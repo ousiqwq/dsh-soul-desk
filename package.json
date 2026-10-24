@@ -1,0 +1,88 @@
+{
+  "name": "dsh-plugin-private-soul",
+  "version": "0.2.3",
+  "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
+  "type": "module",
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "http-api.js",
+    "memory-policy.js",
+    "memory-tools.js",
+    "model-memory.js",
+    "persona-scope.js",
+    "prompt-policy.js",
+    "store.js",
+    "cordis.patch.yml",
+    "icon.svg",
+    "LICENSE",
+    "README.md",
+    "presets/ronova.json",
+    "presets/ronova.SOUL.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings-general",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/schemastery": "3.18.5",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3",
+    "@deepseek-ai/dsh-scope": "0.2.1-rc.3",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.3"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/schemastery": "3.18.5",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3",
+    "@deepseek-ai/dsh-scope": "0.2.1-rc.3",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.3"
+  },
+  "scripts": {
+    "test": "node tests/all.mjs",
+    "check": "node tests/check.mjs"
+  },
+  "author": {
+    "name": "osiqwq",
+    "email": "pc3456789a@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ousiqwq/dsh-soul-desk.git"
+  },
+  "homepage": "https://github.com/ousiqwq/dsh-soul-desk#readme",
+  "bugs": {
+    "url": "https://github.com/ousiqwq/dsh-soul-desk/issues"
+  },
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "plugin",
+    "persona",
+    "memory",
+    "soul"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "npm@11.20.0"
+}
