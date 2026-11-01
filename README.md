@@ -1,125 +1,87 @@
 # DSH Soul Desk
 
-**DeepSeek Harness 的人格与个人记忆控制台。**
+**简体中文** | [English](README.en.md)
 
-Manage personas, switch them per session, and keep each persona's personal memories separate in DeepSeek Harness.
+DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合适的人设，并为每个人设维护独立的跨会话记忆。
 
-插件包名为 `dsh-plugin-private-soul`，设置入口是 **设置 → 私人灵魂**。
-
-> **有预设可以直接尝试：** 本项目内置「若娜瓦」示例。安装插件后，可下载 [示例预设 JSON](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/ronova.json)，在设置中选择 **导入全部 → 合并导入**，检查后自行启用。示例只含角色设定，**不含个人记忆或会话记录**。详见[预设体验步骤](#若娜瓦示例预设)。
+入口：**设置 → 私人灵魂** · 插件包：`dsh-plugin-private-soul`
 
 ## 功能
 
-- 管理多个人设，支持完整人格文本、全局默认人设与每会话切换。
-- 子 Agent 继承所属会话的选择；已发送的请求保留当时的人设归属。
-- 每个人设拥有独立的跨会话个人记忆，只记录关系、稳定喜好与共同故事。
-- 提供记忆查询、新增、编辑、删除、去重与整理预览。
-- 支持人格 Markdown 和整体 JSON 导入导出。
-- 使用 DSH 当前会话或默认模型审核自动记忆、生成整理预览。
-- 原子保存、修订冲突检查、恢复备份与数据损坏保护。
-- 设置页适配 DSH 主题与窄屏，人设菜单集成在聊天界面中。
+- **多个人设**：编辑完整人格文本，设置全局默认，或在聊天界面按会话切换。
+- **独立记忆**：按人设管理关系、喜好与共同故事，支持查询、编辑、去重和整理预览。
+- **两种提示词模式**：选择人格优先或完整替换，配合原生工具与运行上下文使用。
+- **导入与导出**：支持人格 Markdown、整体 JSON，以及合并导入。
+- **自动记忆**：使用当前会话或默认模型审核记忆、生成整理建议。
+- **持久保存**：支持修订冲突检查、恢复备份、深浅主题与窄屏布局。
 
-项目包含插件代码，以及经明确授权公开的 **若娜瓦示例预设**。不包含个人记忆、真实会话绑定、其他人设或运行时存档。
+### 人设管理
 
-## 兼容性
+新建或编辑人设，选择注入方式和默认人设。聊天页可独立选择具体人设、跟随默认或停用。
 
-| 组件 | 已验证版本 |
-| --- | --- |
-| DeepSeek Harness | `0.2.1-rc.3`、`0.2.1-rc.5` |
-| Node.js | `26` |
-| Cordis | `4.0.5` |
+![人设管理：全局默认、注入方式与人格编辑](docs/images/personas.png)
 
-其他 Harness 版本需要重新验证接口兼容性。
+### 个人记忆
 
-此版本显式支持上述两个 RC 版本，无需设置版本豁免。CI 分别安装两套 DSH 依赖运行回归测试；升级保留已有配置和数据。
+按类别筛选和搜索记忆，手动补充内容，或先查看智能整理建议再应用。
+
+![个人记忆：筛选、编辑与整理](docs/images/memories.png)
 
 ## 安装
 
-下载 [v0.2.4 插件包](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz)，然后执行：
-
-```bash
-dsh plugin --profile web add ./dsh-plugin-private-soul-0.2.4.tgz
-```
-
-也可以直接安装发布包：
+兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
 
 ```bash
 dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz
 ```
 
-在 DSH 插件页面启用 `dsh-plugin-private-soul`，重启 DSH 并刷新页面，进入 **设置 → 私人灵魂**。没有工作区或会话时，聊天区可能不显示人设菜单；设置页始终提供管理入口。
-
-## 若娜瓦示例预设
-
-示例是用户提供的同人角色设定，可选导入，不会在安装时自动启用。
-
-- [`presets/ronova.json`](presets/ronova.json)：可以直接通过插件的 **导入全部** 功能导入。
-- [`presets/ronova.SOUL.md`](presets/ronova.SOUL.md)：仅设定文本，可通过 **导入 SOUL.md** 读入草稿。
-
-推荐流程：
-
-1. 下载 `presets/ronova.json`，在设置中点击 **导入全部**。
-2. 在预览中确认只有 **若娜瓦** 一个示例、**0 条记忆**。
-3. 选择 **合并导入** 并确认，保留已有的人设和绑定。
-4. 检查设定内容，再自行保存并启用，或在目标会话中选择这个人设。
-
-示例使用新的固定标识 `example-ronova`，记忆列表与会话绑定均为空，未包含原始存档 ID 或创建时间。导入不会读取或恢复任何人的历史互动。
+在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。也可以从 [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases) 下载安装包后本地安装。
 
 ## 使用
 
-在设置中点击 **新建人设**，填写名称和设定文本。**仅保存** 保存草稿；**保存并启用此人设** 同时将其设为全局默认。会话菜单支持 **跟随默认**、**此会话不使用人设** 或选择具体人设。
+1. 点击 **新建人设**，填写名称与人格文本。
+2. **仅保存** 保存当前编辑；**保存并启用此人设** 同时设为全局默认。
+3. 在聊天页的人设菜单中，为当前会话选择具体人设、**跟随默认** 或 **此会话不使用人设**。
+4. 进入 **个人记忆**，管理该人设的关系、喜好和故事。
 
-支持两种注入方式：
+子 Agent 继承所属会话的选择；已发送请求使用发送时的人设归属。切换人设时，也会切换其个人记忆。
 
-- **人格优先**：将人格原文放在组装后的系统提示词前部，保留工具和其他框架说明。
-- **完整替换**：替换人格相关的提示词正文，保留框架提供的工具 schema 和运行时上下文。
-
-人格文本按字面处理，`{{...}}` 不作模板插值。设置仅控制应用组装的提示词，模型服务自身的上层规则仍由服务商控制。
-
-### 个人记忆
-
-每个人设分别保存以下三类个人事实：
-
-| 类别 | 范围 |
+| 注入方式 | 行为 |
 | --- | --- |
-| `relationship` | 关系、称呼、约定和边界 |
-| `preference` | 稳定的个人或交流偏好 |
-| `story` | 真实共同经历，去除具体工作细节 |
+| 人格优先 | 将人格文本放在系统提示词前部，保留工具和框架说明 |
+| 完整替换 | 使用人格文本替换系统提示词正文，保留工具 schema 与运行时上下文 |
 
-自动记忆提供 `soul_memory_read`、`soul_memory_remember`、`soul_memory_update`、`soul_memory_forget`、`soul_memory_consolidate` 工具。归属由服务端从实际会话与请求确定，不能由模型传入其他人设 ID 来跨库访问。
+人格文本按字面处理，`{{...}}` 不作模板插值。全局开关控制人格注入和自动记忆工具，关闭后保留已有内容。
 
-自动写入通过工作内容过滤及模型语义审核，失败时不写入。人工录入与导入执行结构、长度和内容过滤。语义过滤不能保证识别所有变体，记忆仍可在设置页修正。
+## 尝试若娜瓦预设
 
-每个人设最多 500 条记忆，每条最多 1600 字符；整体存档最多 8 MiB。智能整理先生成预览，确认后才写入，旧版本预览会被拒绝。
+内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
 
-模型审核和智能整理使用已有模型连接，可能产生对应服务的 API 费用。普通聊天记录由 Harness 管理，不属于本插件的个人记忆库。
+1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/ronova.json)。
+2. 在设置中选择 **导入全部 → 合并导入**。
+3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 
-## 数据存储与隐私
+也可以下载 [ronova.SOUL.md](presets/ronova.SOUL.md)，通过 **导入 SOUL.md** 载入编辑器。
 
-运行数据保存在 `$DSH_HOME/private-soul/`，默认是 `~/.dsh/private-soul/`：
+## 记忆与存储
 
-| 文件 | 内容 |
-| --- | --- |
-| `library.json` | 实际人设、记忆、全局设置和会话绑定 |
-| `backups/*.json` | 删除、整理或整体导入前的恢复存档 |
+记忆分为 `relationship`（关系）、`preference`（喜好）和 `story`（共同故事）。模型可通过 `soul_memory_read`、`soul_memory_remember`、`soul_memory_update`、`soul_memory_forget`、`soul_memory_consolidate` 管理当前人设的记忆。
 
-目录权限为 `0700`，存档为 `0600`。这些运行数据不属于插件安装包。整体导出文件包含个人内容，应由使用者自行保管，不要提交到代码仓库。
+自动写入经过内容过滤和模型审核；智能整理先生成预览，确认后保存。每个人设最多 500 条记忆，每条最多 1600 字符，整体存档最多 8 MiB。
 
-全局总开关关闭后停止人格注入和自动记忆工具，保留已存内容。卸载插件不会主动删除运行时数据。网页接口沿用 Harness 的认证及 Host/Origin 检查。
+运行数据位于 `$DSH_HOME/private-soul/`，默认 `~/.dsh/private-soul/`。`library.json` 保存人设、记忆与会话绑定，`backups/` 保存删除、整理或整体导入前的恢复存档。卸载插件保留数据。
 
-## 开发与测试
+## 开发
 
 ```bash
-git clone https://github.com/ousiqwq/dsh-soul-desk.git
-cd dsh-soul-desk
 npm ci --ignore-scripts
 npm run check
 npm test
 npm pack --ignore-scripts
 ```
 
-16 项测试使用临时目录中的合成角色和记忆，不读取真实用户存档，也不调用付费模型。示例预设测试只使用仓库内明确公开的示例文本，详见 [测试说明](docs/TESTING.md)。
+开发检查见 [TESTING.md](docs/TESTING.md)。
 
-## License
+## 许可证
 
 [MIT](LICENSE) © 2026 osiqwq
