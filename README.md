@@ -6,7 +6,7 @@ Manage personas, switch them per session, and keep each persona's personal memor
 
 插件包名为 `dsh-plugin-private-soul`，设置入口是 **设置 → 私人灵魂**。
 
-> **有预设可以直接尝试：** 本项目内置「若娜瓦」示例。安装插件后，可下载 [示例预设 JSON](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.3/ronova.json)，在设置中选择 **导入全部 → 合并导入**，检查后自行启用。示例只含角色设定，**不含个人记忆或会话记录**。详见[预设体验步骤](#若娜瓦示例预设)。
+> **有预设可以直接尝试：** 本项目内置「若娜瓦」示例。安装插件后，可下载 [示例预设 JSON](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/ronova.json)，在设置中选择 **导入全部 → 合并导入**，检查后自行启用。示例只含角色设定，**不含个人记忆或会话记录**。详见[预设体验步骤](#若娜瓦示例预设)。
 
 ## 功能
 
@@ -25,24 +25,26 @@ Manage personas, switch them per session, and keep each persona's personal memor
 
 | 组件 | 已验证版本 |
 | --- | --- |
-| DeepSeek Harness | `0.2.1-rc.3` |
+| DeepSeek Harness | `0.2.1-rc.3`、`0.2.1-rc.5` |
 | Node.js | `26` |
 | Cordis | `4.0.5` |
 
 其他 Harness 版本需要重新验证接口兼容性。
 
+此版本显式支持上述两个 RC 版本，无需设置版本豁免。CI 分别安装两套 DSH 依赖运行回归测试；升级保留已有配置和数据。
+
 ## 安装
 
-下载 [v0.2.3 插件包](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.3/dsh-plugin-private-soul-0.2.3.tgz)，然后执行：
+下载 [v0.2.4 插件包](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz)，然后执行：
 
 ```bash
-dsh plugin --profile web add ./dsh-plugin-private-soul-0.2.3.tgz
+dsh plugin --profile web add ./dsh-plugin-private-soul-0.2.4.tgz
 ```
 
 也可以直接安装发布包：
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.3/dsh-plugin-private-soul-0.2.3.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz
 ```
 
 在 DSH 插件页面启用 `dsh-plugin-private-soul`，重启 DSH 并刷新页面，进入 **设置 → 私人灵魂**。没有工作区或会话时，聊天区可能不显示人设菜单；设置页始终提供管理入口。

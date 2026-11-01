@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -45,16 +45,16 @@
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.5",
     "@deepseek-ai/schemastery": "3.18.5",
-    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3",
-    "@deepseek-ai/dsh-scope": "0.2.1-rc.3",
-    "@deepseek-ai/dsh-tools": "0.2.1-rc.3"
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-scope": "0.2.1-rc.3 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.3 || 0.2.1-rc.5"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.5",
     "@deepseek-ai/schemastery": "3.18.5",
-    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3",
-    "@deepseek-ai/dsh-scope": "0.2.1-rc.3",
-    "@deepseek-ai/dsh-tools": "0.2.1-rc.3"
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-scope": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.5"
   },
   "scripts": {
     "test": "node tests/all.mjs",
