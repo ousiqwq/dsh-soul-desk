@@ -46,7 +46,7 @@ export function validateLibrary(input) {
     }
   }
   if (input.defaultPersonaId !== null && !ids.has(input.defaultPersonaId)) throw new SoulError('默认人设不存在。');
-  if (!['priority','complete'].includes(input.mode) || typeof input.enabled !== 'boolean') throw new SoulError('人格开关或注入方式无效。');
+  if (!['priority','complete','append'].includes(input.mode) || typeof input.enabled !== 'boolean') throw new SoulError('人格开关或注入方式无效。');
   const value = { version: 2, revision: Number.isSafeInteger(input.revision) && input.revision >= 0 ? input.revision : 0, enabled: input.enabled, mode: input.mode, defaultPersonaId: input.defaultPersonaId, personas, sessions };
   const envelope={format:'private-soul-backup',version:2,exportedAt:timestamp(),data:value};
   if (Buffer.byteLength(JSON.stringify(envelope,null,2))+32 > MAX_LIBRARY_BYTES) throw new SoulError('整体存档超过 8 MiB，请精简后再保存。');

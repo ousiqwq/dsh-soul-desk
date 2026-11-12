@@ -61,3 +61,19 @@ test('malformed existing storage is not silently overwritten',async()=>{
   const dir=await mkdtemp(join(tmpdir(),'soul-corrupt-'));const file=join(dir,'library.json');await writeFile(file,'not-json');
   try{await assert.rejects(new SoulStore(file).init({text:'new'}));assert.equal(await readFile(file,'utf8'),'not-json');}finally{await rm(dir,{recursive:true,force:true});}
 });
+
+test('append mode survives restart and archive round-trip while invalid modes cannot overwrite it', () => fixture(async (store, file) => {
+  const id = await create(store, '伙伴', '# 伙伴');
+  await store.action('settings', { mode: 'append' }, store.state.revision);
+  const archive = store.export(), restored = await new SoulStore(file).init();
+  try {
+    assert.equal(restored.state.mode, 'append');
+    assert.equal(restored.persona(id).soul, '# 伙伴');
+    await store.action('settings', { mode: 'priority' }, store.state.revision);
+    await store.action('import', { archive, strategy: 'replace' }, store.state.revision);
+    assert.equal(store.state.mode, 'append');
+    const before = await readFile(file, 'utf8');
+    await assert.rejects(store.action('settings', { mode: 'invalid' }, store.state.revision));
+    assert.equal(await readFile(file, 'utf8'), before);
+  } finally { await restored.close(); }
+}));

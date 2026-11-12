@@ -4,13 +4,16 @@ import { MEMORY_INSTRUCTIONS, KIND_LABELS } from './memory-policy.js';
 export const SECTION_NAME = 'private-soul:identity';
 export const MAX_TEXT_LENGTH = 262144;
 
+const privateSections = new Set([
+  SECTION_NAME,
+  'private-soul:memory-policy',
+  'private-soul:memories',
+]);
 const identitySections = new Set([
   'harness:identity',
   'deployment:persona-prefix',
   'deployment:persona-suffix',
-  SECTION_NAME,
-    'private-soul:memory-policy',
-    'private-soul:memories',
+  ...privateSections,
 ]);
 
 /** Read native Cordis Volatile cells without changing the user's text. */
@@ -46,7 +49,9 @@ export function applyPersona(assembly, config) {
     ...assembly,
     sections: config.mode === 'complete'
       ? own
-      : [...own, ...assembly.sections.filter((section) => !identitySections.has(section.name))],
+      : config.mode === 'append'
+        ? [...assembly.sections.filter((section) => !privateSections.has(section.name)), ...own]
+        : [...own, ...assembly.sections.filter((section) => !identitySections.has(section.name))],
   };
 }
 

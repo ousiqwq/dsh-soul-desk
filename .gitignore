@@ -16,3 +16,4 @@ exports/
 !presets/ronova.json
 SOUL.md
 .DS_Store
+.serena/

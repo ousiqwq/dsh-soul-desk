@@ -2,8 +2,13 @@ window.__ModuleLoader__.load({
   id: 'dsh-plugin-private-soul',
   factory: require => {
     const React=require('react'),h=React.createElement,{createPortal}=require('react-dom');
-    const {Menu,Toast,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
+    const {Menu,MenuItemButton,Tooltip,Toast,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
     const BASE='/private-soul/v2',labels={relationship:'关系',preference:'喜好',story:'故事'};
+    const promptModes=[
+      {id:'priority',label:'优先',description:'将人格与个人记忆放在系统提示词前部，替换原有身份设定，保留工具和框架说明。'},
+      {id:'complete',label:'替换',description:'用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。'},
+      {id:'append',label:'追加',description:'保留原有系统提示词，在其末尾追加人格与个人记忆。'},
+    ];
     const css=`
 .soul-page{box-sizing:border-box;width:100%;min-width:0;display:flex;flex-direction:column;gap:16px;padding:6px 0;color:var(--dsw-alias-label-primary);container-type:inline-size}
 .soul-page *{box-sizing:border-box}
@@ -26,6 +31,10 @@ window.__ModuleLoader__.load({
 .soul-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;align-items:end}
 .soul-field{min-width:0;display:flex;flex-direction:column;gap:7px;font-size:13px}
 .soul-field select{width:100%}
+.soul-mode-menu{width:100%;min-width:0}
+.soul-mode-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}
+.soul-mode-options{min-width:140px}
+.soul-mode-option{width:100%;min-width:0}
 .soul-enable{display:inline-flex;align-items:center;gap:7px;font-size:13px;min-height:36px}
 .soul-enable input{margin:0;flex:none;accent-color:#a779de}
 .soul-layout{min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -92,6 +101,17 @@ window.__ModuleLoader__.load({
     const button=(text,click,disabled=false,kind='')=>h('button',{type:'button',className:'soul-button '+(kind?'soul-'+kind:''),onClick:click,disabled},text);
     function download(name,value,mime='application/json;charset=utf-8'){const url=URL.createObjectURL(new Blob([value],{type:mime}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
+    function PromptModeSelect({value,disabled,onChange}){
+      const [open,setOpen]=React.useState(false);
+      React.useEffect(()=>{if(disabled)setOpen(false);},[disabled]);
+      const selected=promptModes.find(row=>row.id===value)??promptModes[0];
+      return h(Menu,{open,portal:true,minWidthFromAnchor:true,className:'soul-mode-menu',listClassName:'soul-mode-options',onClose:()=>setOpen(false),
+        anchor:h(Tooltip,{label:selected.description,side:'bottom',portal:true,delayMs:400,disabled:open,maxWidth:320},
+          h('button',{id:'soul-prompt-mode',type:'button',className:'soul-button soul-mode-trigger',disabled,'aria-label':'注入方式','aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(current=>!current)},selected.label,h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true})))},
+        ...promptModes.map(row=>h(Tooltip,{key:row.id,label:row.description,side:'right',portal:true,delayMs:350,focusDelayMs:350,maxWidth:320},
+          h('div',{className:'soul-mode-option'},h(MenuItemButton,{current:row.id===selected.id,onSelect:()=>{setOpen(false);onChange(row.id);}},row.label)))));
+    }
+
     function SoulEditor(){
       const library=useLibrary(),view=library.view;
       const [selected,setSelected]=React.useState(null),[draft,setDraft]=React.useState({name:'',soul:''}),[tab,setTab]=React.useState('persona');
@@ -131,8 +151,7 @@ window.__ModuleLoader__.load({
         h('p',{className:'soul-hint'},`${draft.soul.length.toLocaleString()} 字符${dirty?' · 有未保存修改':''}。{{…}} 保留原文。`),
         h('div',{className:'soul-actions'},button('保存并启用此人设',()=>run(()=>savePersona(true),'已保存并设为全局默认人设。'),disabled||!draft.name.trim()||!draft.soul.trim(),'primary'),button('仅保存',()=>run(()=>savePersona(false),'人设已保存。'),disabled||!draft.name.trim())),
         h('div',{className:'soul-actions soul-actions-secondary'},button('导入 SOUL.md',()=>soulInput.current.click(),disabled),button('导出草稿',()=>download('SOUL.md',draft.soul,'text/markdown;charset=utf-8'),!draft.soul),selected?button('重新读取人设',()=>{if(!dirty||window.confirm('重新读取会替换当前草稿，是否继续？'))run(async()=>{await library.load(true);choose(selected,true);});},disabled):null,h('input',{ref:soulInput,type:'file',accept:'.md,.txt,text/plain',hidden:true,onChange:importSoul,'aria-label':'导入人格文本文件'})),
-        selected?h('div',{className:'soul-actions'},button('删除此人设及其记忆',()=>{if(window.confirm(`删除“${persona?.name}”及其 ${persona?.memories.length??0} 条记忆？服务器会先备份。`))run(async()=>{await act('persona-delete',{id:selected});choose(library.current.current.defaultPersonaId,true);},'人设已删除，服务器已保留备份。');},disabled,'danger')):null,
-        h('p',{className:'soul-hint'},'人格优先保留工具说明；完整替换只保留人格与个人记忆规则。模型提供方的上层规则仍由提供方控制。'));
+        selected?h('div',{className:'soul-actions'},button('删除此人设及其记忆',()=>{if(window.confirm(`删除“${persona?.name}”及其 ${persona?.memories.length??0} 条记忆？服务器会先备份。`))run(async()=>{await act('persona-delete',{id:selected});choose(library.current.current.defaultPersonaId,true);},'人设已删除，服务器已保留备份。');},disabled,'danger')):null);
       const memoryPanel=!persona?h('p',{className:'soul-hint'},'先保存或选择一个人设，再管理它的个人记忆。'):h(React.Fragment,null,
         h('p',{className:'soul-hint'},`“${persona.name}”的独立记忆库。自动记录还需通过模型语义审核。`),
         h('div',{className:'soul-memory-filter'},h('input',{className:'soul-input',value:filter,onChange:e=>setFilter(e.target.value),placeholder:'搜索个人记忆','aria-label':'搜索个人记忆'}),h('select',{className:'soul-select',value:kindFilter,onChange:e=>setKindFilter(e.target.value),'aria-label':'筛选记忆类别'},h('option',{value:''},'全部类别'),...Object.entries(labels).map(([key,label])=>h('option',{key,value:key},label)))),
@@ -144,7 +163,7 @@ window.__ModuleLoader__.load({
       return h('section',{className:'soul-page','aria-label':'私人灵魂人设与记忆管理'},
         h('div',{className:'soul-row'},h('h2',null,'私人灵魂'),h('span',{className:'soul-badge',role:'status'},view?.enabled?'已启用':'未启用'),h('span',{className:'soul-hint'},`${view?.personas.length??0} 个人设 · ${total} 条个人记忆`)),
         h('p',{className:'soul-hint'},'每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。'),
-        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h('label',{className:'soul-enable'},h('input',{type:'checkbox',checked:!!view?.enabled,disabled,'aria-label':'启用私人灵魂',onChange:e=>run(()=>act('settings',{enabled:e.target.checked}),'已更新总开关。')}),'启用私人灵魂')),h('div',{className:'soul-settings'},h('label',{className:'soul-field'},'注入方式',h('select',{className:'soul-select',value:view?.mode??'priority',disabled,'aria-label':'注入方式',onChange:e=>run(()=>act('settings',{mode:e.target.value}),'已更新注入方式。')},h('option',{value:'priority'},'人格优先'),h('option',{value:'complete'},'完整替换'))),h('label',{className:'soul-field',htmlFor:'soul-default-persona'},'全局默认人设',h('select',{id:'soul-default-persona',className:'soul-select',value:view?.defaultPersonaId??'',disabled,onChange:e=>run(()=>act('settings',{defaultPersonaId:e.target.value||null}),'默认人设已切换，下一次请求生效。')},h('option',{value:''},'不使用默认人设'),...(view?.personas??[]).map(row=>h('option',{key:row.id,value:row.id},row.name))))),h('p',{className:'soul-hint'},'未单独绑定的会话跟随默认人设。聊天页的人设菜单可单独选择人设，切换时一起切换它的记忆。')),
+        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h('label',{className:'soul-enable'},h('input',{type:'checkbox',checked:!!view?.enabled,disabled,'aria-label':'启用私人灵魂',onChange:e=>run(()=>act('settings',{enabled:e.target.checked}),'已更新总开关。')}),'启用私人灵魂')),h('div',{className:'soul-settings'},h('label',{className:'soul-field',htmlFor:'soul-prompt-mode'},'注入方式',h(PromptModeSelect,{value:view?.mode??'priority',disabled,onChange:mode=>run(()=>act('settings',{mode}),'已更新注入方式。')})),h('label',{className:'soul-field',htmlFor:'soul-default-persona'},'全局默认人设',h('select',{id:'soul-default-persona',className:'soul-select',value:view?.defaultPersonaId??'',disabled,onChange:e=>run(()=>act('settings',{defaultPersonaId:e.target.value||null}),'默认人设已切换，下一次请求生效。')},h('option',{value:''},'不使用默认人设'),...(view?.personas??[]).map(row=>h('option',{key:row.id,value:row.id},row.name))))),h('p',{className:'soul-hint'},'未单独绑定的会话跟随默认人设。聊天页的人设菜单可单独选择人设，切换时一起切换它的记忆。')),
         h('div',{className:'soul-actions'},button('新建人设',()=>{if(!dirty||window.confirm('新建会替换未保存草稿，是否继续？')){baseline.current={id:'new',name:'',soul:''};setSelected(null);setDraft({name:'',soul:''});setTab('persona');}},disabled),button('导出全部',()=>run(async()=>{download(`私人灵魂-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(await request('/export'),null,2));},'整体存档已下载，包含所有人设、记忆和会话绑定。'),disabled||dirty),button('导入全部',()=>importInput.current.click(),disabled||dirty),h('input',{ref:importInput,type:'file',accept:'.json,application/json',onChange:importAll,hidden:true,'aria-label':'导入整体存档文件'})),
         importPreview?h('div',{className:'soul-card',role:'dialog','aria-label':'整体存档导入预览'},h('h3',null,'导入预览'),h('p',{className:'soul-hint'},`包含 ${importPreview.data.personas.length} 个人设、${importPreview.data.personas.reduce((n,row)=>n+(row.memories?.length??0),0)} 条记忆。`),h('select',{className:'soul-select',value:strategy,onChange:e=>setStrategy(e.target.value),'aria-label':'整体导入方式'},h('option',{value:'merge'},'合并导入：保留现有，冲突项作为副本'),h('option',{value:'replace'},'替换全部：恢复整个存档')),h('p',{className:'soul-hint'},'替换、删除和整理前服务器会自动备份。验证失败不会写入。'),h('div',{className:'soul-row'},button('确认导入',()=>run(async()=>{await act('import',{archive:importPreview,strategy});setImportPreview(null);choose(library.current.current.defaultPersonaId,true);},'整体存档已导入。'),busy,'primary'),button('取消导入',()=>setImportPreview(null),busy))):null,
         h('div',{className:'soul-layout'},view?.personas.length?h('aside',{className:'soul-personas','aria-label':'人设列表'},...view.personas.map(row=>h('button',{key:row.id,className:'soul-button soul-persona','aria-pressed':selected===row.id,onClick:()=>choose(row.id),disabled:busy,title:row.name},h('span',{className:'soul-persona-name'},row.name),h('small',null,`${row.memories.length} 条记忆${view.defaultPersonaId===row.id?' · 默认':''}`)))):null,h('div',{className:'soul-card soul-editor'},h('div',{className:'soul-row soul-editor-tabs',role:'tablist'},...['persona','memory'].map(id=>h('button',{key:id,className:'soul-button soul-tab',role:'tab','aria-selected':tab===id,onClick:()=>setTab(id)},id==='persona'?'人格':'个人记忆'))),tab==='persona'?personaPanel:memoryPanel)),

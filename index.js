@@ -12,7 +12,7 @@ export const inject = ['systemPrompt', 'settings'];
 export const Config = z.object({
   enabled: z.boolean().default(false).volatile(),
   text: z.string().max(MAX_TEXT_LENGTH).default('').volatile(),
-  mode: z.union([z.const('priority'), z.const('complete')]).default('priority').volatile(),
+  mode: z.union([z.const('priority'), z.const('complete'), z.const('append')]).default('priority').volatile(),
   dataDir: z.string(),
   memoryBudgetChars: z.number().step(1).min(2000).max(50000).default(12000),
 });

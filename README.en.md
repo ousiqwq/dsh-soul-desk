@@ -10,7 +10,7 @@ Open **Settings → 私人灵魂 (Private Soul)**. Package: `dsh-plugin-private-
 
 - **Multiple personas:** edit full persona instructions, set a global default, and switch per conversation.
 - **Separate memories:** manage relationships, preferences, and shared stories with search, editing, deduplication, and consolidation previews.
-- **Two prompt modes:** prioritize the persona or replace the system prompt body while retaining native tools and runtime context.
+- **Three prompt modes:** prioritize, replace, or append the persona while retaining native tools and runtime context.
 - **Import and export:** persona Markdown, full JSON archives, and merge imports.
 - **Automatic memory:** use the current conversation's model or the default model to review memories and suggest consolidation.
 - **Persistent settings:** revision-conflict checks, recovery backups, light/dark themes, and responsive layouts.
@@ -32,7 +32,7 @@ Filter and search by category, add or edit memories, and preview consolidation b
 Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**. Check interface compatibility before using another Harness version.
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/dsh-plugin-private-soul-0.2.5.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/dsh-plugin-private-soul-0.2.6.tgz
 ```
 
 Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → 私人灵魂**. Packages are also available from [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases).
@@ -50,6 +50,9 @@ Subagents inherit their owning conversation's selection. Requests already sent r
 | --- | --- |
 | Persona priority | Place persona text before the system prompt's tool and framework guidance |
 | Complete replacement | Replace the system prompt body with persona text while retaining tool schemas and runtime context |
+| Append | Preserve the original system prompt and append the persona and personal memories at the end |
+
+The interface uses short labels; hover over a mode to see its explanation.
 
 Persona text is literal: `{{...}}` is not interpolated. The global switch controls persona injection and automatic memory tools; disabling it retains saved content.
 
@@ -57,7 +60,7 @@ Persona text is literal: `{{...}}` is not interpolated. The global switch contro
 
 An optional **Ronova** persona preset is included and can be imported after installation.
 
-1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/ronova.json).
+1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/ronova.json).
 2. Choose **导入全部 → 合并导入 (Import all → Merge)** in settings.
 3. Review the persona, save and enable it, or select Ronova in a specific conversation.
 

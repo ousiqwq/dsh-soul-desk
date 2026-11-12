@@ -10,7 +10,7 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 - **多个人设**：编辑完整人格文本，设置全局默认，或在聊天界面按会话切换。
 - **独立记忆**：按人设管理关系、喜好与共同故事，支持查询、编辑、去重和整理预览。
-- **两种提示词模式**：选择人格优先或完整替换，配合原生工具与运行上下文使用。
+- **三种提示词模式**：选择优先、替换或追加，配合原生工具与运行上下文使用。
 - **导入与导出**：支持人格 Markdown、整体 JSON，以及合并导入。
 - **自动记忆**：使用当前会话或默认模型审核记忆、生成整理建议。
 - **持久保存**：支持修订冲突检查、恢复备份、深浅主题与窄屏布局。
@@ -32,7 +32,7 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/dsh-plugin-private-soul-0.2.5.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/dsh-plugin-private-soul-0.2.6.tgz
 ```
 
 在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。也可以从 [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases) 下载安装包后本地安装。
@@ -48,8 +48,11 @@ dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/d
 
 | 注入方式 | 行为 |
 | --- | --- |
-| 人格优先 | 将人格文本放在系统提示词前部，保留工具和框架说明 |
-| 完整替换 | 使用人格文本替换系统提示词正文，保留工具 schema 与运行时上下文 |
+| 优先 | 将人格文本放在系统提示词前部，保留工具和框架说明 |
+| 替换 | 使用人格文本替换系统提示词正文，保留工具 schema 与运行时上下文 |
+| 追加 | 保留原有系统提示词，在末尾追加人格与个人记忆 |
+
+界面使用简短名称，鼠标悬停选项查看说明。
 
 人格文本按字面处理，`{{...}}` 不作模板插值。全局开关控制人格注入和自动记忆工具，关闭后保留已有内容。
 
@@ -57,7 +60,7 @@ dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/d
 
 内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
 
-1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/ronova.json)。
+1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/ronova.json)。
 2. 在设置中选择 **导入全部 → 合并导入**。
 3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 
