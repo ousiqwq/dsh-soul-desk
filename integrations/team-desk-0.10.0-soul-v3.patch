@@ -1,0 +1,57 @@
+--- a/src/client/PersonaBinding.tsx
++++ b/src/client/PersonaBinding.tsx
+@@ -1,6 +1,6 @@
+ import {tr, messageText} from './locale.ts';
+ import {useEffect,useRef,useState} from 'react';
+-interface SoulView {revision:number;enabled:boolean;override?:string|null;defaultPersonaId?:string|null;personas:{id:string;name:string}[];}
++interface SoulView {revision:number;enabled:boolean;override?:string|null;defaultPersonaId?:string|null;effective?:{personaId?:string|null;status:string;source:{scope:string}};personas:{id:string;name:string}[];}
+ /** Optional adapter: only the existing Soul Desk binding API owns persona state. */
+ export function PersonaBinding({sessionId}:{sessionId:string}){
+   const [view,setView]=useState<SoulView>(),[error,setError]=useState(''),[missing,setMissing]=useState(false),[busy,setBusy]=useState(false);
+@@ -22,7 +22,8 @@
+   }catch(e){if(!abort.current?.signal.aborted){setError(String(e));window.dispatchEvent(new Event('private-soul-library-changed'));}}finally{if(!abort.current?.signal.aborted)setBusy(false);}}
+   if(missing)return <span className="td-muted">{tr("未安装私人灵魂")}</span>;
+   return <div className="td-persona"><label>{tr("本会话人设")}<select aria-label={tr("成员人设")} value={view?.override??''} disabled={busy||!view||!view.enabled} onChange={e=>void choose(e.target.value)}>
+-    <option value="">{tr("跟随全局默认{p0}", {p0: view?.defaultPersonaId?' · '+(view.personas.find(p=>p.id===view.defaultPersonaId)?.name??''):''})}</option>
++    <option value="">{tr("跟随默认")}</option>
++    {view?.override&&view.override!=='none'&&!view.personas.some(p=>p.id===view.override)&&<option value={view.override}>{tr("人设已失效")}</option>}
+     {(view?.personas??[]).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}<option value="none">{tr("不使用人设")}</option>
+-  </select></label>{view&&!view.enabled&&<span className="td-muted">{tr("私人灵魂尚未启用")}</span>}{error&&<span role="alert">{messageText(error)}</span>}</div>;
++  </select></label>{view?.enabled&&view.effective&&<span className="td-muted">{tr("实际生效：{p0} · {p1}",{p0:view.effective.status==='missing'?tr("人设已失效"):view.effective.status==='empty'?tr("人设内容为空"):view.personas.find(p=>p.id===view.effective?.personaId)?.name??tr("不使用人设"),p1:tr(({session:'会话单独设置',workspace:'工作区默认',subagent:'派生时的默认选择'} as Record<string,string>)[view.effective.source.scope]??'全局默认')})}</span>}{view&&!view.enabled&&<span className="td-muted">{tr("私人灵魂尚未启用")}</span>}{error&&<span role="alert">{messageText(error)}</span>}</div>;
+ }
+--- a/src/client/messages.ts
++++ b/src/client/messages.ts
+@@ -597,7 +597,15 @@
+   "Reconcile the existing operation before continuing": "请先核对已有操作再继续",
+   "Checkout has an operation awaiting verification": "此检出目录有待核对操作",
+   "Git settings changed": "Git 设置已变化",
+-  "Proposal changed": "成果提案已变化"
++  "Proposal changed": "成果提案已变化",
++  "跟随默认": "跟随默认",
++  "人设已失效": "人设已失效",
++  "人设内容为空": "人设内容为空",
++  "实际生效：{p0} · {p1}": "实际生效：{p0} · {p1}",
++  "会话单独设置": "会话单独设置",
++  "工作区默认": "工作区默认",
++  "派生时的默认选择": "派生时的默认选择",
++  "全局默认": "全局默认",
+   "返回主会话": "返回主会话",
+   "拣选提交": "拣选提交",
+   "按顺序填写完整提交 SHA，每行一项": "按顺序填写完整提交 SHA，每行一项",
+@@ -1205,7 +1213,15 @@
+   "Reconcile the existing operation before continuing": "Reconcile the existing operation before continuing",
+   "Checkout has an operation awaiting verification": "Checkout has an operation awaiting verification",
+   "Git settings changed": "Git settings changed",
+-  "Proposal changed": "Proposal changed"
++  "Proposal changed": "Proposal changed",
++  "跟随默认": "Follow default",
++  "人设已失效": "Persona unavailable",
++  "人设内容为空": "Empty persona",
++  "实际生效：{p0} · {p1}": "Effective: {p0} · {p1}",
++  "会话单独设置": "Conversation override",
++  "工作区默认": "Workspace default",
++  "派生时的默认选择": "Captured child default",
++  "全局默认": "Global default",
+   "返回主会话": "Return to root conversation",
+   "拣选提交": "Cherry-pick",
+   "按顺序填写完整提交 SHA，每行一项": "Full commit SHAs in order, one per line",

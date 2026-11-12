@@ -68,7 +68,7 @@ export function attachPersonaPolicy(systemPrompt, getConfig) {
   let active = true;
   const wrapped = async function (...args) {
     const assembly = await original.apply(this, args);
-    return active ? applyPersona(assembly, readConfig(getConfig(args[0] ?? {}))) : assembly;
+    return active ? applyPersona(assembly, readConfig(await getConfig(args[0] ?? {}))) : assembly;
   };
   target.assemble = wrapped;
   return () => {

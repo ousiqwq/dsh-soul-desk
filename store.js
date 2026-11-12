@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, rename, unlink, readdir, open } from 'node:
 import { dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { SoulError, validateMemory, memoryKey } from './memory-policy.js';
+import { validateRuleMaps, validateRule, validateSessionRule, followRule, noneRule, ruleFromLegacy, legacyFromRule, resolvePersona, resolveChildRule, remapRule, remapSession } from './persona-rules.js';
 
 export const MAX_LIBRARY_BYTES = 8 * 1024 * 1024;
 export const MAX_PERSONAS = 100;
@@ -19,7 +20,7 @@ function identifier(value) { if (typeof value !== 'string' || !ID.test(value) ||
 function safeDate(value) { return typeof value === 'string' && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : timestamp(); }
 
 export function validateLibrary(input) {
-  if (!input || typeof input !== 'object' || input.version !== 2 || !Array.isArray(input.personas)) throw new SoulError('不是有效的私人灵魂 v2 存档。');
+  if (!input || typeof input !== 'object' || ![2,3].includes(input.version) || !Array.isArray(input.personas)) throw new SoulError('不是有效的私人灵魂 v2/v3 存档。');
   if (input.personas.length > MAX_PERSONAS) throw new SoulError(`最多保存 ${MAX_PERSONAS} 个人设。`);
   const ids = new Set();
   const personas = input.personas.map(item => {
@@ -36,19 +37,13 @@ export function validateLibrary(input) {
     });
     return { id, name: string(item.name, 80, '人设名称').trim(), soul: string(item.soul, MAX_SOUL_LENGTH, '人格文本', true), createdAt: safeDate(item.createdAt), updatedAt: safeDate(item.updatedAt), memories };
   });
-  const sessions = Object.create(null);
-  if (input.sessions && typeof input.sessions === 'object' && !Array.isArray(input.sessions)) {
-    if (Object.keys(input.sessions).length > 10000) throw new SoulError('会话绑定过多。');
-    for (const [sessionId, personaId] of Object.entries(input.sessions)) {
-      identifier(sessionId);
-      if (personaId !== 'none' && !ids.has(personaId)) throw new SoulError('会话绑定指向不存在的人设。');
-      sessions[sessionId] = personaId;
-    }
-  }
-  if (input.defaultPersonaId !== null && !ids.has(input.defaultPersonaId)) throw new SoulError('默认人设不存在。');
+  if (input.version === 2) for (const id of Object.values(input.sessions ?? {})) if (id !== 'none' && !ids.has(id)) throw new SoulError('会话绑定指向不存在的人设。');
+  const rules = validateRuleMaps(input, input.version === 2);
+  if (input.defaultPersonaId !== null) identifier(input.defaultPersonaId);
+  if (input.version === 2 && input.defaultPersonaId !== null && !ids.has(input.defaultPersonaId)) throw new SoulError('默认人设不存在。');
   if (!['priority','complete','append'].includes(input.mode) || typeof input.enabled !== 'boolean') throw new SoulError('人格开关或注入方式无效。');
-  const value = { version: 2, revision: Number.isSafeInteger(input.revision) && input.revision >= 0 ? input.revision : 0, enabled: input.enabled, mode: input.mode, defaultPersonaId: input.defaultPersonaId, personas, sessions };
-  const envelope={format:'private-soul-backup',version:2,exportedAt:timestamp(),data:value};
+  const value = { version: 3, revision: Number.isSafeInteger(input.revision) && input.revision >= 0 ? input.revision : 0, enabled: input.enabled, mode: input.mode, defaultPersonaId: input.defaultPersonaId, personas, ...rules };
+  const envelope={format:'private-soul-backup',version:3,exportedAt:timestamp(),data:value};
   if (Buffer.byteLength(JSON.stringify(envelope,null,2))+32 > MAX_LIBRARY_BYTES) throw new SoulError('整体存档超过 8 MiB，请精简后再保存。');
   return value;
 }
@@ -60,7 +55,12 @@ export class SoulStore {
     try {
       const bytes = await readFile(this.file);
       if (bytes.length > MAX_LIBRARY_BYTES) throw new SoulError('现有存档过大，拒绝覆盖。');
-      this.state = validateLibrary(JSON.parse(bytes.toString('utf8')));
+      const original = JSON.parse(bytes.toString('utf8'));
+      this.state = validateLibrary(original);
+      if (original.version === 2) {
+        try { await writeFile(this.file+'.pre-v3.json',bytes,{mode:0o600,flag:'wx'}); } catch (error) { if(error.code!=='EEXIST')throw error; }
+        await this.persist(this.state);
+      }
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
       const text = typeof legacy.text === 'string' ? legacy.text : '';
@@ -74,23 +74,33 @@ export class SoulStore {
   snapshot() { return clone(this.state); }
   persona(id, state = this.state) { const found = state.personas.find(row => row.id === id); if (!found) throw new SoulError('人设已不存在，请刷新后重试。','persona-not-found',404); return found; }
   resolve(sessionIds = []) {
-    if (!this.state.enabled) return null;
-    for (const sessionId of sessionIds) if (Object.hasOwn(this.state.sessions,sessionId)) {
-      const id = this.state.sessions[sessionId];
-      const persona = id === 'none' ? null : this.state.personas.find(row => row.id === id) ?? null;
-      return persona?.soul.trim() ? persona : null;
-    }
-    const persona = this.state.personas.find(row => row.id === this.state.defaultPersonaId) ?? null;
-    return persona?.soul.trim() ? persona : null;
+    return this.effective(sessionIds[0]).persona;
   }
-  view(sessionId, compact = false) {
+  effective(sessionId, context = {}) { return resolvePersona(this.state, sessionId, context); }
+  view(sessionId, compact = false, context = {}) {
     const value = this.snapshot();
-    const activePersonaId = this.resolve(sessionId ? [sessionId] : [])?.id ?? null;
-    const override = sessionId && Object.hasOwn(value.sessions,sessionId) ? value.sessions[sessionId] : '';
-    if (compact) return { revision: value.revision, enabled: value.enabled, mode: value.mode, defaultPersonaId: value.defaultPersonaId, personas: value.personas.map(row => ({ id: row.id, name: row.name, memoryCount: row.memories.length })), activePersonaId, override };
-    return { ...value, activePersonaId, override };
+    const { persona, ...effective } = this.effective(sessionId, context);
+    const selection = effective.selection, override = legacyFromRule(selection);
+    const children = { selection: value.sessions[sessionId]?.children ?? followRule(), ...resolveChildRule(value, sessionId, effective.workspaceId) };
+    const extra = { activePersonaId: effective.personaId, effectivePersonaId: effective.personaId, effective, selection, override, children, sessionInfo: sessionId ? { id: sessionId, ...value.sessions[sessionId], ...context } : null };
+    if (compact) return { revision: value.revision, enabled: value.enabled, mode: value.mode, defaultPersonaId: value.defaultPersonaId, personas: value.personas.map(row => ({ id: row.id, name: row.name, memoryCount: row.memories.length })), ...extra };
+    return { ...value, ...extra };
   }
-  export() { return { format: 'private-soul-backup', version: 2, exportedAt: timestamp(), data: this.snapshot() }; }
+  export() { return { format: 'private-soul-backup', version: 3, exportedAt: timestamp(), data: this.snapshot() }; }
+  registerSessions(descriptors) {
+    return this.mutate(undefined, state => {
+      for (const descriptor of descriptors) {
+        const id = identifier(descriptor.id), previous = state.sessions[id];
+        const row = previous ?? { persona: followRule(), children: followRule(), kind: 'session' };
+        for (const key of ['workspaceId','parentSessionId','title','kind']) if (Object.hasOwn(descriptor,key)) {
+          if (descriptor[key] === null || descriptor[key] === undefined) delete row[key]; else row[key] = descriptor[key];
+        }
+        if (row.kind === 'subagent' && !row.derived) row.derived = descriptor.derived ?? { selection: noneRule(), policy: noneRule(), source: { scope: 'global' } };
+        state.sessions[id] = validateSessionRule(row);
+      }
+      return {};
+    });
+  }
   async persist(state) {
     const temporary = `${this.file}.${randomUUID()}.tmp`;
     const bytes = JSON.stringify(state, null, 2) + '\n';
@@ -132,27 +142,41 @@ export class SoulStore {
         persona.name = string(data.name,80,'人设名称').trim();
         persona.soul = string(data.soul,MAX_SOUL_LENGTH,'人格文本',true);
         persona.updatedAt = timestamp();
-        if (state.defaultPersonaId === null) state.defaultPersonaId = persona.id;
         if (data.activate) { if (!persona.soul.trim()) throw new SoulError('先填写人格文本再启用。'); state.enabled = true; state.defaultPersonaId = persona.id; }
         return { personaId: persona.id };
       }
       if (action === 'persona-delete') {
         this.persona(data.id,state);
         state.personas = state.personas.filter(row => row.id !== data.id);
-        for (const [id,value] of Object.entries(state.sessions)) if (value === data.id) delete state.sessions[id];
-        if (state.defaultPersonaId === data.id) state.defaultPersonaId = state.personas[0]?.id ?? null;
+        // Keep references as visible invalid rules. Deletion must not silently
+        // reassign a conversation, workspace or future child to another persona.
         return {};
       }
       if (action === 'settings') {
         if (Object.hasOwn(data,'enabled')) { if (typeof data.enabled !== 'boolean') throw new SoulError('开关格式错误。'); state.enabled=data.enabled; }
         if (Object.hasOwn(data,'mode')) state.mode=data.mode;
         if (Object.hasOwn(data,'defaultPersonaId')) { if (data.defaultPersonaId!==null)this.persona(data.defaultPersonaId,state); state.defaultPersonaId=data.defaultPersonaId; }
+        if (Object.hasOwn(data,'subagentDefault')) { state.subagentDefault=validateRule(data.subagentDefault,{children:true,follow:false});if(state.subagentDefault.mode==='persona')this.persona(state.subagentDefault.personaId,state); }
         return {};
       }
       if (action === 'session-select') {
         identifier(data.sessionId);
-        if (!data.personaId) delete state.sessions[data.sessionId];
-        else { if (data.personaId!=='none') this.persona(data.personaId,state); state.sessions[data.sessionId]=data.personaId; }
+        const rule=ruleFromLegacy(data.personaId);if(rule.mode==='persona')this.persona(rule.personaId,state);
+        const row=state.sessions[data.sessionId]??validateSessionRule({});row.persona=rule;state.sessions[data.sessionId]=row;
+        return {};
+      }
+      if (action === 'rule-set') {
+        if (!['global','workspace','session'].includes(data.scope) || !['persona','children'].includes(data.target)) throw new SoulError('规则范围无效。');
+        const rule=validateRule(data.rule,{children:data.target==='children',follow:data.scope!=='global'});
+        if(rule.mode==='persona')this.persona(rule.personaId,state);
+        if(data.scope==='global'){
+          if(data.target==='persona')state.defaultPersonaId=rule.mode==='persona'?rule.personaId:null;else state.subagentDefault=rule;
+        }else{
+          identifier(data.id);
+          const map=data.scope==='workspace'?state.workspaces:state.sessions;
+          const row=map[data.id]??(data.scope==='workspace'?{persona:followRule(),children:followRule()}:validateSessionRule({}));
+          row[data.target]=rule;map[data.id]=row;
+        }
         return {};
       }
       if (action === 'memory-save') return this.putMemoryIn(state,data.personaId,data,'user');
@@ -166,15 +190,15 @@ export class SoulStore {
       }
       if (action === 'memory-organize') return this.organizeIn(state,data.personaId,data.memories);
       if (action === 'import') {
-        if (data.archive?.format!=='private-soul-backup' || data.archive.version!==2) throw new SoulError('请选择私人灵魂整体 JSON 存档。');
+        if (data.archive?.format!=='private-soul-backup' || ![2,3].includes(data.archive.version)) throw new SoulError('请选择私人灵魂整体 JSON 存档。');
         const imported=validateLibrary(data.archive.data);
         if (data.strategy==='replace') {
           Object.assign(state,imported,{revision:state.revision});
         } else if (data.strategy==='merge') {
           const mapping=new Map();
           for(const source of imported.personas){ const row=clone(source); if(state.personas.some(item=>item.id===row.id))row.id=randomUUID(); mapping.set(source.id,row.id); state.personas.push(row); }
-          if(state.defaultPersonaId===null)state.defaultPersonaId=mapping.get(imported.defaultPersonaId)??null;
-          for(const [id,pid] of Object.entries(imported.sessions))if(!Object.hasOwn(state.sessions,id))state.sessions[id]=pid==='none'?'none':mapping.get(pid);
+          for(const [id,row] of Object.entries(imported.sessions))if(!Object.hasOwn(state.sessions,id))state.sessions[id]=remapSession(row,mapping);
+          for(const [id,row] of Object.entries(imported.workspaces))if(!Object.hasOwn(state.workspaces,id))state.workspaces[id]={persona:remapRule(row.persona,mapping),children:remapRule(row.children,mapping)};
         } else throw new SoulError('导入方式无效。');
         return { imported:imported.personas.length };
       }

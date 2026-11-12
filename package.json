@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "memory-tools.js",
     "model-memory.js",
     "persona-scope.js",
+    "persona-rules.js",
     "prompt-policy.js",
     "store.js",
     "cordis.patch.yml",

@@ -2,7 +2,7 @@ window.__ModuleLoader__.load({
   id: 'dsh-plugin-private-soul',
   factory: require => {
     const React=require('react'),h=React.createElement,{createPortal}=require('react-dom');
-    const {Menu,MenuItemButton,Tooltip,Toast,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
+    const {Button,Input,Switch,SegmentedTabs,Menu,MenuItemButton,Tooltip,Toast,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
     /* i18n:start */
 const NS="soulDesk";
 const zh={
@@ -169,7 +169,45 @@ const zh={
   "操作未完成，请重试。": "操作未完成，请重试。",
   "翻译已取消或超时，请重试。": "翻译已取消或超时，请重试。",
   "当前模型翻译失败，请检查 DeepSeek 的模型连接后重试。": "当前模型翻译失败，请检查 DeepSeek 的模型连接后重试。",
-  "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。": "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。"
+  "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。": "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。",
+  "人设规则已保存，下一次请求生效。": "人设规则已保存，下一次请求生效。",
+  "人设已失效": "人设已失效",
+  "人设内容为空": "人设内容为空",
+  "复用当前人设": "复用当前人设",
+  "会话单独设置": "会话单独设置",
+  "工作区默认": "工作区默认",
+  "派生时的默认选择": "派生时的默认选择",
+  "全局默认": "全局默认",
+  "工作区默认人设": "工作区默认人设",
+  "人设使用规则": "人设使用规则",
+  "会话选择优先于工作区和全局": "会话选择优先于工作区和全局",
+  "规则范围": "规则范围",
+  "工作区": "工作区",
+  "会话": "会话",
+  "搜索会话": "搜索会话",
+  "选择工作区": "选择工作区",
+  "选择会话": "选择会话",
+  "子代理": "子代理",
+  "普通会话": "普通会话",
+  "派出子代理时的人设": "派出子代理时的人设",
+  "子代理默认不使用人设；复用时采用派出者本轮实际使用的人设。": "子代理默认不使用人设；复用时采用派出者本轮实际使用的人设。",
+  "实际生效：{p0} · {p1}": "实际生效：{p0} · {p1}",
+  "此范围暂无可配置项。": "此范围暂无可配置项。",
+  "本会话：{p0}": "本会话：{p0}",
+  "子代理：{p0}": "子代理：{p0}",
+  "本会话人设与子代理规则": "本会话人设与子代理规则",
+  "本会话：{p0}；子代理：{p1}": "本会话：{p0}；子代理：{p1}",
+  "无效的规则标识。": "无效的规则标识。",
+  "人设规则格式无效。": "人设规则格式无效。",
+  "人设规则模式无效。": "人设规则模式无效。",
+  "会话规则格式无效。": "会话规则格式无效。",
+  "会话标题无效。": "会话标题无效。",
+  "人设来源无效。": "人设来源无效。",
+  "人设规则数量或格式无效。": "人设规则数量或格式无效。",
+  "规则范围无效。": "规则范围无效。",
+  "不是有效的私人灵魂 v2/v3 存档。": "不是有效的私人灵魂 v2/v3 存档。",
+  "工作区已不存在，请刷新。": "工作区已不存在，请刷新。",
+  "会话已不存在，请刷新。": "会话已不存在，请刷新。"
 };
 const en={
   " · 有未保存修改": " · Unsaved changes",
@@ -335,7 +373,45 @@ const en={
   "操作未完成，请重试。": "Operation did not complete. Retry.",
   "翻译已取消或超时，请重试。": "Translation was cancelled or timed out. Retry.",
   "当前模型翻译失败，请检查 DeepSeek 的模型连接后重试。": "Translation failed. Check the DeepSeek model connection and retry.",
-  "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。": "Policy file is unreadable; Skills and MCP are paused. Restore the policy.json backup and restart."
+  "策略文件无法读取，Skill 和 MCP 已暂停。请恢复 policy.json 备份后重启服务。": "Policy file is unreadable; Skills and MCP are paused. Restore the policy.json backup and restart.",
+  "人设规则已保存，下一次请求生效。": "Persona rules saved; they apply to the next request.",
+  "人设已失效": "Persona unavailable",
+  "人设内容为空": "Persona text is empty",
+  "复用当前人设": "Reuse dispatcher persona",
+  "会话单独设置": "Conversation override",
+  "工作区默认": "Workspace default",
+  "派生时的默认选择": "Default captured at creation",
+  "全局默认": "Global default",
+  "工作区默认人设": "Workspace default persona",
+  "人设使用规则": "Persona rules",
+  "会话选择优先于工作区和全局": "Conversation overrides workspace and global defaults",
+  "规则范围": "Rule scope",
+  "工作区": "Workspace",
+  "会话": "Conversation",
+  "搜索会话": "Search conversations",
+  "选择工作区": "Choose workspace",
+  "选择会话": "Choose conversation",
+  "子代理": "Subagent",
+  "普通会话": "Root conversation",
+  "派出子代理时的人设": "Persona for dispatched subagents",
+  "子代理默认不使用人设；复用时采用派出者本轮实际使用的人设。": "Subagents use no Soul persona by default. Reuse follows the dispatcher’s actual current request.",
+  "实际生效：{p0} · {p1}": "Effective: {p0} · {p1}",
+  "此范围暂无可配置项。": "Nothing to configure in this scope yet.",
+  "本会话：{p0}": "This conversation: {p0}",
+  "子代理：{p0}": "Subagents: {p0}",
+  "本会话人设与子代理规则": "Conversation persona and subagent rules",
+  "本会话：{p0}；子代理：{p1}": "Conversation: {p0}; subagents: {p1}",
+  "无效的规则标识。": "Invalid rule identifier.",
+  "人设规则格式无效。": "Invalid persona rule.",
+  "人设规则模式无效。": "Invalid persona rule mode.",
+  "会话规则格式无效。": "Invalid conversation rule.",
+  "会话标题无效。": "Invalid conversation title.",
+  "人设来源无效。": "Invalid persona source.",
+  "人设规则数量或格式无效。": "Invalid persona rule format or count.",
+  "规则范围无效。": "Invalid rule scope.",
+  "不是有效的私人灵魂 v2/v3 存档。": "Not a valid Private Soul v2/v3 archive.",
+  "工作区已不存在，请刷新。": "The workspace no longer exists; please refresh.",
+  "会话已不存在，请刷新。": "The conversation no longer exists; please refresh."
 };
 let nativeTranslate = null, nativeLocale = null;
 function tr(key, params) { return nativeTranslate ? nativeTranslate(key, params) : params ? key.replace(/\{(\w+)\}/g, (match, name) => name in params ? String(params[name]) : match) : key; }
@@ -374,16 +450,16 @@ function installLocale(ctx) {
 .soul-hint{font-size:12px;line-height:1.7;color:var(--dsw-alias-label-secondary);margin:0;overflow-wrap:anywhere}
 .soul-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
 .soul-card{min-width:0;border:1px solid var(--dsw-alias-border-l2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
-.soul-button,.soul-select,.soul-input{min-width:0;max-width:100%;font:inherit;font-size:13px;line-height:1.5;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-module-platform);color:inherit;padding:8px 10px;margin:0}
+.soul-select,.soul-text{min-width:0;max-width:100%;font:inherit;font-size:13px;line-height:1.5;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-module-platform);color:inherit;padding:8px 10px;margin:0}
 .soul-button{min-height:36px;cursor:pointer;text-align:center;white-space:normal;overflow-wrap:anywhere}
 .soul-button:disabled,.soul-select:disabled{opacity:.45;cursor:default}
-.soul-button:focus-visible,.soul-select:focus-visible,.soul-input:focus-visible{outline:2px solid #a779de;outline-offset:2px}
-.soul-primary{background:#7854ae;color:white;border-color:#7854ae}
-.soul-danger{color:#ff8c98}
-.soul-input{display:block;width:100%}
+.soul-button:focus-visible,.soul-select:focus-visible,.soul-input:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:2px}
+
+.soul-danger{color:var(--dsw-alias-state-error-primary)}
+.soul-input{width:100%;min-width:0}
 .soul-text{width:100%;height:clamp(180px,28dvh,320px);min-height:180px;max-height:65dvh;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.7;tab-size:2}
 .soul-memory-text{height:110px;min-height:90px;max-height:40dvh}
-.soul-badge{flex:none;font-size:11px;line-height:1.5;border-radius:20px;padding:4px 9px;background:color-mix(in srgb,#a779de 20%,transparent)}
+.soul-badge{flex:none;font-size:11px;line-height:1.5;border-radius:20px;padding:4px 9px;background:color-mix(in srgb,var(--dsw-alias-state-business-primary) 20%,transparent)}
 .soul-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;align-items:end}
 .soul-field{min-width:0;display:flex;flex-direction:column;gap:7px;font-size:13px}
 .soul-field select{width:100%}
@@ -392,12 +468,12 @@ function installLocale(ctx) {
 .soul-mode-options{min-width:140px}
 .soul-mode-option{width:100%;min-width:0}
 .soul-enable{display:inline-flex;align-items:center;gap:7px;font-size:13px;min-height:36px}
-.soul-enable input{margin:0;flex:none;accent-color:#a779de}
+.soul-enable input{margin:0;flex:none;accent-color:var(--dsw-alias-state-business-primary)}
 .soul-layout{min-width:0;display:flex;flex-direction:column;gap:12px}
 .soul-personas{display:flex;flex-wrap:wrap;gap:8px;min-width:0;max-height:150px;overflow:auto;scrollbar-gutter:stable;padding:2px}
-.soul-persona{flex:0 1 180px;min-width:0;max-width:100%;text-align:left;display:flex;flex-direction:column;gap:4px}
+.soul-persona{height:auto;min-height:58px;padding:8px 10px;flex:0 1 180px;min-width:0;max-width:100%;text-align:left;display:flex;flex-direction:column;gap:4px}
 .soul-persona-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.soul-persona[aria-pressed=true],.soul-tab[aria-selected=true]{border-color:#a779de;background:color-mix(in srgb,#a779de 16%,transparent)}
+.soul-persona[aria-pressed=true],.soul-tab[aria-selected=true]{border-color:var(--dsw-alias-state-business-primary);background:color-mix(in srgb,var(--dsw-alias-state-business-primary) 16%,transparent)}
 .soul-persona small{font-size:11px;color:var(--dsw-alias-label-secondary)}
 .soul-editor{width:100%;min-width:0}
 .soul-editor label{font-size:13px;font-weight:500}
@@ -405,7 +481,7 @@ function installLocale(ctx) {
 .soul-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
 .soul-actions-secondary{padding-top:4px}
 .soul-error,.soul-success{font-size:13px;line-height:1.6;white-space:pre-wrap;margin:0;overflow-wrap:anywhere}
-.soul-error{color:#ff8c98}.soul-success{color:#7ecba2}
+.soul-error{color:var(--dsw-alias-state-error-primary)}.soul-success{color:var(--dsw-alias-state-success-primary)}
 .soul-memory{min-width:0;display:flex;flex-direction:column;gap:7px;padding:11px 0;border-bottom:1px solid var(--dsw-alias-border-l2)}
 .soul-memory p{white-space:pre-wrap;margin:0;line-height:1.7;font-size:13px;overflow-wrap:anywhere}
 .soul-preview{max-height:260px;overflow:auto}
@@ -415,25 +491,24 @@ function installLocale(ctx) {
 .soul-chip-anchor{min-width:54px;max-width:100%;display:inline-flex}
 .soul-chip-button{box-sizing:border-box;border-radius:var(--dsw-radius-sm);min-width:0;max-width:min(100%,240px);min-height:28px;color:var(--dsw-alias-label-primary);white-space:nowrap;cursor:pointer;background:transparent;border:none;align-items:center;gap:4px;padding:0 8px;font:inherit;font-size:13px;font-weight:500;line-height:20px;display:inline-flex}
 .soul-chip-button:hover{background:var(--dsw-alias-interactive-bg-hover)}
-.soul-chip-button:focus-visible{outline:2px solid var(--dsw-alias-border-focus,#a779de);outline-offset:2px}
+.soul-chip-button:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:2px}
 .soul-chip-button:disabled{opacity:.45;cursor:default}
 .soul-chip-icon{color:var(--dsw-alias-label-primary);flex:none}
 .soul-chip-label{text-overflow:ellipsis;white-space:nowrap;min-width:0;overflow:hidden}
 .soul-chip-chevron{color:var(--dsw-alias-label-caption);flex:none}
 .soul-menu-item{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:280px}
 .soul-menu-name{overflow-wrap:anywhere}
-.soul-menu-description{color:var(--dsw-alias-label-caption);white-space:normal;overflow-wrap:anywhere;font-size:12px;line-height:16px}
+.soul-menu-description{color:var(--dsw-alias-label-secondary);white-space:normal;overflow-wrap:anywhere;font-size:12px;line-height:16px}
 @container(max-width:420px){.soul-card{padding:12px}.soul-actions>.soul-primary{flex:1 1 100%}.soul-actions>.soul-button{flex:1 1 auto}.soul-persona{flex:1 1 140px}.soul-memory-filter{grid-template-columns:minmax(0,1fr)}.soul-text{height:210px;min-height:160px}}
-@media(max-width:650px){
-  [data-shortcut-modal="settings"]:has(.soul-page){flex-direction:column;width:calc(100vw - 24px);max-width:calc(100vw - 24px);height:calc(100dvh - 24px)}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav{width:100%;min-width:0;flex-direction:row;align-items:center;gap:8px;padding:12px 12px 0}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav>:first-child{flex:none;white-space:nowrap;padding:0}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav>:last-child{flex:1;min-width:0;flex-direction:row;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav button{flex:none;height:36px;padding:7px 10px}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav+div{min-height:0}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav+div>:first-child{height:42px;padding:8px 12px 4px}
-  [data-shortcut-modal="settings"]:has(.soul-page)>nav+div>:last-child{padding:0 14px 14px}
-}
+/* Layout only: controls, menus, focus and hover come from DSH primitives. */
+.soul-native-select{width:100%;min-width:0}
+.soul-select-trigger{width:100%;justify-content:space-between;gap:8px;text-align:left}
+.soul-ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.soul-rule-panel,.soul-rule-target{display:flex;flex-direction:column;gap:12px;min-width:0}
+.soul-persona-trigger{max-width:min(100%,380px);min-width:0;gap:6px}
+.soul-chip-secondary{font-size:12px;color:inherit;opacity:.72;padding-left:6px;border-left:1px solid var(--dsw-alias-border-l2);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:650px){.soul-persona-trigger{max-width:250px}.soul-chip-secondary{max-width:110px}.soul-card{padding:12px}}
+
 `;
     async function request(path,data){
       const response=await fetch(BASE+path,{method:data===undefined?'GET':'POST',cache:'no-store',credentials:'same-origin',...(data===undefined?{}:{headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})});
@@ -454,7 +529,7 @@ function installLocale(ctx) {
       function accept(value){if(live.current){current.current=value;setView(value);setError('');}}
       return {view,error,load,accept,current};
     }
-    const button=(text,click,disabled=false,kind='')=>h('button',{type:'button',className:'soul-button '+(kind?'soul-'+kind:''),onClick:click,disabled},text);
+    const button=(text,click,disabled=false,kind='')=>h(Button,{variant:kind==='primary'?'primary':'outline',className:kind==='danger'?'soul-danger':undefined,onClick:click,disabled},text);
     function download(name,value,mime='application/json;charset=utf-8'){const url=URL.createObjectURL(new Blob([value],{type:mime}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
     function PromptModeSelect({value,disabled,onChange}){
@@ -463,7 +538,7 @@ function installLocale(ctx) {
       const selected=promptModes.find(row=>row.id===value)??promptModes[0];
       return h(Menu,{open,portal:true,minWidthFromAnchor:true,className:'soul-mode-menu',listClassName:'soul-mode-options',onClose:()=>setOpen(false),
         anchor:h(Tooltip,{label:selected.description,side:'bottom',portal:true,delayMs:400,disabled:open,maxWidth:320},
-          h('button',{id:'soul-prompt-mode',type:'button',className:'soul-button soul-mode-trigger',disabled,'aria-label':tr("注入方式"),'aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(current=>!current)},selected.label,h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true})))},
+          h(Button,{id:'soul-prompt-mode',variant:'outline',className:'soul-mode-trigger',disabled,'aria-label':tr("注入方式"),'aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(current=>!current)},selected.label,h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true})))},
         ...promptModes.map(row=>h(Tooltip,{key:row.id,label:row.description,side:'right',portal:true,delayMs:350,focusDelayMs:350,maxWidth:320},
           h('div',{className:'soul-mode-option'},h(MenuItemButton,{current:row.id===selected.id,onSelect:()=>{setOpen(false);onChange(row.id);}},row.label)))));
     }
@@ -497,7 +572,7 @@ function installLocale(ctx) {
         if(selected&&old&&(old.name!==baseline.current.name||old.soul!==baseline.current.soul))throw new Error(tr("这个人设已被其他页面编辑，草稿仍保留。请导出草稿后重新读取并合并。"));
         const result=await act('persona-save',{id:selected,...draft,activate});choose(result.personaId,true);
       }
-      async function importAll(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>8*1024*1024)throw new Error(tr("整体存档最多8 MiB。"));const archive=JSON.parse(await file.text());if(archive.format!=='private-soul-backup'||archive.version!==2||!Array.isArray(archive.data?.personas))throw new Error(tr("请选择“导出全部”生成的 JSON 存档。"));setImportPreview(archive);setStrategy('merge');setError('');}catch(cause){setError(cause.message);}}
+      async function importAll(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>8*1024*1024)throw new Error(tr("整体存档最多8 MiB。"));const archive=JSON.parse(await file.text());if(archive.format!=='private-soul-backup'||![2,3].includes(archive.version)||!Array.isArray(archive.data?.personas))throw new Error(tr("请选择“导出全部”生成的 JSON 存档。"));setImportPreview(archive);setStrategy('merge');setError('');}catch(cause){setError(cause.message);}}
       async function importSoul(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>1024*1024)throw new Error(tr("人格文本文件过大。"));const soul=await file.text();if(soul.length>262144)throw new Error(tr("人格文本最多262144字符。"));setDraft(value=>({...value,soul}));setMessage(tr("已导入人格草稿，保存后生效。"));}catch(cause){setError(cause.message);}}
       const disabled=busy||!view,total=view?.personas.reduce((n,row)=>n+row.memories.length,0)??0;
       const rows=[...(persona?.memories??[])].filter(row=>(!kindFilter||row.kind===kindFilter)&&(!filter||row.content.toLowerCase().includes(filter.toLowerCase()))).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
@@ -510,7 +585,7 @@ function installLocale(ctx) {
         selected?h('div',{className:'soul-actions'},button(tr("删除此人设及其记忆"),()=>{if(window.confirm(tr("删除“{p0}”及其 {p1} 条记忆？服务器会先备份。", {p0: persona?.name, p1: persona?.memories.length??0})))run(async()=>{await act('persona-delete',{id:selected});choose(library.current.current.defaultPersonaId,true);},tr("人设已删除，服务器已保留备份。"));},disabled,'danger')):null);
       const memoryPanel=!persona?h('p',{className:'soul-hint'},tr("先保存或选择一个人设，再管理它的个人记忆。")):h(React.Fragment,null,
         h('p',{className:'soul-hint'},tr("“{p0}”的独立记忆库。自动记录还需通过模型语义审核。", {p0: persona.name})),
-        h('div',{className:'soul-memory-filter'},h('input',{className:'soul-input',value:filter,onChange:e=>setFilter(e.target.value),placeholder:tr("搜索个人记忆"),'aria-label':tr("搜索个人记忆")}),h('select',{className:'soul-select',value:kindFilter,onChange:e=>setKindFilter(e.target.value),'aria-label':tr("筛选记忆类别")},h('option',{value:''},tr("全部类别")),...Object.entries(labels).map(([key,label])=>h('option',{key,value:key},label)))),
+        h('div',{className:'soul-memory-filter'},h(Input,{className:'soul-input',value:filter,onChange:e=>setFilter(e.target.value),placeholder:tr("搜索个人记忆"),'aria-label':tr("搜索个人记忆")}),h('select',{className:'soul-select',value:kindFilter,onChange:e=>setKindFilter(e.target.value),'aria-label':tr("筛选记忆类别")},h('option',{value:''},tr("全部类别")),...Object.entries(labels).map(([key,label])=>h('option',{key,value:key},label)))),
         h('div',{className:'soul-row'},button(tr("一键去重"),()=>run(()=>act('memory-dedupe',{personaId:selected}),tr("已去除重复的个人记忆。")),disabled),button(tr("智能整理"),()=>run(async()=>{setOrganize(await request('/organize-preview',{personaId:selected}));},tr("建议已生成，确认后才会写入。")),disabled||!persona.memories.length)),
         organize?h('div',{className:'soul-card',role:'dialog','aria-label':tr("记忆整理预览")},h('h3',null,tr("记忆整理预览")),h('p',{className:'soul-hint'},tr("{p0} 条 → {p1} 条。{p2}", {p0: persona.memories.length, p1: organize.memories.length, p2: organize.note})),h('div',{className:'soul-preview'},...organize.memories.map((row,index)=>h('p',{key:index,className:'soul-hint'},`${labels[row.kind]}：${row.content}`))),h('div',{className:'soul-row'},button(tr("应用整理"),()=>run(async()=>{await act('memory-organize',{personaId:selected,memories:organize.memories},organize.revision);setOrganize(null);},tr("记忆已整理，原内容已自动备份。")),busy,'primary'),button(tr("取消整理"),()=>setOrganize(null),busy))):null,
         h('div',{className:'soul-card'},h('h3',null,memoryDraft.id?tr("编辑个人记忆"):tr("新增个人记忆")),h('select',{className:'soul-select',value:memoryDraft.kind,onChange:e=>setMemoryDraft(value=>({...value,kind:e.target.value})),'aria-label':tr("记忆类别")},...Object.entries(labels).map(([key,label])=>h('option',{key,value:key},label))),h('textarea',{className:'soul-input soul-text soul-memory-text',value:memoryDraft.content,onChange:e=>setMemoryDraft(value=>({...value,content:e.target.value})),placeholder:tr("例如：用户喜欢我叫他“小林”，这个称呼让他感觉亲切。"),'aria-label':tr("个人记忆内容"),disabled}),h('div',{className:'soul-row'},button(tr("保存记忆"),()=>run(async()=>{await act('memory-save',{personaId:selected,...memoryDraft});setMemoryDraft({id:null,kind:'relationship',content:''});},tr("个人记忆已保存，只属于当前人设。")),disabled||!memoryDraft.content.trim(),'primary'),memoryDraft.id?button(tr("取消编辑"),()=>setMemoryDraft({id:null,kind:'relationship',content:''}),busy):null)),
@@ -519,37 +594,101 @@ function installLocale(ctx) {
       return h('section',{className:'soul-page','aria-label':tr("私人灵魂人设与记忆管理")},
         h('div',{className:'soul-row'},h('h2',null,tr("私人灵魂")),h('span',{className:'soul-badge',role:'status'},view?.enabled?tr("已启用"):tr("未启用")),h('span',{className:'soul-hint'},tr("{p0} 个人设 · {p1} 条个人记忆", {p0: view?.personas.length??0, p1: total}))),
         h('p',{className:'soul-hint'},tr("每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。")),
-        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h('label',{className:'soul-enable'},h('input',{type:'checkbox',checked:!!view?.enabled,disabled,'aria-label':tr("启用私人灵魂"),onChange:e=>run(()=>act('settings',{enabled:e.target.checked}),tr("已更新总开关。"))}),tr("启用私人灵魂"))),h('div',{className:'soul-settings'},h('label',{className:'soul-field',htmlFor:'soul-prompt-mode'},tr("注入方式"),h(PromptModeSelect,{value:view?.mode??'priority',disabled,onChange:mode=>run(()=>act('settings',{mode}),tr("已更新注入方式。"))})),h('label',{className:'soul-field',htmlFor:'soul-default-persona'},tr("全局默认人设"),h('select',{id:'soul-default-persona',className:'soul-select',value:view?.defaultPersonaId??'',disabled,onChange:e=>run(()=>act('settings',{defaultPersonaId:e.target.value||null}),tr("默认人设已切换，下一次请求生效。"))},h('option',{value:''},tr("不使用默认人设")),...(view?.personas??[]).map(row=>h('option',{key:row.id,value:row.id},row.name))))),h('p',{className:'soul-hint'},tr("未单独绑定的会话跟随默认人设。聊天页的人设菜单可单独选择人设，切换时一起切换它的记忆。"))),
+        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h(Switch,{checked:!!view?.enabled,disabled,label:tr("启用私人灵魂"),onChange:enabled=>run(()=>act('settings',{enabled}),tr("已更新总开关。"))}),h('span',null,tr("启用私人灵魂"))),h('div',{className:'soul-field'},h('span',null,tr("注入方式")),h(PromptModeSelect,{value:view?.mode??'priority',disabled,onChange:mode=>run(()=>act('settings',{mode}),tr("已更新注入方式。"))}))),
+        h(RuleEditor,{library,disabled,onWrite:data=>run(()=>act('rule-set',data),tr("人设规则已保存，下一次请求生效。"))}),
         h('div',{className:'soul-actions'},button(tr("新建人设"),()=>{if(!dirty||window.confirm(tr("新建会替换未保存草稿，是否继续？"))){baseline.current={id:'new',name:'',soul:''};setSelected(null);setDraft({name:'',soul:''});setTab('persona');}},disabled),button(tr("导出全部"),()=>run(async()=>{download(tr("私人灵魂-{p0}.json", {p0: new Date().toISOString().slice(0,10)}),JSON.stringify(await request('/export'),null,2));},tr("整体存档已下载，包含所有人设、记忆和会话绑定。")),disabled||dirty),button(tr("导入全部"),()=>importInput.current.click(),disabled||dirty),h('input',{ref:importInput,type:'file',accept:'.json,application/json',onChange:importAll,hidden:true,'aria-label':tr("导入整体存档文件")})),
         importPreview?h('div',{className:'soul-card',role:'dialog','aria-label':tr("整体存档导入预览")},h('h3',null,tr("导入预览")),h('p',{className:'soul-hint'},tr("包含 {p0} 个人设、{p1} 条记忆。", {p0: importPreview.data.personas.length, p1: importPreview.data.personas.reduce((n,row)=>n+(row.memories?.length??0),0)})),h('select',{className:'soul-select',value:strategy,onChange:e=>setStrategy(e.target.value),'aria-label':tr("整体导入方式")},h('option',{value:'merge'},tr("合并导入：保留现有，冲突项作为副本")),h('option',{value:'replace'},tr("替换全部：恢复整个存档"))),h('p',{className:'soul-hint'},tr("替换、删除和整理前服务器会自动备份。验证失败不会写入。")),h('div',{className:'soul-row'},button(tr("确认导入"),()=>run(async()=>{await act('import',{archive:importPreview,strategy});setImportPreview(null);choose(library.current.current.defaultPersonaId,true);},tr("整体存档已导入。")),busy,'primary'),button(tr("取消导入"),()=>setImportPreview(null),busy))):null,
-        h('div',{className:'soul-layout'},view?.personas.length?h('aside',{className:'soul-personas','aria-label':tr("人设列表")},...view.personas.map(row=>h('button',{key:row.id,className:'soul-button soul-persona','aria-pressed':selected===row.id,onClick:()=>choose(row.id),disabled:busy,title:row.name},h('span',{className:'soul-persona-name'},row.name),h('small',null,tr("{p0} 条记忆{p1}", {p0: row.memories.length, p1: view.defaultPersonaId===row.id?tr(" · 默认"):''}))))):null,h('div',{className:'soul-card soul-editor'},h('div',{className:'soul-row soul-editor-tabs',role:'tablist'},...['persona','memory'].map(id=>h('button',{key:id,className:'soul-button soul-tab',role:'tab','aria-selected':tab===id,onClick:()=>setTab(id)},id==='persona'?tr("人格"):tr("个人记忆")))),tab==='persona'?personaPanel:memoryPanel)),
+        h('div',{className:'soul-layout'},view?.personas.length?h('aside',{className:'soul-personas','aria-label':tr("人设列表")},...view.personas.map(row=>h(Button,{variant:'outline',key:row.id,className:'soul-persona','aria-pressed':selected===row.id,onClick:()=>choose(row.id),disabled:busy,title:row.name},h('span',{className:'soul-persona-name'},row.name),h('small',null,tr("{p0} 条记忆{p1}", {p0: row.memories.length, p1: view.defaultPersonaId===row.id?tr(" · 默认"):''}))))):null,h('div',{className:'soul-card soul-editor'},h('div',{className:'soul-row soul-editor-tabs',role:'tablist'},...['persona','memory'].map(id=>h(Button,{variant:'ghost',key:id,className:'soul-tab',role:'tab','aria-selected':tab===id,onClick:()=>setTab(id)},id==='persona'?tr("人格"):tr("个人记忆")))),tab==='persona'?personaPanel:memoryPanel)),
         busy?h('p',{className:'soul-hint',role:'status'},tr("正在处理，请稍候…")):null,error||library.error?h('p',{className:'soul-error',role:'alert'},messageText(error||library.error)):null,message?h('p',{className:'soul-success',role:'status'},messageText(message)):null);
+    }
+
+    function ruleValue(rule){return rule?.mode==='persona'?'persona:'+rule.personaId:rule?.mode??'follow';}
+    function ruleFromValue(value){return value.startsWith('persona:')?{mode:'persona',personaId:value.slice(8)}:{mode:value};}
+    function ruleName(rule,view){
+      if(rule?.mode==='persona')return view?.personas.find(row=>row.id===rule.personaId)?.name??tr("人设已失效");
+      return rule?.mode==='parent'?tr("复用当前人设"):rule?.mode==='follow'?tr("跟随默认"):tr("不使用人设");
+    }
+    function sourceName(source,view){
+      if(source?.scope==='session')return tr("会话单独设置");
+      if(source?.scope==='workspace')return tr("工作区默认");
+      if(source?.scope==='subagent')return tr("派生时的默认选择");
+      return tr("全局默认");
+    }
+    function ruleChoices(view,{children=false,follow=true}={}){
+      return [
+        ...(follow?[{id:'follow',label:tr("跟随默认")}]:[]),
+        {id:'none',label:tr("不使用人设")},
+        ...(children?[{id:'parent',label:tr("复用当前人设")}]:[]),
+        ...(view?.personas??[]).map(row=>({id:'persona:'+row.id,label:row.name})),
+      ];
+    }
+    function NativeSelect({label,value,options,onChange,disabled=false}){
+      const [open,setOpen]=React.useState(false);
+      React.useEffect(()=>{if(disabled)setOpen(false);},[disabled]);
+      const current=options.find(row=>row.id===value);
+      return h(Menu,{open,items:options,selectedId:value,onSelect:id=>{setOpen(false);onChange(id);},onClose:()=>setOpen(false),portal:true,minWidthFromAnchor:true,className:'soul-native-select',
+        anchor:h(Button,{variant:'outline',className:'soul-select-trigger',disabled,'aria-label':label,'aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(v=>!v)},h('span',{className:'soul-ellipsis'},current?.label??tr("人设已失效")),h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true}))});
+    }
+    function RuleEditor({library,disabled,onWrite}){
+      const view=library.view,[scope,setScope]=React.useState('global'),[target,setTarget]=React.useState(''),[search,setSearch]=React.useState('');
+      const uid=React.useId(),panel='soul-rules-'+uid;
+      const spaces=view?.catalog?.workspaces??[],sessions=view?.catalog?.sessions??[];
+      const candidates=scope==='workspace'?spaces:sessions;
+      const rows=candidates.filter(row=>!search||(row.title+' '+row.id).toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+      const ids=candidates.map(row=>row.id).join(',');
+      React.useEffect(()=>{if(scope!=='global'&&!candidates.some(row=>row.id===target))setTarget(candidates[0]?.id??'');},[scope,ids,target]);
+      const session=useLibrary(scope==='session'?target:undefined,true);
+      const record=scope==='workspace'?view?.workspaces?.[target]:view?.sessions?.[target];
+      const persona=scope==='global'?(view?.defaultPersonaId?{mode:'persona',personaId:view.defaultPersonaId}:{mode:'none'}):record?.persona??{mode:'follow'};
+      const children=scope==='global'?view?.subagentDefault??{mode:'none'}:record?.children??{mode:'follow'};
+      const locked=disabled||(scope!=='global'&&!candidates.some(row=>row.id===target));
+      const choose=(kind,rule)=>onWrite({scope,id:scope==='global'?undefined:target,target:kind,rule});
+      const effective=session.view?.effective;
+      const selfLabel=scope==='global'?tr("全局默认人设"):scope==='workspace'?tr("工作区默认人设"):tr("本会话人设");
+      return h('section',{className:'soul-card','aria-label':tr("人设使用规则")},
+        h('div',{className:'soul-row'},h('h3',null,tr("人设使用规则")),h('span',{className:'soul-hint'},tr("会话选择优先于工作区和全局"))),
+        h(SegmentedTabs,{label:tr("规则范围"),size:'sm',value:scope,onChange:next=>{setScope(next);setTarget('');setSearch('');},items:[['global',tr("全局默认")],['workspace',tr("工作区")],['session',tr("会话")]].map(([value,label])=>({value,label,id:panel+'-'+value,panelId:panel}))}),
+        h('div',{id:panel,role:'tabpanel','aria-labelledby':panel+'-'+scope,className:'soul-rule-panel'},
+          scope!=='global'?h('div',{className:'soul-rule-target'},
+            scope==='session'?h(Input,{type:'search',value:search,onChange:e=>setSearch(e.target.value),placeholder:tr("搜索会话"),'aria-label':tr("搜索会话")}):null,
+            h(NativeSelect,{label:scope==='workspace'?tr("选择工作区"):tr("选择会话"),value:target,disabled,options:rows.map(row=>({id:row.id,label:h('span',{className:'soul-menu-item'},h('span',null,row.title||row.id),h('small',{className:'soul-menu-description'},scope==='session'?[spaces.find(space=>space.id===row.workspaceId)?.title,row.kind==='subagent'?tr("子代理"):tr("普通会话")].filter(Boolean).join(' · '):row.path))})),onChange:setTarget})):null,
+          h('div',{className:'soul-settings'},
+            h('div',{className:'soul-field'},h('span',null,selfLabel),h(NativeSelect,{label:selfLabel,value:ruleValue(persona),options:ruleChoices(view,{follow:scope!=='global'}),disabled:locked,onChange:value=>choose('persona',ruleFromValue(value))})),
+            h('div',{className:'soul-field'},h('span',null,tr("派出子代理时的人设")),h(NativeSelect,{label:tr("派出子代理时的人设"),value:ruleValue(children),options:ruleChoices(view,{children:true,follow:scope!=='global'}),disabled:locked,onChange:value=>choose('children',ruleFromValue(value))}))),
+          h('p',{className:'soul-hint'},tr("子代理默认不使用人设；复用时采用派出者本轮实际使用的人设。")),
+          scope==='session'&&effective?h('p',{className:'soul-hint',role:'status'},tr("实际生效：{p0} · {p1}",{p0:ruleName(effective.rule,view),p1:sourceName(effective.source,view)})):null,
+          scope!=='global'&&!candidates.length?h('p',{className:'soul-hint'},tr("此范围暂无可配置项。")):null));
     }
 
     function PersonaMenu({soulSessionId}){
       const library=useLibrary(soulSessionId,true),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[open,setOpen]=React.useState(false);
       const view=library.view;
       React.useEffect(()=>{setOpen(false);setError('');},[soulSessionId,view?.enabled]);
-      if(!view||!view.personas.length)return null;
-      const defaultName=view.personas.find(row=>row.id===view.defaultPersonaId)?.name??tr("无");
-      const selected=view.override??'';
-      const currentName=selected==='none'?tr("不使用人设"):view.personas.find(row=>row.id===(selected||view.defaultPersonaId))?.name??tr("人设");
+      if(!view)return null;
+      const effective=view.effective,childRule=view.children?.rule??{mode:'none'};
+      const currentName=effective?.status==='missing'?tr("人设已失效"):effective?.status==='empty'?tr("人设内容为空"):ruleName(effective?.rule,view);
+      const childName=ruleName(childRule,view);
       const label=(name,description)=>h('span',{className:'soul-menu-item'},h('span',{className:'soul-menu-name'},name),h('span',{className:'soul-menu-description'},description));
+      const group=(target,children)=>ruleChoices(view,{children}).map(row=>({...row,id:target+':'+row.id}));
       const items=[
-        {id:'',label:label(tr("跟随默认"),tr("全局默认人设：{p0}", {p0: defaultName}))},
-        ...view.personas.map(row=>({id:row.id,label:label(row.name,tr("{p0} 条个人记忆", {p0: row.memoryCount}))})),
-        {id:'soul:separator',type:'separator'},
-        {id:'none',label:label(tr("此会话不使用人设"),tr("关闭本会话的人格与个人记忆"))},
+        {id:'persona-group',label:label(tr("本会话：{p0}",{p0:currentName}),sourceName(effective?.source,view)),submenu:group('persona',false)},
+        {id:'children-group',label:label(tr("子代理：{p0}",{p0:childName}),sourceName(view.children?.source,view)),submenu:group('children',true)},
       ];
-      const choose=async personaId=>{
+      const choose=async id=>{
+        const separator=id.indexOf(':'),target=id.slice(0,separator),value=id.slice(separator+1);
+        if(!['persona','children'].includes(target))return;
         setOpen(false);setBusy(true);setError('');
-        try{await request('/action',{action:'session-select',data:{sessionId:soulSessionId,personaId},expectedRevision:view.revision,sessionId:soulSessionId});await library.load(true);}
+        try{await request('/action',{action:'rule-set',data:{scope:'session',id:soulSessionId,target,rule:ruleFromValue(value)},expectedRevision:view.revision,sessionId:soulSessionId});await library.load(true);}
         catch(cause){setError(cause.message);await library.load(true);}
         finally{setBusy(false);}
       };
+      const disabled=busy||!view.enabled||!soulSessionId;
       return h('span',{className:'soul-chip'},h(Menu,{
-        open:open&&view.enabled&&!busy,items,selectedId:selected,onSelect:choose,onClose:()=>setOpen(false),portal:true,align:'start',className:'soul-chip-anchor',
-        anchor:h('button',{type:'button',className:'soul-chip-button','aria-label':tr("本会话人设"),'aria-haspopup':'menu','aria-expanded':open&&view.enabled&&!busy,disabled:busy||!view.enabled,title:!view.enabled?tr("请在设置 → 私人灵魂启用人设"):tr("人设：{p0}{p1}", {p0: selected?'':tr("跟随默认 · "), p1: currentName}),onClick:()=>setOpen(value=>!value)},h(IconUserOutlineRegular,{size:16,className:'soul-chip-icon'}),h('span',{className:'soul-chip-label'},currentName),h(IconChevronDownOutlineRegular,{size:12,className:'soul-chip-chevron'})),
+        open:open&&!disabled,items,selectedIds:['persona:'+ruleValue(view.selection),'children:'+ruleValue(view.children?.selection)],onSelect:choose,onClose:()=>setOpen(false),portal:true,align:'start',className:'soul-chip-anchor',
+        anchor:h(Button,{variant:'toolbar',size:'sm',className:'soul-persona-trigger',icon:h(IconUserOutlineRegular,{size:16}),'aria-label':tr("本会话人设与子代理规则"),'aria-haspopup':'menu','aria-expanded':open&&!disabled,disabled,title:!view.enabled?tr("请在设置 → 私人灵魂启用人设"):tr("本会话：{p0}；子代理：{p1}",{p0:currentName,p1:childName}),onClick:()=>setOpen(v=>!v)},
+          h('span',{className:'soul-chip-label'},currentName),
+          h('span',{className:'soul-chip-secondary'},tr("子代理：{p0}",{p0:childName})),
+          h(IconChevronDownOutlineRegular,{size:12,'aria-hidden':true})),
       }),error?h(Toast,{text:messageText(error),holdMs:5000,onDone:()=>setError('')}):null);
     }
 
@@ -561,12 +700,10 @@ function installLocale(ctx) {
         if(!scope)return;
         let seat=null;
         const place=()=>{
-          // The blank-session chip row and the existing-session header are owned
-          // by the framework. A portal appends our chip without replacing them.
-          const hero=scope.querySelector('[data-slot="conversation.hero.agentPreset"]');
-          const header=scope.querySelector('[data-slot="conversation.session.header.actions"]');
-          const row=(hero??header)?.parentElement;
-          if(seat?.parentElement===row)return;
+          // Existing and read-only sessions use the native header slot below.
+          // Only the hero's preset row needs this small portal adapter.
+          const row=scope.querySelector('[data-slot="conversation.hero.agentPreset"]')?.parentElement;
+          if(seat&&seat.parentElement===row)return;
           seat?.remove();seat=null;
           if(row){seat=document.createElement('span');seat.dataset.soulPersonaSeat='';seat.style.display='contents';row.appendChild(seat);}
           setTarget(seat);
@@ -575,14 +712,14 @@ function installLocale(ctx) {
         const observer=new MutationObserver(place);observer.observe(scope,{childList:true,subtree:true});
         return()=>{observer.disconnect();seat?.remove();};
       },[soulSessionId]);
-      const control=h(PersonaMenu,{soulSessionId});
-      return h(React.Fragment,null,h('span',{ref:anchor,hidden:true,'data-soul-persona-anchor':''}),target?createPortal(control,target):control);
+      return h(React.Fragment,null,h('span',{ref:anchor,hidden:true,'data-soul-persona-anchor':''}),target?createPortal(h(PersonaMenu,{soulSessionId}),target):null);
     }
     function apply(ctx) {
       ctx.effect(() => installLocale(ctx), 'locale: dictionaries');
       ctx.effect(()=>{const style=document.createElement('style');style.dataset.plugin='private-soul-v2';style.textContent=css;document.head.appendChild(style);return()=>style.remove();},'private-soul: styles');
       ctx.slots.inject('settings.section',()=>ctx.slots.register({name:'settings.section',locale:NS,id:'private-soul',order:15,label:()=> tr("私人灵魂")},SoulEditor));
       ctx.slots.inject('conversation.input.dock',()=>ctx.slots.register({name:'conversation.input.dock',locale:NS,id:'private-soul-quick-switch',order:20,inject:sessionId=>({soulSessionId:sessionId})},QuickSwitch));
+      ctx.slots.inject('conversation.session.header.actions',()=>ctx.slots.register({name:'conversation.session.header.actions',locale:NS,id:'private-soul-persona-menu',order:20,inject:sessionId=>({soulSessionId:sessionId})},PersonaMenu));
     }
     return {name:'private-soul-client',inject:['slots','locale'],apply};
   },

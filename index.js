@@ -22,13 +22,15 @@ export async function apply(ctx, config) {
   const root=config.dataDir??join(process.env.DSH_HOME||join(homedir(),'.dsh'),'private-soul');
   const store=await new SoulStore(join(root,'library.json'),()=>ctx.emit('system-prompt/change')).init({enabled:read(config.enabled),text:read(config.text),mode:read(config.mode)});
   ctx.effect(()=>()=>store.close(),'private-soul: persistent library');
-  const runtime=createPersonaRuntime(store);
+  const runtime=createPersonaRuntime(store,ctx);
+  ctx.on('agent/created',async({agent})=>{await runtime.registerAgent(agent);});
+  ctx.inject(['sessionQuery','workspaceRegistry'],async()=>{await runtime.initialize();});
   ctx.effect(() => ctx.settings.configure({ auto: false }, ctx.fiber), 'private-soul: custom editor');
-  ctx.effect(() => attachPersonaPolicy(ctx.systemPrompt, context => {
-    const persona=runtime.forPrompt(context.scope);
+  ctx.effect(() => attachPersonaPolicy(ctx.systemPrompt, async context => {
+    const persona=await runtime.forPrompt(context.scope);
     return {enabled:!!persona,text:persona?.soul??'',mode:store.state.mode,personaId:persona?.id,name:persona?.name,memories:persona?.memories,memoryBudgetChars:config.memoryBudgetChars};
   }), 'private-soul: persona assembly');
   ctx.inject(['tools'],child=>registerMemoryTools(child,store,runtime.forExecution));
-  ctx.inject(['webServer','connection'],child=>registerSoulApi(child,store));
+  ctx.inject(['webServer','connection'],child=>registerSoulApi(child,store,runtime));
   ctx.emit('system-prompt/change');
 }

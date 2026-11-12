@@ -20,7 +20,8 @@ Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and op
 
 ## Features
 
-- **Multiple personas:** edit full persona instructions, set a global default, and switch per conversation.
+- **Three-level rules:** global → workspace → conversation. Explicit conversation choices take priority; “No persona” stops inheritance.
+- **Subagent policies:** no Soul persona by default; inherit the dispatcher's persona or choose another at the same three levels. One native dropdown controls both selections.
 - **Separate memories:** manage relationships, preferences, and shared stories with search, editing, deduplication, and consolidation previews.
 - **Three prompt modes:** prioritize, replace, or append the persona while retaining native tools and runtime context.
 - **Import and export:** persona Markdown, full JSON archives, and merge imports.
@@ -46,7 +47,17 @@ Filter and search by category, add or edit memories, and preview consolidation b
 3. Use the conversation's persona menu to select a persona, **Follow default**, or **No persona for this conversation**.
 4. Open **Personal memories** to manage that persona's relationships, preferences, and stories.
 
-Subagents inherit their owning conversation's selection. Requests already sent retain the persona selected when they were sent. Switching personas also switches the associated memories.
+Use **Persona rules** to configure global, workspace, or conversation settings. The conversation dropdown contains separate conversation and subagent groups, backed by the same records as settings. Requests already sent retain their persona and memory ownership.
+
+| Scope | Own persona | Dispatched subagents |
+| --- | --- | --- |
+| Global | Specific persona / None | None (initial default) / Reuse current / Specific persona |
+| Workspace | Follow global / Specific / None | Follow global / None / Reuse current / Specific |
+| Conversation | Follow workspace / Specific / None | Follow default / None / Reuse current / Specific |
+
+Native subagents capture their selection when created. Later changes to the parent do not rewrite existing children; each child can also choose independently. Missing, deleted, or empty personas stop injection rather than silently selecting another. Independent outer Team Desk members use ordinary conversation rules.
+
+Disabled children receive no new Soul persona, private memories, or memory instructions, and memory tools refuse access. **Native fork copies parent history**: disabling subsequent injection does not erase private information already in that history. Use fresh spawn when parent history must not be copied. Persona control for external ACP backends is unverified.
 
 | Prompt mode | Behavior |
 | --- | --- |
@@ -74,7 +85,9 @@ Memory categories are `relationship`, `preference`, and `story`. Models can mana
 
 Automatic writes pass content filtering and model review. Consolidation produces a preview for confirmation. Each persona supports up to 500 memories, each up to 1,600 characters; a full archive can be up to 8 MiB.
 
-Data is stored in `$DSH_HOME/private-soul/`, or `~/.dsh/private-soul/` by default. `library.json` holds personas, memories, and session bindings. `backups/` holds recovery archives created before deletion, consolidation, or full imports. Uninstalling retains the data.
+Data is stored in `$DSH_HOME/private-soul/`, or `~/.dsh/private-soul/` by default. `library.json` holds personas, memories, three-level rules, and captured child selections. `backups/` holds recovery archives created before deletion, consolidation, or full imports. Uninstalling retains the data.
+
+0.4.0 migrates v2 to v3 automatically, preserving the exact original file as `library.json.pre-v3.json` before the first migration. Existing personas, memories, and explicit conversation bindings are retained. Old subagents without an explicit choice use the new “None” default. Exports use v3; v2 imports remain supported. Rolling back requires restoring both the old plugin and its pre-migration data; old plugins cannot read v3.
 
 ## Development
 

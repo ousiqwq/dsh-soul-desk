@@ -10,16 +10,17 @@ import {SoulStore} from '../store.js';
 import {createPersonaRuntime} from '../persona-scope.js';
 import {attachPersonaPolicy} from '../prompt-policy.js';
 
-test('native scopes inherit a parent persona, preserve in-flight owners, and inject only their own memories',async()=>{
+test('explicit child inheritance preserves in-flight owners and injects only their own memories',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'soul-scopes-')),store=await new SoulStore(join(dir,'library.json')).init();
  const ctx=new Context(),fiber=ctx.plugin(SystemPrompt);await fiber;
  const a=(await store.action('persona-save',{name:'甲',soul:'# 甲',activate:true},0)).personaId;
  const b=(await store.action('persona-save',{name:'乙',soul:'# 乙'},store.state.revision)).personaId;
  await store.remember(a,{kind:'preference',content:'用户喜欢乌龙茶。'});await store.remember(b,{kind:'story',content:'我们每周日一起读书。'});
  const parent={session:{id:'parent'}},child={session:{id:'child'}},scope=createScope(ctx,child,{parent});
- const runtime=createPersonaRuntime(store),undo=attachPersonaPolicy(ctx.systemPrompt,context=>{const persona=runtime.forPrompt(context.scope);return {enabled:!!persona,text:persona?.soul??'',personaId:persona?.id,memories:persona?.memories,mode:store.state.mode};});
+ const runtime=createPersonaRuntime(store),undo=attachPersonaPolicy(ctx.systemPrompt,async context=>{const persona=await runtime.forPrompt(context.scope);return {enabled:!!persona,text:persona?.soul??'',personaId:persona?.id,memories:persona?.memories,mode:store.state.mode};});
  try{
   await store.action('session-select',{sessionId:'parent',personaId:b},store.state.revision);
+  await store.action('rule-set',{scope:'global',target:'children',rule:{mode:'parent'}},store.state.revision);
   let prompt=renderPrompt(await ctx.systemPrompt.assemble({scope:child}));assert.match(prompt,/^# 乙/);assert.match(prompt,/每周日一起读书/);assert.doesNotMatch(prompt,/乌龙茶/);
   await store.action('session-select',{sessionId:'child',personaId:a},store.state.revision);
   assert.equal(runtime.forExecution(child).id,b,'a previously sent request retains its own persona');
