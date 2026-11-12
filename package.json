@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",

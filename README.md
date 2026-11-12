@@ -21,13 +21,13 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 新建或编辑人设，选择注入方式和默认人设。聊天页可独立选择具体人设、跟随默认或停用。
 
-![人设管理：全局默认、注入方式与人格编辑](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png)
+![人设管理：全局默认、注入方式与人格编辑](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png?v=0.3.1)
 
 ### 个人记忆
 
 按类别筛选和搜索记忆，手动补充内容，或先查看智能整理建议再应用。
 
-![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png)
+![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png?v=0.3.1)
 
 ## 一键安装
 
@@ -62,7 +62,7 @@ dsh plugin --profile web add dsh-plugin-private-soul
 
 内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
 
-1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/ronova.json)。
+1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.1/ronova.json)。
 2. 在设置中选择 **导入全部 → 合并导入**。
 3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 

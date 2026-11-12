@@ -4,7 +4,7 @@
 
 A persona and personal-memory manager for DeepSeek Harness. Choose a persona for each conversation and maintain separate memories across sessions for each persona.
 
-Open **Settings → 私人灵魂 (Private Soul)**. Package: `dsh-plugin-private-soul`.
+Open **Settings → Private Soul**. Package: `dsh-plugin-private-soul`.
 
 The interface uses DSH native i18n and follows language changes immediately. Chinese and English dictionaries are included; other interface languages use the native English fallback.
 
@@ -21,13 +21,13 @@ The interface uses DSH native i18n and follows language changes immediately. Chi
 
 Create and edit personas, choose a prompt mode, and select the default. Each conversation can use a specific persona, follow the default, or turn personas off.
 
-![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png)
+![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.3.1)
 
 ### Personal memories
 
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
-![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png)
+![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.3.1)
 
 ## One-command installation
 
@@ -37,21 +37,21 @@ Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and No
 dsh plugin --profile web add dsh-plugin-private-soul
 ```
 
-Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → 私人灵魂**.
+Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → Private Soul**.
 
 ## Usage
 
-1. Select **新建人设 (New persona)** and enter a name and persona text.
-2. **仅保存 (Save)** saves your changes. **保存并启用此人设 (Save and enable)** also sets the persona as the global default.
-3. Use the conversation's persona menu to select a persona, **跟随默认 (Follow default)**, or **此会话不使用人设 (No persona for this session)**.
-4. Open **个人记忆 (Personal memories)** to manage that persona's relationships, preferences, and stories.
+1. Select **New persona** and enter a name and persona text.
+2. **Save only** saves your changes. **Save and enable this persona** also sets the persona as the global default.
+3. Use the conversation's persona menu to select a persona, **Follow default**, or **No persona for this conversation**.
+4. Open **Personal memories** to manage that persona's relationships, preferences, and stories.
 
 Subagents inherit their owning conversation's selection. Requests already sent retain the persona selected when they were sent. Switching personas also switches the associated memories.
 
 | Prompt mode | Behavior |
 | --- | --- |
-| Persona priority | Place persona text before the system prompt's tool and framework guidance |
-| Complete replacement | Replace the system prompt body with persona text while retaining tool schemas and runtime context |
+| Priority | Place persona text before the system prompt's tool and framework guidance |
+| Replace | Replace the system prompt body with persona text while retaining tool schemas and runtime context |
 | Append | Preserve the original system prompt and append the persona and personal memories at the end |
 
 The interface uses short labels; hover over a mode to see its explanation.
@@ -62,11 +62,11 @@ Persona text is literal: `{{...}}` is not interpolated. The global switch contro
 
 An optional **Ronova** persona preset is included and can be imported after installation.
 
-1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/ronova.json).
-2. Choose **导入全部 → 合并导入 (Import all → Merge)** in settings.
+1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.1/ronova.json).
+2. In settings, choose **Import all** and select the merge option.
 3. Review the persona, save and enable it, or select Ronova in a specific conversation.
 
-Alternatively, load [ronova.SOUL.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/presets/ronova.SOUL.md) into the editor using **导入 SOUL.md (Import SOUL.md)**.
+Alternatively, load [ronova.SOUL.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/presets/ronova.SOUL.md) into the editor using **Import SOUL.md**.
 
 ## Memories and storage
 
