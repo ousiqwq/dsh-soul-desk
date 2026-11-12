@@ -1,3 +1,4 @@
+import {mountExecutor,executeTool} from './harness-tools.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Context, Service } from '@deepseek-ai/cordis';
@@ -16,10 +17,10 @@ async function fixture(fn){
   const control={mode:'valid',beforeReply:null};
   class LlmStub extends Service {constructor(c){super(c,'llm');}async *stream(options){if(control.beforeReply)await control.beforeReply();if(control.mode==='throw')throw new Error('model unavailable');if(control.mode==='invalid'){yield {type:'text-delta',text:'invalid JSON'};return;}const content=JSON.parse(options.messages[0].content[0].text).content;yield {type:'text-delta',text:JSON.stringify({allow:!content.includes('欢迎按钮改成蓝色'),reason:'非个人事实'})};}}
   class DefaultModelStub extends Service {constructor(c){super(c,'agentDefaultModel');}currentSelection(){return {provider:'test',model:'test'};}}
-  const fibers=[ctx.plugin(SystemPrompt),ctx.plugin(ToolRuntime),ctx.plugin(LlmStub),ctx.plugin(DefaultModelStub)];for(const fiber of fibers)await fiber;
+  const fibers=[ctx.plugin(SystemPrompt),ctx.plugin(ToolRuntime),ctx.plugin(LlmStub),ctx.plugin(DefaultModelStub)];for(const fiber of fibers)await fiber;await mountExecutor(ctx);
   const owner={id:'caller-a'},other={id:'caller-b'};
   const plugin=ctx.plugin({name:'memory-tools-fixture',inject:['tools'],apply(child){registerMemoryTools(child,store,agent=>store.state.enabled?store.persona(agent===owner?a:b):null);}});await plugin;
-  let n=0;const execute=(name,args,agent=owner)=>ctx.tools.execute({name,arguments:args,agent,callId:'test-'+(++n),signal:new AbortController().signal});
+  let n=0;const execute=(name,args,agent=owner)=>executeTool(ctx,{name,arguments:args,agent,callId:'test-'+(++n),signal:new AbortController().signal});
   try{await fn({ctx,store,a,b,owner,other,execute,control});}finally{await plugin.dispose();for(const fiber of fibers.reverse())await fiber.dispose();await store.close();await rm(dir,{recursive:true,force:true});}
 }
 test('native tools save only the captured persona and run semantic approval before persistence',()=>fixture(async({store,a,b,execute,other})=>{

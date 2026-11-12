@@ -29,10 +29,10 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 ## 安装
 
-兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
+兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/dsh-plugin-private-soul-0.2.5.tgz
 ```
 
 在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。也可以从 [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases) 下载安装包后本地安装。
@@ -57,7 +57,7 @@ dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/d
 
 内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
 
-1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/ronova.json)。
+1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/ronova.json)。
 2. 在设置中选择 **导入全部 → 合并导入**。
 3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 

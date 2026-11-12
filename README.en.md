@@ -29,10 +29,10 @@ Filter and search by category, add or edit memories, and preview consolidation b
 
 ## Installation
 
-Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5** and Node.js **26**. Check interface compatibility before using another Harness version.
+Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**. Check interface compatibility before using another Harness version.
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/dsh-plugin-private-soul-0.2.4.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/dsh-plugin-private-soul-0.2.5.tgz
 ```
 
 Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → 私人灵魂**. Packages are also available from [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases).
@@ -57,7 +57,7 @@ Persona text is literal: `{{...}}` is not interpolated. The global switch contro
 
 An optional **Ronova** persona preset is included and can be imported after installation.
 
-1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.4/ronova.json).
+1. Download [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.5/ronova.json).
 2. Choose **导入全部 → 合并导入 (Import all → Merge)** in settings.
 3. Review the persona, save and enable it, or select Ronova in a specific conversation.
 
