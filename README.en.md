@@ -1,6 +1,6 @@
 # DSH Soul Desk
 
-[简体中文](README.md) | **English**
+[简体中文](https://github.com/ousiqwq/dsh-soul-desk/blob/main/README.md) | **English**
 
 A persona and personal-memory manager for DeepSeek Harness. Choose a persona for each conversation and maintain separate memories across sessions for each persona.
 
@@ -21,23 +21,23 @@ The interface uses DSH native i18n and follows language changes immediately. Chi
 
 Create and edit personas, choose a prompt mode, and select the default. Each conversation can use a specific persona, follow the default, or turn personas off.
 
-![Persona management with a default selector, prompt mode, and editor](docs/images/personas.png)
+![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png)
 
 ### Personal memories
 
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
-![Memory filtering, editing, and consolidation controls](docs/images/memories.png)
+![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png)
 
-## Installation
+## One-command installation
 
-Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**. Check interface compatibility before using another Harness version.
+Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/dsh-plugin-private-soul-0.3.0.tgz
+dsh plugin --profile web add dsh-plugin-private-soul
 ```
 
-Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → 私人灵魂**. Packages are also available from [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases).
+Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → 私人灵魂**.
 
 ## Usage
 
@@ -66,7 +66,7 @@ An optional **Ronova** persona preset is included and can be imported after inst
 2. Choose **导入全部 → 合并导入 (Import all → Merge)** in settings.
 3. Review the persona, save and enable it, or select Ronova in a specific conversation.
 
-Alternatively, load [ronova.SOUL.md](presets/ronova.SOUL.md) into the editor using **导入 SOUL.md (Import SOUL.md)**.
+Alternatively, load [ronova.SOUL.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/presets/ronova.SOUL.md) into the editor using **导入 SOUL.md (Import SOUL.md)**.
 
 ## Memories and storage
 
@@ -85,8 +85,8 @@ npm test
 npm pack --ignore-scripts
 ```
 
-See [TESTING.md](docs/TESTING.md) for development checks.
+See [TESTING.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/docs/TESTING.md) for development commands.
 
 ## License
 
-[MIT](LICENSE) © 2026 osiqwq
+[MIT](https://github.com/ousiqwq/dsh-soul-desk/blob/main/LICENSE) © 2026 osiqwq

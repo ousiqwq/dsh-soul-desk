@@ -1,6 +1,6 @@
 # DSH Soul Desk
 
-**简体中文** | [English](README.en.md)
+**简体中文** | [English](https://github.com/ousiqwq/dsh-soul-desk/blob/main/README.en.md)
 
 DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合适的人设，并为每个人设维护独立的跨会话记忆。
 
@@ -21,23 +21,23 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 新建或编辑人设，选择注入方式和默认人设。聊天页可独立选择具体人设、跟随默认或停用。
 
-![人设管理：全局默认、注入方式与人格编辑](docs/images/personas.png)
+![人设管理：全局默认、注入方式与人格编辑](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png)
 
 ### 个人记忆
 
 按类别筛选和搜索记忆，手动补充内容，或先查看智能整理建议再应用。
 
-![个人记忆：筛选、编辑与整理](docs/images/memories.png)
+![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png)
 
-## 安装
+## 一键安装
 
-兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
+兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/dsh-plugin-private-soul-0.3.0.tgz
+dsh plugin --profile web add dsh-plugin-private-soul
 ```
 
-在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。也可以从 [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases) 下载安装包后本地安装。
+在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。
 
 ## 使用
 
@@ -66,7 +66,7 @@ dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/d
 2. 在设置中选择 **导入全部 → 合并导入**。
 3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 
-也可以下载 [ronova.SOUL.md](presets/ronova.SOUL.md)，通过 **导入 SOUL.md** 载入编辑器。
+也可以下载 [ronova.SOUL.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/presets/ronova.SOUL.md)，通过 **导入 SOUL.md** 载入编辑器。
 
 ## 记忆与存储
 
@@ -85,8 +85,8 @@ npm test
 npm pack --ignore-scripts
 ```
 
-开发检查见 [TESTING.md](docs/TESTING.md)。
+开发命令见 [TESTING.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/docs/TESTING.md)。
 
 ## 许可证
 
-[MIT](LICENSE) © 2026 osiqwq
+[MIT](https://github.com/ousiqwq/dsh-soul-desk/blob/main/LICENSE) © 2026 osiqwq
