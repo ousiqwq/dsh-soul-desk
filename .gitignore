@@ -17,3 +17,6 @@ exports/
 SOUL.md
 .DS_Store
 .serena/
+
+!locale/
+!locale/*.json

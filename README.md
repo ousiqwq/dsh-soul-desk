@@ -6,6 +6,8 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 入口：**设置 → 私人灵魂** · 插件包：`dsh-plugin-private-soul`
 
+界面接入 DSH 原生 i18n，实时跟随 DSH 的语言设置。内置中英文词典；其他界面语言按 DSH 的规则回退到英文。
+
 ## 功能
 
 - **多个人设**：编辑完整人格文本，设置全局默认，或在聊天界面按会话切换。
@@ -32,7 +34,7 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。其他 Harness 版本需确认接口兼容性。
 
 ```bash
-dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/dsh-plugin-private-soul-0.2.6.tgz
+dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/dsh-plugin-private-soul-0.3.0.tgz
 ```
 
 在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。也可以从 [Releases](https://github.com/ousiqwq/dsh-soul-desk/releases) 下载安装包后本地安装。
@@ -60,7 +62,7 @@ dsh plugin --profile web add https://github.com/ousiqwq/dsh-soul-desk/releases/d
 
 内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
 
-1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.2.6/ronova.json)。
+1. 下载 [ronova.json](https://github.com/ousiqwq/dsh-soul-desk/releases/download/v0.3.0/ronova.json)。
 2. 在设置中选择 **导入全部 → 合并导入**。
 3. 查看设定，保存并启用，或在目标会话中选择若娜瓦。
 

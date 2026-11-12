@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -10,7 +10,9 @@
     ".": "./index.js",
     "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./locale/en.json": "./locale/en.json",
+    "./locale/zh.json": "./locale/zh.json"
   },
   "files": [
     "index.js",
@@ -27,7 +29,9 @@
     "LICENSE",
     "README.md",
     "presets/ronova.json",
-    "presets/ronova.SOUL.md"
+    "presets/ronova.SOUL.md",
+    "locales.js",
+    "locale"
   ],
   "dsh": {
     "bundle": {
@@ -38,7 +42,8 @@
       "inject": [
         "@deepseek-ai/dsh-client-ui-settings-general",
         "@deepseek-ai/dsh-client-ui-conversation",
-        "@deepseek-ai/dsh-client-ui-slots"
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale"
       ]
     }
   },
@@ -59,7 +64,9 @@
   },
   "scripts": {
     "test": "node tests/all.mjs",
-    "check": "node tests/check.mjs"
+    "check": "node tests/check.mjs",
+    "i18n:build": "node scripts/sync-locales.mjs",
+    "prepack": "node scripts/sync-locales.mjs --check"
   },
   "author": {
     "name": "osiqwq",

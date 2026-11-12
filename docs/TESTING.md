@@ -18,3 +18,7 @@ Compatibility checks cover the independent native tool executor, prompt assembly
 ## Append mode
 
 20 tests cover literal persona and memory text appended after the original prompt, scoped complete presets, live mode changes, native configuration validation, restart persistence and archive round-trips. Priority and replacement retain their existing behavior. Browser checks verify short labels, hover explanations, keyboard selection, responsive menus and removal of the duplicate inline explanation.
+
+## Native i18n
+
+Catalog checks validate matching keys, interpolation parameters, generated client data and dynamic status messages. Browser checks cover live language changes, English fallback, unsaved persona drafts, and hover explanations for Priority, Replace and Append. Persona text and memory remain unchanged.
