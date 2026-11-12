@@ -8,6 +8,16 @@ Open **Settings → Private Soul**. Package: `dsh-plugin-private-soul`.
 
 The interface uses DSH native i18n and follows language changes immediately. Chinese and English dictionaries are included; other interface languages use the native English fallback.
 
+## One-command installation
+
+Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
+
+```bash
+dsh plugin --profile web add dsh-plugin-private-soul
+```
+
+Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → Private Soul**.
+
 ## Features
 
 - **Multiple personas:** edit full persona instructions, set a global default, and switch per conversation.
@@ -28,16 +38,6 @@ Create and edit personas, choose a prompt mode, and select the default. Each con
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
 ![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.3.1)
-
-## One-command installation
-
-Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
-
-```bash
-dsh plugin --profile web add dsh-plugin-private-soul
-```
-
-Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → Private Soul**.
 
 ## Usage
 

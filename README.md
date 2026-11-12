@@ -8,6 +8,16 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 界面接入 DSH 原生 i18n，实时跟随 DSH 的语言设置。内置中英文词典；其他界面语言按 DSH 的规则回退到英文。
 
+## 一键安装
+
+兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。
+
+```bash
+dsh plugin --profile web add dsh-plugin-private-soul
+```
+
+在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。
+
 ## 功能
 
 - **多个人设**：编辑完整人格文本，设置全局默认，或在聊天界面按会话切换。
@@ -28,16 +38,6 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 按类别筛选和搜索记忆，手动补充内容，或先查看智能整理建议再应用。
 
 ![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png?v=0.3.1)
-
-## 一键安装
-
-兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。
-
-```bash
-dsh plugin --profile web add dsh-plugin-private-soul
-```
-
-在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。
 
 ## 使用
 
