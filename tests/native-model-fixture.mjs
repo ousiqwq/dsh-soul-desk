@@ -13,8 +13,9 @@ class Adapter extends LlmAdapter {
     const last=options.messages?.filter(m=>['assistant','tool'].includes(m.role)||['user','agent-message'].includes(m.source?.kind)).at(-1)??options.messages?.findLast(m=>m.role==='user');
     const text=last?.content?.filter(c=>c.type==='text').map(c=>c.text).join('\n')??'';
     const system=JSON.stringify(options.messages?.filter(m=>m.role==='system')??[]);
+    const skillCatalog=options.messages?.flatMap(m=>m.content?.filter(c=>c.type==='text'&&c.text.includes('<available_skills>')).map(c=>c.text)??[]).at(-1)??'';
     const identity=system.match(/SOUL_PERSONA_([ABC])/)?.[1]??'none';
-    await appendFile(join(process.env.DSH_TEST_REPORTDIR,'model-requests.jsonl'),JSON.stringify({identity,system,systemPersonas:[...new Set([...system.matchAll(/SOUL_PERSONA_([ABC])/g)].map(match=>match[1]))],text,tools:options.tools?.map(t=>t.name),privateMemory:system.includes('SOUL_PRIVATE_MEMORY'),memoryB:system.includes('SOUL_MEMORY_B'),toolResult:last?.role==='tool'?last.content:undefined})+'\n');
+    await appendFile(join(process.env.DSH_TEST_REPORTDIR,'model-requests.jsonl'),JSON.stringify({identity,system,skillCatalog,systemPersonas:[...new Set([...system.matchAll(/SOUL_PERSONA_([ABC])/g)].map(match=>match[1]))],text,tools:options.tools?.map(t=>t.name),privateMemory:system.includes('SOUL_PRIVATE_MEMORY'),memoryB:system.includes('SOUL_MEMORY_B'),toolResult:last?.role==='tool'?last.content:undefined})+'\n');
     if(last?.role==='user'&&text.startsWith('SOUL_CALL:')){
       const {name,args}=JSON.parse(text.slice(10).split('\n')[0]),id=ToolCallId('soul-fixture-'+Date.now());
       yield{type:'block-start',index:0,blockType:'tool-call'};

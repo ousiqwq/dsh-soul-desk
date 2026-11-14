@@ -33,9 +33,11 @@ Verified against the native DeepSeek Harness **0.2.2-rc.2** Web service using re
 | Preset | Capability Desk | Soul Desk | File Bridge |
 | --- | --- | --- | --- |
 | Standard `standard` | Skill/MCP catalogs, rules and invocation guards work | All three injection modes, memories and child policies work | Download and access checks work |
-| PTC `ptc` | Disabled tools are omitted from the SDK and nested calls remain guarded | Preserves the `run_code` protocol and SDK; memory tools work through SDK calls | Works independently of tool-call style |
+| PTC `ptc` | Enabled Skills are injected normally; enabled tools stay in the SDK, while disabled entries are hidden and guarded | Preserves the `run_code` protocol and SDK; memory tools work through SDK calls | Works independently of tool-call style |
 | Minimal `minimal` | Rules work without adding a Skill loader, editor or subagent tools | Persona and memory support preserves the preset's existing tool boundary | Works |
 | Creation `cordis` | Skill/MCP rules preserve native creation tools | All three injection modes, memories and child policies work | Works |
+
+PTC and Standard both receive the available Skill catalog, persona and memories. Full Skill instructions enter context when loaded. PTC invokes tools through the `run_code` SDK; Standard invokes them directly. All six combinations with Priority, Complete and Append were tested: enabled Skills load, while disabled ones cannot be forced.
 
 Minimal does not ship a Skill loader or subagents; enabling a Skill does not install those tools into that preset. Global plugins can still contribute their own memory or MCP tools. Soul child policies default to no persona; parent reuse is explicit. Soul's Complete mode replaces the preset's prompt body while preserving executor protocol/SDK sections, tool schemas and native runtime context. Use Priority or Append to keep the original task instructions. Custom presets that isolate or replace underlying registries, and external ACP backends, need separate verification.
 
@@ -55,13 +57,15 @@ See [four-preset acceptance](docs/AGENT-PRESET-COMPATIBILITY.md).
 
 Create and edit personas, choose a prompt mode, and select the default. Each conversation can use a specific persona, follow the default, or turn personas off.
 
-![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.3.1)
+Screenshots show the current native DSH UI with isolated sample data; settings are expanded for readability.
+
+![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.4.2)
 
 ### Personal memories
 
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
-![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.3.1)
+![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.4.2)
 
 ## Usage
 
