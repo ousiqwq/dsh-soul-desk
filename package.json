@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,9 @@
     "presets/ronova.json",
     "presets/ronova.SOUL.md",
     "locales.js",
-    "locale"
+    "locale",
+    "team-bridge.js",
+    "docs/TEAM-BRIDGE.md"
   ],
   "dsh": {
     "bundle": {

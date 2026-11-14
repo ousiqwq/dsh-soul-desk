@@ -145,3 +145,14 @@ test('native Cordis migrates literal legacy cells once and unload restores the r
   } finally { await plugin.dispose(); await settings.dispose(); await rm(dataDir,{recursive:true,force:true}); }
   assert.match(renderPrompt(await ctx.systemPrompt.assemble()), /default persona/);
 }));
+
+
+test('complete persona replacement preserves executor protocol and generated PTC SDK sections',()=>fixture(async ctx=>{
+ ctx.systemPrompt.section({name:'tools:ptc-only',order:200,text:'Only run_code is callable directly.'});
+ ctx.systemPrompt.section({name:'tools:sdk',order:300,text:'declare const tools: { soul_memory_read(): void }'});
+ ctx.systemPrompt.section({name:'task:old-body',order:100,text:'Old task instructions to replace'});
+ ctx.systemPrompt.context({name:'workdir',order:100,text:'native workspace context',required:true});
+ const baseline=await ctx.systemPrompt.assemble(),config={enabled:true,text:'Replacement persona',mode:'complete'};
+ const undo=attachPersonaPolicy(ctx.systemPrompt,()=>config);
+ try{const result=await ctx.systemPrompt.assemble();assert.deepEqual(result.sections.map(s=>s.name),['private-soul:identity','tools:ptc-only','tools:sdk']);assert.match(renderPrompt(result),/Only run_code/);assert.match(renderPrompt(result),/declare const tools/);assert.doesNotMatch(renderPrompt(result),/Old task|default persona/);assert.deepEqual(result.contexts,baseline.contexts);assert.deepEqual(applyPersona(result,config).sections,result.sections);}finally{undo();}
+}));

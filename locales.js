@@ -1,4 +1,6 @@
 export const zh = {
+  "人设编辑内容": "人设编辑内容",
+  "会话仅在对话顶部设置，优先于工作区和全局。": "会话仅在对话顶部设置，优先于工作区和全局。",
   " · 有未保存修改": " · 有未保存修改",
   " · 默认": " · 默认",
   "# 我是谁\n\n粘贴完整的人格、语气、价值观和交流习惯……": "# 我是谁\n\n粘贴完整的人格、语气、价值观和交流习惯……",
@@ -203,6 +205,8 @@ export const zh = {
   "会话已不存在，请刷新。": "会话已不存在，请刷新。"
 };
 export const en = {
+  "人设编辑内容": "Persona editor sections",
+  "会话仅在对话顶部设置，优先于工作区和全局。": "Set conversations in the chat header; they override workspace and global defaults.",
   " · 有未保存修改": " · Unsaved changes",
   " · 默认": " · Default",
   "# 我是谁\n\n粘贴完整的人格、语气、价值观和交流习惯……": "# Who I am\n\nPaste the persona, tone, values, and communication preferences…",

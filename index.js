@@ -1,3 +1,4 @@
+import {createTeamBridge} from './team-bridge.js';
 import z from '@deepseek-ai/schemastery';
 import { attachPersonaPolicy, MAX_TEXT_LENGTH } from './prompt-policy.js';
 import { createPersonaRuntime } from './persona-scope.js';
@@ -23,6 +24,7 @@ export async function apply(ctx, config) {
   const store=await new SoulStore(join(root,'library.json'),()=>ctx.emit('system-prompt/change')).init({enabled:read(config.enabled),text:read(config.text),mode:read(config.mode)});
   ctx.effect(()=>()=>store.close(),'private-soul: persistent library');
   const runtime=createPersonaRuntime(store,ctx);
+  ctx.provide('privateSoulBridge',createTeamBridge(store));
   ctx.on('agent/created',async({agent})=>{await runtime.registerAgent(agent);});
   ctx.inject(['sessionQuery','workspaceRegistry'],async()=>{await runtime.initialize();});
   ctx.effect(() => ctx.settings.configure({ auto: false }, ctx.fiber), 'private-soul: custom editor');

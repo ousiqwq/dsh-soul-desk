@@ -48,7 +48,7 @@ export function applyPersona(assembly, config) {
   return {
     ...assembly,
     sections: config.mode === 'complete'
-      ? own
+      ? [...own, ...assembly.sections.filter(section => section.name.startsWith('tools:'))]
       : config.mode === 'append'
         ? [...assembly.sections.filter((section) => !privateSections.has(section.name)), ...own]
         : [...own, ...assembly.sections.filter((section) => !identitySections.has(section.name))],

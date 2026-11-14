@@ -15,14 +15,26 @@ async function requests(){try{return(await readFile(join(dir,'reports/model-requ
 async function prompt(id,text){await rpc('session/prompt',{request:{sessionId:id,requestId:randomUUID(),mode:'queue',content:[{type:'text',text}]}});await until(async()=>(await requests()).some(row=>row.text.includes(text)),'model request');await until(async()=>!(await rpc('session/list',{_request:{}})).items.find(row=>row.sessionId===id)?.running,'session idle');}
 const call=(name,args)=>'SOUL_CALL:'+JSON.stringify({name,args})+'\n';
 const pick=personaId=>({mode:'persona',personaId});
+async function probe(id,expected,memories={}){
+  const text='PERSONA_PROBE_'+randomUUID();await prompt(id,text);
+  const row=(await requests()).find(row=>row.text===text);
+  assert.equal(row.identity,expected);assert.deepEqual(row.systemPersonas,expected==='none'?[]:[expected]);
+  for(const[key,value]of Object.entries(memories))assert.equal(row[key],value,key);
+  assert.ok(row.tools.includes('subagent'));return row;
+}
 try {
   const ids={};
   for(const name of ['A','B','C'])ids[name]=(await act('persona-save',{name:'验收人设 '+name,soul:'SOUL_PERSONA_'+name,activate:name==='A'})).personaId;
   await act('memory-save',{personaId:ids.A,kind:'preference',content:'用户喜欢 SOUL_PRIVATE_MEMORY 清晨散步。'});
+  await act('memory-save',{personaId:ids.B,kind:'preference',content:'用户喜欢 SOUL_MEMORY_B 午后阅读。'});
   const space=(await rpc('workspace/create',{request:{path:join(dir,'workspaces/alpha')}})).workspace;
   const beta=(await rpc('workspace/create',{request:{path:join(dir,'workspaces/beta')}})).workspace;
   const root=(await rpc('session/create',{request:{workspaceId:space.workspaceId,sessionId:'session-'+randomUUID()}})).sessionId;
   await rpc('session/rename',{request:{sessionId:root,title:'灵魂三层与子代理验收'}});
+  await rule('global',undefined,'children',{mode:'none'});
+  await rule('workspace',space.workspaceId,'children',{mode:'follow'});
+  await rule('workspace',space.workspaceId,'persona',{mode:'follow'});
+  await probe(root,'A',{privateMemory:true,memoryB:false});report.nativeGlobalInjection=true;
   await rule('workspace',space.workspaceId,'persona',pick(ids.B));
   const marker='ROOT_PROBE_'+randomUUID();await prompt(root,marker);
   assert.equal((await requests()).find(row=>row.text.includes(marker)).identity,'B');
@@ -30,6 +42,19 @@ try {
   const bound='SESSION_PROBE_'+randomUUID();await prompt(root,bound);
   assert.equal((await requests()).find(row=>row.text.includes(bound)).identity,'A');
   report.nativeThreeLayers=true;
+  await rule('session',root,'persona',pick(ids.B));
+  await probe(root,'B',{privateMemory:false,memoryB:true});report.nativeSwitchRemovesOldPersonaAndMemories=true;
+  const readFrom=(await requests()).length;await prompt(root,call('soul_memory_read',{}));
+  const read=await until(async()=>(await requests()).slice(readFrom).find(row=>row.toolResult&&JSON.stringify(row.toolResult).includes(ids.B)),'switched memory owner');
+  assert.ok(JSON.stringify(read.toolResult).includes('SOUL_MEMORY_B'));assert.ok(!JSON.stringify(read.toolResult).includes(ids.A));assert.ok(!JSON.stringify(read.toolResult).includes('SOUL_PRIVATE_MEMORY'));report.nativeMemoryReadUsesSwitchedPersona=true;
+  await rule('session',root,'persona',{mode:'none'});await probe(root,'none',{privateMemory:false,memoryB:false});
+  await rule('session',root,'persona',{mode:'follow'});await probe(root,'B',{privateMemory:false,memoryB:true});report.nativeNoneAndFollow=true;
+  await rule('session',root,'persona',pick(ids.A));
+  for(const mode of['priority','complete','append']){await act('settings',{mode});await probe(root,'A',{privateMemory:true,memoryB:false});}
+  await act('settings',{mode:'priority',enabled:false});await probe(root,'none',{privateMemory:false,memoryB:false});
+  const disabledFrom=(await requests()).length;await prompt(root,call('soul_memory_read',{}));
+  await until(async()=>(await requests()).slice(disabledFrom).some(row=>JSON.stringify(row.toolResult??'').includes('当前会话未启用人设')),'disabled memory rejection');
+  await act('settings',{enabled:true});await probe(root,'A',{privateMemory:true,memoryB:false});report.nativeThreeModesAndMasterSwitch=true;
   const rootRequest=(await requests()).find(row=>row.text.includes(bound));
   assert.ok(rootRequest.tools.includes('subagent'),JSON.stringify(rootRequest.tools));
   async function child(name,tool='subagent',childPrompt='CHILD_PROBE_'+randomUUID()){
@@ -48,12 +73,13 @@ try {
   await rule('workspace',space.workspaceId,'children',pick(ids.C));
   const fixed=await child('workspace-fixed');assert.equal(fixed.request.identity,'C');report.nativeWorkspaceChildRule=true;
   await rule('session',root,'children',{mode:'none'});
+  const deniedFrom=(await requests()).length;
   const denied=await child('session-off','subagent',call('soul_memory_read',{}));
   assert.equal(denied.request.identity,'none');
   report.nativeSessionChildOverride=true;
   // Read the native raw log from the isolated persistence store to verify that
   // the real tool executor refused memory access, rather than trusting a model.
-  const denial=await until(async()=>(await requests()).find(row=>row.identity==='none'&&JSON.stringify(row.toolResult??'').includes('当前会话未启用人设')),'memory tool denial');
+  const denial=await until(async()=>(await requests()).slice(deniedFrom).find(row=>row.identity==='none'&&JSON.stringify(row.toolResult??'').includes('当前会话未启用人设')),'memory tool denial');
   assert.equal(denial.privateMemory,false);report.nativeMemoryToolDenied=true;
   report.memoryDeniedChildId=denied.entry.id;
   await rule('session',inherited.entry.id,'persona',pick(ids.B));

@@ -34,6 +34,7 @@ node tests/native-api.mjs
 # Restart the isolated host before checking cold resume:
 node tests/native-resume.mjs
 node tests/native-browser.mjs
+node tests/browser-editor.mjs
 ```
 
 For browser checks, provide a Playwright module via `DSH_TEST_PLAYWRIGHT`
@@ -43,4 +44,15 @@ The browser script expects the Chinese locale initially and switches back after
 the English check. Native API and browser scripts change synthetic selections,
 so run them sequentially.
 
+`browser-editor.mjs` exercises native name/category/filter/import controls,
+unsaved drafts across tabs, memory revisions, conflicting saves with draft
+recovery, archive export and merge import. It creates synthetic personas only
+in the isolated profile. Joint native-control acceptance and local deployment
+details are recorded in the sibling Capability Desk project's
+`docs/NATIVE-UI-MIGRATION-ACCEPTANCE.zh-CN.md`.
+
 See [0.4.0 acceptance](./RELEASE-0.4.0.zh-CN.md) for verified behavior and limits.
+
+## Team preset integration
+
+The optional host bridge checks atomic application across sessions, unchanged fields, concurrent edits, deleted personas, token reuse and rule validation. Native DSH integration verifies preset overrides, unspecified defaults, creation-time child decisions, later manual changes and optional plugin removal/reinstallation. Existing persona and memory resolution use the original store and runtime.

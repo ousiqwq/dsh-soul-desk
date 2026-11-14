@@ -6,3 +6,5 @@ import './persona-rules.test.mjs';
 import './preset.test.mjs';
 
 import './i18n.test.mjs';
+
+import './team-bridge.test.mjs';
