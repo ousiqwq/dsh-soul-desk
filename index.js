@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import { SoulStore } from './store.js';
 import { registerMemoryTools } from './memory-tools.js';
 import { registerSoulApi } from './http-api.js';
+import { EnhancementStore } from './enhancement-store.js';
+import { createEnhancementRuntime } from './enhancement-runtime.js';
 
 export const name = 'private-soul';
 export const inject = ['systemPrompt', 'settings'];
@@ -23,7 +25,12 @@ export async function apply(ctx, config) {
   const root=config.dataDir??join(process.env.DSH_HOME||join(homedir(),'.dsh'),'private-soul');
   const store=await new SoulStore(join(root,'library.json'),()=>ctx.emit('system-prompt/change')).init({enabled:read(config.enabled),text:read(config.text),mode:read(config.mode)});
   ctx.effect(()=>()=>store.close(),'private-soul: persistent library');
+  let enhancementRuntime;
+  const enhancement=await new EnhancementStore(join(root,'prompt-enhancement.v1.json'),()=>{enhancementRuntime?.changed();ctx.emit('system-prompt/change');}).init();
+  ctx.effect(()=>()=>enhancement.close(),'private-soul: optional response enhancement');
   const runtime=createPersonaRuntime(store,ctx);
+  enhancementRuntime=createEnhancementRuntime(ctx,enhancement,runtime);
+  ctx.effect(()=>()=>enhancementRuntime.dispose(),'private-soul: structural enhancement lifecycle');
   ctx.provide('privateSoulBridge',createTeamBridge(store));
   ctx.on('agent/created',async({agent})=>{await runtime.registerAgent(agent);});
   ctx.inject(['sessionQuery','workspaceRegistry'],async()=>{await runtime.initialize();});
@@ -31,8 +38,8 @@ export async function apply(ctx, config) {
   ctx.effect(() => attachPersonaPolicy(ctx.systemPrompt, async context => {
     const persona=await runtime.forPrompt(context.scope);
     return {enabled:!!persona,text:persona?.soul??'',mode:store.state.mode,personaId:persona?.id,name:persona?.name,memories:persona?.memories,memoryBudgetChars:config.memoryBudgetChars};
-  }), 'private-soul: persona assembly');
+  }, enhancementRuntime), 'private-soul: persona assembly');
   ctx.inject(['tools'],child=>registerMemoryTools(child,store,runtime.forExecution));
-  ctx.inject(['webServer','connection'],child=>registerSoulApi(child,store,runtime));
+  ctx.inject(['webServer','connection'],child=>registerSoulApi(child,store,runtime,enhancement,enhancementRuntime));
   ctx.emit('system-prompt/change');
 }

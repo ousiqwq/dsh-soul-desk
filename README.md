@@ -12,16 +12,24 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。
 
-通过 **npx** 安装（Node.js 26，无需全局安装 dsh 或 pnpm）：
+当前 GitHub 源码为 **`0.5.0-local.3` 预览版**，包含默认关闭的增强框架和三页高级设置。**npm 仍为 `0.4.2` 稳定版，本次未更新 npm**。新增增强适配以 DSH Web `0.2.2-rc.2` 的验收为准。
+
+通过 **npx 安装当前 GitHub 分支**（Node.js 26，无需全局安装 dsh 或 pnpm）：
+
+```bash
+npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
+```
+
+如需 **npm 稳定版**（不包含本页新增的增强功能），使用：
 
 ```bash
 npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@latest
 ```
 
-在运行 DSH 的主机上，用原实例相同的账户和 `DSH_HOME` 执行。命令固定本轮验证的官方 DSH CLI，插件安装最新版；`web` 是目标 profile。已安装 DSH CLI 时也可使用：
+在运行 DSH 的主机上，用原实例相同的账户和 `DSH_HOME` 执行。命令固定本轮验证的官方 DSH CLI；`web` 是目标 profile。已安装 DSH CLI 时，安装 GitHub 预览版也可使用：
 
 ```bash
-dsh plugin --profile web add dsh-plugin-private-soul
+dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
 ```
 
 在 DSH 插件管理中启用插件，重启 DSH 并刷新页面，然后打开 **设置 → 私人灵魂**。
@@ -98,6 +106,22 @@ PTC 与标准模式都保留可用 Skill 目录、人设和记忆。Skill 完整
 
 Team Desk 0.14.0 可在团队预设中为每个成员及未来子代理指定人设。应用时明确选择优先，未指定继续使用本插件原规则；之后仍可在会话菜单或团队成员节点中修改。全局开关保持有效，预设不会自动开启人格注入。接口约定见 [团队联动](docs/TEAM-BRIDGE.md)。
 
+## 提示词增强与模式适配（GitHub 预览版）
+
+在私人灵魂设置中提供**默认关闭的全局开关**，右侧的**高级设置**使用 DSH 原生窗口。增强开关独立于原有的人设总开关；开启或关闭从下一次模型请求生效，不修改历史消息。
+
+`0.5.0-local.2` 迁入原项目的结构融合、Minimal 作用域覆盖及清理、各模式诊断、最近真实组装／独立模式的完整提示词预览。高级设置可检查 Standard、PTC、Cordis、Minimal，并重新检查适配；预览不调用模型，也不启用开关。完整预览可能包含人设和个人记忆，按当前 DSH 的登录与来源校验保护。
+
+`0.5.0-local.3` 将高级窗口整理为 **常规／提示词／诊断** 三页。常规页只显示常用开关；提示词页编辑和预览新增内容；诊断页检查模式并查看完整提示词。窗口与保存区保持固定，草稿在切页和重开时保留。
+
+![默认关闭的增强框架：常规设置](docs/images/enhancement-general.png)
+
+高级窗口可分别设置简洁开场、完整交付、保留用户命名，以及是否应用于子代理；可以编辑新增提示词、预览、保存或恢复默认草稿。保存设置不会自动开启增强，恢复默认只修改草稿。跨页面同时编辑时拒绝过期写入，并保留当前草稿供手动合并。
+
+原有的人设、语气和个人记忆明确豁免，保持优先。增强段独立加入，不改写这些内容；固定保护说明不属于可编辑区域。保留 PTC 的执行协议、SDK、工具目录、Plan 和结构化输出约定。增强是模型指导，不增加工具权限，也不保证模型每次都按文风要求回答。优先、替换和追加三种人设方式仍然有效。
+
+增强设置单独保存在 `$DSH_HOME/private-soul/prompt-enhancement.v1.json`，最近十次修改前的版本位于 `enhancement-backups/`。初次安装和读取不会创建配置；人设存档导入导出、记忆整理均不改动它。格式损坏时仅关闭增强，不覆盖原文件，不影响原有人设与记忆。检测到独立安装的 `dsh-unrestricted` 提示词段时跳过重复增强；不要同时启用两个同类模块。
+
 ## 尝试若娜瓦预设
 
 内置可选的 **若娜瓦** 角色预设，安装后可手动导入体验。
@@ -132,3 +156,7 @@ npm pack --ignore-scripts
 ## 许可证
 
 [MIT](https://github.com/ousiqwq/dsh-soul-desk/blob/main/LICENSE) © 2026 osiqwq
+
+## 项目致谢
+
+提示词增强的框架适配自 [yexi-by/dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted)（0.2.8，提交 `1383c6c16849a0f05bb8f9d927aa1bb31d772547`，MIT）。已迁入结构融合、模式适配与诊断预览代码，并为 Soul 人设、记忆和当前 DSH 增加兼容保护；原项目的完整破限提示词未迁入，不能声称回答行为与原版完全一致。保留默认关闭、高级编辑、独立配置、备份与并发冲突保护，不修改 DSH 宿主文件。详见 [迁移范围](docs/UPSTREAM-INTEGRATION.md) 和 [第三方说明](THIRD_PARTY_NOTICES.md)。

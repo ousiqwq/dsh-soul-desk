@@ -56,3 +56,23 @@ See [0.4.0 acceptance](./RELEASE-0.4.0.zh-CN.md) for verified behavior and limit
 ## Team preset integration
 
 The optional host bridge checks atomic application across sessions, unchanged fields, concurrent edits, deleted personas, token reuse and rule validation. Native DSH integration verifies preset overrides, unspecified defaults, creation-time child decisions, later manual changes and optional plugin removal/reinstallation. Existing persona and memory resolution use the original store and runtime.
+
+## Optional response enhancement
+
+`npm test` includes isolated configuration/CAS/authentication tests and a four-preset × three-persona-mode assembly matrix. Disabled enhancement returns the original Soul assembly. The tests also cover literal templates, immutable persona/memory rows, PTC protocol/SDK preservation, native Plan/reporting sections, child exclusion, duplicate-module detection and failure isolation.
+
+With the candidate installed in the isolated host, run `node tests/native-enhancement.mjs` after `native-api.mjs`. It verifies actual model inputs for all four presets in all three persona modes, both enabled and disabled, and independently toggles child enhancement without changing its persona policy. The sibling Capability Desk native preset and PTC Skill tests additionally execute memory, Skill and MCP calls through the real executor.
+
+`tests/browser-enhancement.mjs` tests the native Modal, frontmost hit testing after the entrance animation, Escape/focus restoration, preview without saving, draft retention, save-without-enabling, stale-write recovery, size limits, native light/dark themes, widths 320/390/1440 and live English translation. It verifies that enhancement changes leave the original library and its persona draft unchanged. Use a Chinese starting locale. Reports and screenshots stay under ignored `test-results/native-host/reports/enhancement/`.
+
+These fixtures verify assembly, persistence and execution contracts using a synthetic model. They do not guarantee that any external model will follow every stylistic instruction.
+
+## Upstream framework adaptation
+
+`enhancement-fusion.test.mjs` tests structural contracts, protected Soul rows, scope shadows and custom-agent exclusion, removal on mode changes, literal templates, fallback on errors and empty configuration, standalone-module coexistence, rosterless detection, full preview and concurrent recheck scope isolation.
+
+In the isolated host, also run `native-enhancement-framework.mjs` and `browser-enhancement-framework.mjs` sequentially. These check blank-session Minimal/Standard/PTC switching, the actual scope-shadow path, removal when off, live/standing full previews, read-only rechecking without model calls, native Plan/PTC coordination, four-mode browser previews, and 320/390/1440 widths in both themes. Native preset and PTC Skill regression scripts still execute actual memory, Skill and MCP tools. See `docs/UPSTREAM-INTEGRATION.md` for intentional differences from upstream content.
+
+## Advanced settings layout
+
+Run `node tests/browser-enhancement-layout.mjs` against the same isolated host to check General / Prompt / Diagnostics, fixed window dimensions, drafts across tabs and reopening, both themes and 320/390/1440 widths. Enhancement scripts create their report folders under `test-results/native-host/reports/` automatically; set `DSH_TEST_REPORTDIR` to choose another report root. A fresh checkout does not need any local `operations/` pointer files.

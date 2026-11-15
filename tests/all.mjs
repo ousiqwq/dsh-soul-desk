@@ -8,3 +8,7 @@ import './preset.test.mjs';
 import './i18n.test.mjs';
 
 import './team-bridge.test.mjs';
+
+import './enhancement.test.mjs';
+
+import './enhancement-fusion.test.mjs';

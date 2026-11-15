@@ -2,7 +2,7 @@ window.__ModuleLoader__.load({
   id: 'dsh-plugin-private-soul',
   factory: require => {
     const React=require('react'),h=React.createElement,{createPortal}=require('react-dom');
-    const {Button,Input,Switch,SegmentedTabs,Menu,MenuItemButton,Tooltip,Toast,IconWarningOutlineRegular,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
+    const {Button,Input,Switch,SegmentedTabs,Menu,MenuItemButton,Tooltip,Toast,Modal,IconSettingsOutlineRegular,IconWarningOutlineRegular,IconUserOutlineRegular,IconChevronDownOutlineRegular}=require('@deepseek-ai/dsh-client-ui-primitives');
     /* i18n:start */
 const NS="soulDesk";
 const zh={
@@ -209,7 +209,98 @@ const zh={
   "规则范围无效。": "规则范围无效。",
   "不是有效的私人灵魂 v2/v3 存档。": "不是有效的私人灵魂 v2/v3 存档。",
   "工作区已不存在，请刷新。": "工作区已不存在，请刷新。",
-  "会话已不存在，请刷新。": "会话已不存在，请刷新。"
+  "会话已不存在，请刷新。": "会话已不存在，请刷新。",
+  "关闭": "关闭",
+  "保存设置": "保存设置",
+  "提示词增强": "提示词增强",
+  "高级设置": "高级设置",
+  "提示词增强高级设置": "提示词增强高级设置",
+  "默认关闭；启用后也不覆盖原有人设和个人记忆。": "默认关闭；启用后也不覆盖原有人设和个人记忆。",
+  "增强开关已保存，下一次模型请求生效。": "增强开关已保存，下一次模型请求生效。",
+  "增强设置已保存，开关状态保持不变。": "增强设置已保存，开关状态保持不变。",
+  "仅调整新增模块，人设、记忆与原生运行约束始终优先。": "仅调整新增模块，人设、记忆与原生运行约束始终优先。",
+  "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。": "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。",
+  "减少开场套话": "减少开场套话",
+  "尽量先给出所需结果，保留人设原有语气。": "尽量先给出所需结果，保留人设原有语气。",
+  "完整交付": "完整交付",
+  "在允许范围内交付完整成果，不编造未执行的结果。": "在允许范围内交付完整成果，不编造未执行的结果。",
+  "保留用户命名": "保留用户命名",
+  "保留用户提供的名称与路径，继续遵守隐私及脱敏要求。": "保留用户提供的名称与路径，继续遵守隐私及脱敏要求。",
+  "应用于子代理": "应用于子代理",
+  "仅沿用此增强开关，不改变子代理的人设继承规则。": "仅沿用此增强开关，不改变子代理的人设继承规则。",
+  "增强提示词（仅新增部分）": "增强提示词（仅新增部分）",
+  "{p0} / 16000 字符。{{…}} 保留原文；只有保存后才生效。": "{p0} / 16000 字符。{{…}} 保留原文；只有保存后才生效。",
+  "恢复默认草稿": "恢复默认草稿",
+  "重新读取增强设置": "重新读取增强设置",
+  "预览新增提示词": "预览新增提示词",
+  "新增提示词预览": "新增提示词预览",
+  "已开启，将于下一次模型请求生效。": "已开启，将于下一次模型请求生效。",
+  "已应用；人设、记忆与原生工具约束保持优先。": "已应用；人设、记忆与原生工具约束保持优先。",
+  "已检测到独立增强模块，本模块未重复注入。": "已检测到独立增强模块，本模块未重复注入。",
+  "已按高级设置跳过子代理。": "已按高级设置跳过子代理。",
+  "未设置增强效果或提示词，原提示词保持不变。": "未设置增强效果或提示词，原提示词保持不变。",
+  "当前提示词结构不受支持，已保留原有人设与记忆。": "当前提示词结构不受支持，已保留原有人设与记忆。",
+  "增强模块暂不可用，已保留原有人设与记忆。": "增强模块暂不可用，已保留原有人设与记忆。",
+  "提示词增强设置格式无效。": "提示词增强设置格式无效。",
+  "含有未知的提示词增强设置。": "含有未知的提示词增强设置。",
+  "提示词增强选项必须为开关值。": "提示词增强选项必须为开关值。",
+  "增强提示词最多16000字符。": "增强提示词最多16000字符。",
+  "提示词增强配置格式或版本不受支持。": "提示词增强配置格式或版本不受支持。",
+  "提示词增强配置无法读取，已保持关闭。原有人设与记忆不受影响。": "提示词增强配置无法读取，已保持关闭。原有人设与记忆不受影响。",
+  "提示词增强服务正在退出。": "提示词增强服务正在退出。",
+  "增强设置已被其他页面更新，草稿仍保留。请重新读取后合并。": "增强设置已被其他页面更新，草稿仍保留。请重新读取后合并。",
+  "提示词增强操作不存在。": "提示词增强操作不存在。",
+  "模式适配与诊断": "模式适配与诊断",
+  "已关闭": "已关闭",
+  "待验证": "待验证",
+  "已适配": "已适配",
+  "需要检查": "需要检查",
+  "预览模式": "预览模式",
+  "此模式需要检查：{p0}": "此模式需要检查：{p0}",
+  "完整预览优先显示此模式最近一次真实组装；没有记录时读取独立模式，不调用模型。": "完整预览优先显示此模式最近一次真实组装；没有记录时读取独立模式，不调用模型。",
+  "模式检查完成，未修改开关或人设。": "模式检查完成，未修改开关或人设。",
+  "重新检查模式": "重新检查模式",
+  "预览完整系统提示词": "预览完整系统提示词",
+  "完整系统提示词预览": "完整系统提示词预览",
+  "完整预览暂不可用。": "完整预览暂不可用。",
+  "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。": "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。",
+  "{p0} · {p1} 行 · {p2} 字节": "{p0} · {p1} 行 · {p2} 字节",
+  "最近真实组装": "最近真实组装",
+  "独立模式预览": "独立模式预览",
+  "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。": "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。",
+  "请求必须是 JSON 对象。": "请求必须是 JSON 对象。",
+  "当前宿主没有此模式。": "当前宿主没有此模式。",
+  "当前宿主不支持模式预览。": "当前宿主不支持模式预览。",
+  "Minimal 原生人设段缺失，已保留原提示词。": "Minimal 原生人设段缺失，已保留原提示词。",
+  "不支持此预览模式。": "不支持此预览模式。",
+  "缺少可融合的人设段，已保留原提示词。": "缺少可融合的人设段，已保留原提示词。",
+  "完整提示词预览过大。": "完整提示词预览过大。",
+  "模式预览暂不可用，原提示词未修改。": "模式预览暂不可用，原提示词未修改。",
+  "常规": "常规",
+  "提示词": "提示词",
+  "诊断": "诊断",
+  "增强设置分类": "增强设置分类",
+  "先给结果，保留人设语气。": "先给结果，保留人设语气。",
+  "完整交付，明确未执行的部分。": "完整交付，明确未执行的部分。",
+  "保留名称、路径和参数。": "保留名称、路径和参数。",
+  "沿用增强，不改变人设继承。": "沿用增强，不改变人设继承。",
+  "保存设置不会自动开启增强。": "保存设置不会自动开启增强。",
+  "恢复默认": "恢复默认",
+  "重新读取": "重新读取",
+  "返回编辑": "返回编辑",
+  "预览": "预览",
+  "只读预览": "只读预览",
+  "{p0} / 16000 字符": "{p0} / 16000 字符",
+  "只编辑新增部分，{{…}} 保留原文。": "只编辑新增部分，{{…}} 保留原文。",
+  "结构检查通过": "结构检查通过",
+  "尚未检查": "尚未检查",
+  "选择预览模式，不切换会话。": "选择预览模式，不切换会话。",
+  "查看完整提示词": "查看完整提示词",
+  "检查模式，或查看完整提示词。": "检查模式，或查看完整提示词。",
+  "预览只读，可能包含人设和记忆。": "预览只读，可能包含人设和记忆。",
+  "关于适配": "关于适配",
+  "有未保存修改": "有未保存修改",
+  "人设、记忆和原生工具约束保持优先。": "人设、记忆和原生工具约束保持优先。"
 };
 const en={
   "人设编辑内容": "Persona editor sections",
@@ -415,7 +506,98 @@ const en={
   "规则范围无效。": "Invalid rule scope.",
   "不是有效的私人灵魂 v2/v3 存档。": "Not a valid Private Soul v2/v3 archive.",
   "工作区已不存在，请刷新。": "The workspace no longer exists; please refresh.",
-  "会话已不存在，请刷新。": "The conversation no longer exists; please refresh."
+  "会话已不存在，请刷新。": "The conversation no longer exists; please refresh.",
+  "关闭": "Close",
+  "保存设置": "Save settings",
+  "提示词增强": "Response enhancement",
+  "高级设置": "Advanced settings",
+  "提示词增强高级设置": "Response enhancement settings",
+  "默认关闭；启用后也不覆盖原有人设和个人记忆。": "Off by default. Original personas and personal memories retain priority.",
+  "增强开关已保存，下一次模型请求生效。": "Enhancement switch saved. Applies to the next model request.",
+  "增强设置已保存，开关状态保持不变。": "Enhancement settings saved. The switch is unchanged.",
+  "仅调整新增模块，人设、记忆与原生运行约束始终优先。": "Only changes the added module. Persona, memory and native runtime requirements retain priority.",
+  "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。": "Fixed protection: this editor does not override original personas, personal memories, PTC SDK, Plan or structured output requirements.",
+  "减少开场套话": "Concise introductions",
+  "尽量先给出所需结果，保留人设原有语气。": "Lead with the requested result while retaining the persona’s tone.",
+  "完整交付": "Complete deliverables",
+  "在允许范围内交付完整成果，不编造未执行的结果。": "Provide complete deliverables where permitted, without inventing results or claiming unperformed work.",
+  "保留用户命名": "Preserve user names",
+  "保留用户提供的名称与路径，继续遵守隐私及脱敏要求。": "Preserve supplied names and paths while respecting privacy and redaction requirements.",
+  "应用于子代理": "Apply to subagents",
+  "仅沿用此增强开关，不改变子代理的人设继承规则。": "Applies this enhancement only; subagent persona rules stay unchanged.",
+  "增强提示词（仅新增部分）": "Enhancement prompt (added section only)",
+  "{p0} / 16000 字符。{{…}} 保留原文；只有保存后才生效。": "{p0} / 16000 characters. {{…}} stays literal; changes apply only after saving.",
+  "恢复默认草稿": "Reset draft to defaults",
+  "重新读取增强设置": "Reload enhancement settings",
+  "预览新增提示词": "Preview added prompt",
+  "新增提示词预览": "Added prompt preview",
+  "已开启，将于下一次模型请求生效。": "Enabled. Applies to the next model request.",
+  "已应用；人设、记忆与原生工具约束保持优先。": "Applied. Persona, memory and native tool requirements retain priority.",
+  "已检测到独立增强模块，本模块未重复注入。": "A standalone enhancement module was detected; this module skipped injection.",
+  "已按高级设置跳过子代理。": "Skipped for a subagent according to advanced settings.",
+  "未设置增强效果或提示词，原提示词保持不变。": "No enhancement effects or prompt are set. The original prompt is unchanged.",
+  "当前提示词结构不受支持，已保留原有人设与记忆。": "The current prompt structure is unsupported. Original personas and memories are preserved.",
+  "增强模块暂不可用，已保留原有人设与记忆。": "Enhancement is unavailable. Original personas and memories are preserved.",
+  "提示词增强设置格式无效。": "Invalid enhancement settings format.",
+  "含有未知的提示词增强设置。": "Unknown enhancement setting.",
+  "提示词增强选项必须为开关值。": "Enhancement options must be boolean values.",
+  "增强提示词最多16000字符。": "The enhancement prompt is limited to 16000 characters.",
+  "提示词增强配置格式或版本不受支持。": "Unsupported enhancement configuration format or version.",
+  "提示词增强配置无法读取，已保持关闭。原有人设与记忆不受影响。": "Enhancement configuration could not be read and remains off. Original personas and memories are unaffected.",
+  "提示词增强服务正在退出。": "Enhancement service is shutting down.",
+  "增强设置已被其他页面更新，草稿仍保留。请重新读取后合并。": "Enhancement settings were updated elsewhere. Your draft is preserved; reload and merge the changes.",
+  "提示词增强操作不存在。": "Unknown enhancement action.",
+  "模式适配与诊断": "Mode adaptation and diagnostics",
+  "已关闭": "Off",
+  "待验证": "Pending validation",
+  "已适配": "Adapted",
+  "需要检查": "Needs review",
+  "预览模式": "Preview mode",
+  "此模式需要检查：{p0}": "This mode needs review: {p0}",
+  "完整预览优先显示此模式最近一次真实组装；没有记录时读取独立模式，不调用模型。": "Full preview uses the latest live assembly for this mode when available; otherwise it reads a standing preset without calling a model.",
+  "模式检查完成，未修改开关或人设。": "Mode checks completed. The switch and personas are unchanged.",
+  "重新检查模式": "Recheck modes",
+  "预览完整系统提示词": "Preview full system prompt",
+  "完整系统提示词预览": "Full system prompt preview",
+  "完整预览暂不可用。": "Full preview is currently unavailable.",
+  "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。": "The read-only full preview may include persona and personal memory. It does not enable enhancement or send a model request.",
+  "{p0} · {p1} 行 · {p2} 字节": "{p0} · {p1} lines · {p2} bytes",
+  "最近真实组装": "Latest live assembly",
+  "独立模式预览": "Standing preset preview",
+  "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。": "Adaptation base: dsh-unrestricted {p0}. The original unrestricted prompt is not included.",
+  "请求必须是 JSON 对象。": "The request must be a JSON object.",
+  "当前宿主没有此模式。": "This host does not provide this preset.",
+  "当前宿主不支持模式预览。": "This host does not support preset previews.",
+  "Minimal 原生人设段缺失，已保留原提示词。": "The native Minimal persona section is missing. The original prompt is preserved.",
+  "不支持此预览模式。": "This preview preset is unsupported.",
+  "缺少可融合的人设段，已保留原提示词。": "No persona section is available for fusion. The original prompt is preserved.",
+  "完整提示词预览过大。": "The full prompt preview is too large.",
+  "模式预览暂不可用，原提示词未修改。": "Preset preview is unavailable. The original prompt was not modified.",
+  "常规": "General",
+  "提示词": "Prompt",
+  "诊断": "Diagnostics",
+  "增强设置分类": "Enhancement settings",
+  "先给结果，保留人设语气。": "Lead with the result, keeping the persona’s voice.",
+  "完整交付，明确未执行的部分。": "Complete deliverables; distinguish work not yet done.",
+  "保留名称、路径和参数。": "Keep supplied names, paths and parameters.",
+  "沿用增强，不改变人设继承。": "Apply enhancement without changing persona inheritance.",
+  "保存设置不会自动开启增强。": "Saving settings does not enable enhancement.",
+  "恢复默认": "Reset defaults",
+  "重新读取": "Reload",
+  "返回编辑": "Back to editing",
+  "预览": "Preview",
+  "只读预览": "Read-only preview",
+  "{p0} / 16000 字符": "{p0} / 16000 characters",
+  "只编辑新增部分，{{…}} 保留原文。": "Edit only the added section. {{…}} stays literal.",
+  "结构检查通过": "Structure check passed",
+  "尚未检查": "Not checked yet",
+  "选择预览模式，不切换会话。": "Preview mode only; your conversation stays unchanged.",
+  "查看完整提示词": "View full prompt",
+  "检查模式，或查看完整提示词。": "Check a mode or view its full prompt.",
+  "预览只读，可能包含人设和记忆。": "Read-only preview; may include persona and memories.",
+  "关于适配": "About integration",
+  "有未保存修改": "Unsaved changes",
+  "人设、记忆和原生工具约束保持优先。": "Persona, memories and native tool requirements retain priority."
 };
 let nativeTranslate = null, nativeLocale = null;
 function tr(key, params) { return nativeTranslate ? nativeTranslate(key, params) : params ? key.replace(/\{(\w+)\}/g, (match, name) => name in params ? String(params[name]) : match) : key; }
@@ -504,6 +686,15 @@ function installLocale(ctx) {
 .soul-rule-panel,.soul-rule-target{display:flex;flex-direction:column;gap:12px;min-width:0}
 .soul-persona-trigger{max-width:min(100%,380px);min-width:0;gap:6px}
 .soul-chip-secondary{font-size:12px;color:inherit;opacity:.72;padding-left:6px;border-left:1px solid var(--dsw-alias-border-l2);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.soul-enhancement-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.soul-enhancement-label{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px}.soul-enhancement-label>button{flex:none}.soul-enhancement-hint{min-height:21px}
+.soul-enhancement-dialog{width:min(680px,calc(100vw - 24px));height:min(620px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);min-height:0;overflow:hidden}
+.soul-enhancement-content{display:flex;flex-direction:column;flex:1;gap:14px;min-width:0;min-height:0;overflow:hidden}.soul-enhancement-content>p{margin:0}.soul-enhancement-content>:has(>.soul-enhancement-panel){flex:1;min-height:0;gap:12px;overflow:hidden}
+.soul-enhancement-panel{display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;min-height:0;overflow:auto}.soul-enhancement-panel p{margin:0}
+.soul-enhancement-options{display:flex;flex-direction:column;gap:16px}.soul-enhancement-option{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px}.soul-enhancement-option>button{flex:none}.soul-enhancement-option>span{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+.soul-enhancement-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;flex-shrink:0;min-width:0}.soul-enhancement-tools{display:flex;gap:2px;flex-wrap:wrap}.soul-enhancement-toolbar label{font-size:13px}.soul-enhancement-meta{font-size:12px}
+.soul-enhancement-panel .soul-enhancement-editor{box-sizing:border-box;height:220px;min-height:150px;flex:1;min-width:0;resize:vertical}.soul-enhancement-diagnostics{display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;min-height:0}.soul-enhancement-empty{display:grid;place-items:center;flex:1;min-height:90px;text-align:center}.soul-enhancement-note{margin-top:auto!important}
+.soul-enhancement-footer{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px}.soul-enhancement-draft-state{flex:1;min-width:0;font-size:12px}
+
 @media(max-width:650px){.soul-persona-trigger{max-width:250px}.soul-chip-secondary{max-width:110px}.soul-card{padding:12px}}
 
 `;
@@ -574,6 +765,73 @@ function installLocale(ctx) {
           h('div',{className:'soul-mode-option'},h(MenuItemButton,{current:row.id===selected.id,onSelect:()=>{setOpen(false);onChange(row.id);}},row.label)))));
     }
 
+    function useEnhancement(){
+      const [view,setView]=React.useState(null),[error,setError]=React.useState('');
+      const current=React.useRef(null),alive=React.useRef(true);
+      const accept=value=>{if(alive.current&&(!current.current||value.revision>=current.current.revision)){current.current=value;setView(value);setError('');}};
+      const load=async()=>{try{const next=await request('/enhancement');accept(next);return next;}catch(cause){if(alive.current)setError(cause.message);return null;}};
+      React.useEffect(()=>{alive.current=true;load();const changed=()=>load(),timer=setInterval(()=>{if(!document.hidden)load();},3000);window.addEventListener('private-soul-enhancement-changed',changed);return()=>{alive.current=false;clearInterval(timer);window.removeEventListener('private-soul-enhancement-changed',changed);};},[]);
+      return {view,error,current,alive,accept,load};
+    }
+
+    function EnhancementControls(){
+      const state=useEnhancement(),view=state.view;
+      const [open,setOpen]=React.useState(false),[draft,setDraft]=React.useState(null),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[message,setMessage]=React.useState(''),[preview,setPreview]=React.useState(''),[preset,setPreset]=React.useState('standard'),[fullPreview,setFullPreview]=React.useState(null),[section,setSection]=React.useState('general');
+      const baseline=React.useRef({revision:0,settings:null}),openButton=React.useRef(null),editId=React.useId();
+      const dirty=!!draft&&JSON.stringify(draft)!==JSON.stringify(baseline.current.settings);
+      const close=()=>{if(!busy)setOpen(false);};
+      function adoptSettings(next){baseline.current={revision:next.revision,settings:structuredClone(next.settings)};setDraft(structuredClone(next.settings));setPreview('');setFullPreview(null);setError('');}
+      async function advanced(){const next=await state.load();if(!state.alive.current)return;if(next&&!dirty)adoptSettings(next);setOpen(true);}
+      function change(key,value){setDraft(previous=>({...previous,[key]:value}));setPreview('');setFullPreview(null);}
+      async function action(fn,success){if(busy)return;setBusy(true);setError('');try{await fn();if(state.alive.current&&success)setMessage(success);}catch(cause){if(state.alive.current)setError(cause.message);}finally{if(state.alive.current)setBusy(false);}}
+      async function write(action,data,revision){const next=await request('/enhancement',{action,data,expectedRevision:revision});state.accept(next);window.dispatchEvent(new Event('private-soul-enhancement-changed'));return next;}
+      const statuses={pending:tr("已开启，将于下一次模型请求生效。"),active:tr("已应用；人设、记忆与原生工具约束保持优先。"),'external-module':tr("已检测到独立增强模块，本模块未重复注入。"),'subagent-excluded':tr("已按高级设置跳过子代理。"),empty:tr("未设置增强效果或提示词，原提示词保持不变。"),unsupported:tr("当前提示词结构不受支持，已保留原有人设与记忆。"),unavailable:tr("增强模块暂不可用，已保留原有人设与记忆。")};
+      const options=[['directAnswer','减少开场套话','尽量先给出所需结果，保留人设原有语气。'],['completeArtifacts','完整交付','在允许范围内交付完整成果，不编造未执行的结果。'],['preserveNames','保留用户命名','保留用户提供的名称与路径，继续遵守隐私及脱敏要求。'],['includeSubagents','应用于子代理','仅沿用此增强开关，不改变子代理的人设继承规则。']];
+      const presetLabels={standard:'Standard',ptc:'PTC',cordis:'Cordis',minimal:'Minimal'};
+      const modeStates={off:tr("已关闭"),pending:tr("待验证"),active:tr("已适配"),failed:tr("需要检查")};
+      const selectedMode=view?.modes?.[preset];
+      const panelId=editId+'-settings-panel';
+      const sectionItems=[['general',tr("常规")],['prompt',tr("提示词")],['diagnostics',tr("诊断")]].map(([value,label])=>({value,label,id:editId+'-section-'+value,panelId}));
+      const shortHints={directAnswer:tr("先给结果，保留人设语气。"),completeArtifacts:tr("完整交付，明确未执行的部分。"),preserveNames:tr("保留名称、路径和参数。"),includeSubagents:tr("沿用增强，不改变人设继承。")};
+      const resetDraft=()=>{setDraft(structuredClone(view.defaults));setPreview('');setFullPreview(null);setError('');};      function renderPanel(){
+        if(section==='general')return h(React.Fragment,null,
+          h('div',{className:'soul-enhancement-options'},...options.map(([key,label,hint])=>h(Tooltip,{key,label:tr(hint),side:'bottom',portal:true,delayMs:500},
+            h('div',{className:'soul-enhancement-option'},h('span',null,h('span',null,tr(label)),h('small',{className:'soul-hint'},shortHints[key])),h(Switch,{label:tr(label),checked:!!draft[key],disabled:busy,onChange:value=>change(key,value)}))))),
+          h('p',{className:'soul-hint soul-enhancement-note'},tr("保存设置不会自动开启增强。")));
+        if(section==='prompt')return h(React.Fragment,null,
+          h('div',{className:'soul-enhancement-toolbar'},h('label',{htmlFor:editId},preview?tr("新增提示词预览"):tr("增强提示词（仅新增部分）")),
+            h('div',{className:'soul-enhancement-tools'},h(Tooltip,{label:tr("恢复默认草稿"),side:'bottom',portal:true},h(Button,{variant:'ghost',size:'sm',disabled:busy,'aria-label':tr("恢复默认草稿"),onClick:resetDraft},tr("恢复默认"))),
+              h(Tooltip,{label:tr("重新读取增强设置"),side:'bottom',portal:true},h(Button,{variant:'ghost',size:'sm',disabled:busy,'aria-label':tr("重新读取增强设置"),onClick:()=>action(async()=>{const next=await state.load();if(next)adoptSettings(next);})},tr("重新读取"))))),
+          h('textarea',{id:editId,className:'soul-input soul-text soul-enhancement-editor',value:preview||draft.prompt,readOnly:!!preview,maxLength:preview?undefined:view?.maxPromptLength??16000,disabled:busy,spellCheck:false,'aria-label':preview?tr("新增提示词预览"):tr("增强提示词（仅新增部分）"),onChange:event=>change('prompt',event.target.value)}),
+          h('div',{className:'soul-enhancement-toolbar soul-enhancement-meta'},h('span',{className:'soul-hint'},preview?tr("只读预览"):tr("{p0} / 16000 字符",{p0:draft.prompt.length.toLocaleString(localeId())})),
+            h(Button,{variant:'ghost',size:'sm',disabled:busy,'aria-label':preview?tr("返回编辑"):tr("预览新增提示词"),onClick:preview?()=>setPreview(''):()=>action(async()=>{const result=await request('/enhancement',{action:'preview',data:{settings:draft}});setPreview(result.preview||tr("未设置增强效果或提示词，原提示词保持不变。"));})},preview?tr("返回编辑"):tr("预览"))),
+          h('p',{className:'soul-hint'},tr("只编辑新增部分，{{…}} 保留原文。")));
+        return h(React.Fragment,null,
+          h(SegmentedTabs,{label:tr("预览模式"),size:'sm',value:preset,onChange:value=>{if(!busy){setPreset(value);setFullPreview(null);}},items:Object.entries(presetLabels).map(([value,label])=>({value,label,id:editId+'-mode-'+value,panelId:editId+'-mode-panel'}))}),
+          h('div',{id:editId+'-mode-panel',role:'tabpanel','aria-labelledby':editId+'-mode-'+preset,className:'soul-enhancement-diagnostics'},
+            h('div',{className:'soul-enhancement-toolbar','data-soul-mode-statuses':''},h('span',{className:'soul-hint',role:'status'},(modeStates[selectedMode?.state]??modeStates.pending)+' · '+(selectedMode?.checked&&!selectedMode.issues.length?tr("结构检查通过"):tr("尚未检查"))),
+              h(Button,{variant:'ghost',size:'sm',disabled:busy||!view?.available,onClick:()=>action(async()=>{await request('/enhancement',{action:'recheck'});await state.load();setFullPreview(null);},tr("模式检查完成，未修改开关或人设。"))},tr("重新检查模式"))),
+            selectedMode?.issues?.length?h('p',{className:'soul-error'},tr("此模式需要检查：{p0}",{p0:selectedMode.issues.join(', ')})):null,
+            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("选择预览模式，不切换会话。")),h(Button,{variant:'outline',size:'sm',disabled:busy||!view?.available,'aria-label':tr("预览完整系统提示词"),onClick:()=>action(async()=>{const result=await request('/enhancement',{action:'preview-mode',data:{presetId:preset,settings:draft,preferLive:!dirty}});if(!result.available)throw new Error(messageText(result.reason)||tr("完整预览暂不可用。"));setFullPreview(result);})},tr("查看完整提示词"))),
+            fullPreview?h(React.Fragment,null,
+              h('textarea',{className:'soul-input soul-text soul-enhancement-editor',readOnly:true,value:fullPreview.text,'aria-label':tr("完整系统提示词预览")}),
+              h(Tooltip,{label:tr("{p0} · {p1} 行 · {p2} 字节",{p0:fullPreview.source==='live'?tr("最近真实组装"):tr("独立模式预览"),p1:fullPreview.lines,p2:fullPreview.bytes}),side:'top',portal:true},h('span',{className:'soul-hint'},fullPreview.source==='live'?tr("最近真实组装"):tr("独立模式预览"))))
+              :h('div',{className:'soul-enhancement-empty soul-hint'},tr("检查模式，或查看完整提示词。")),
+            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("预览只读，可能包含人设和记忆。")),h(Tooltip,{label:tr("适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。",{p0:view?.upstream?.version??'0.2.8'}),side:'top',portal:true,maxWidth:320},h('span',{className:'soul-hint',tabIndex:0},tr("关于适配"))))));
+      }
+      return h(React.Fragment,null,
+        h('div',{className:'soul-enhancement-row','data-soul-enhancement-controls':''},h('span',{className:'soul-enhancement-label'},h(Switch,{label:tr("提示词增强"),checked:!!view?.enabled,disabled:busy||!view?.available,onChange:enabled=>action(()=>write('toggle',{enabled},state.current.current.revision),tr("增强开关已保存，下一次模型请求生效。"))}),h('span',null,tr("提示词增强"))),h(Button,{ref:openButton,variant:'ghost',size:'sm',disabled:busy||!view,'aria-label':tr("提示词增强高级设置"),onClick:advanced,icon:IconSettingsOutlineRegular?h(IconSettingsOutlineRegular,{size:16}):undefined},tr("高级设置"))),
+        h('p',{className:'soul-hint soul-enhancement-hint',role:'status'},messageText(view?.error||state.error)||(view?.enabled?statuses[view.status]??statuses.pending:tr("默认关闭；启用后也不覆盖原有人设和个人记忆。"))),
+        open&&draft?h(Modal,{open:true,title:tr("提示词增强高级设置"),closeLabel:tr("关闭"),onClose:close,className:'soul-enhancement-dialog',contentClassName:'soul-enhancement-content',footer:h('div',{className:'soul-enhancement-footer'},
+          h('span',{className:'soul-hint soul-enhancement-draft-state',role:'status'},dirty?tr("有未保存修改"):''),h(Button,{variant:'outline',onClick:close,disabled:busy},tr("关闭")),h(Button,{variant:'primary',disabled:busy||!view?.available||!dirty,onClick:()=>action(async()=>{const next=await write('save',{settings:draft},baseline.current.revision);adoptSettings(next);setOpen(false);},tr("增强设置已保存，开关状态保持不变。"))},tr("保存设置")))},
+          h(Tooltip,{label:tr("固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。"),side:'bottom',portal:true,maxWidth:380},h('p',{className:'soul-hint','data-soul-enhancement-protection':''},tr("人设、记忆和原生工具约束保持优先。"))),
+          h(SegmentedTabs,{label:tr("增强设置分类"),size:'sm',value:section,onChange:value=>{if(!busy)setSection(value);},items:sectionItems}),
+          h('div',{id:panelId,role:'tabpanel','aria-labelledby':editId+'-section-'+section,'data-soul-enhancement-panel':section,className:'soul-enhancement-panel'},renderPanel()),
+          error?h('p',{className:'soul-error',role:'alert'},messageText(error)):null):null,
+        !open&&error?h(Toast,{key:error,text:messageText(error),icon:h(IconWarningOutlineRegular,{size:16}),holdMs:6000,onDone:()=>setError('')}):null,
+        message?h(Toast,{key:message,text:messageText(message),tone:'success',onDone:()=>setMessage('')}):null);
+    }
+
     function SoulEditor(){
       const library=useLibrary(),view=library.view;
       const [selected,setSelected]=React.useState(null),[draft,setDraft]=React.useState({name:'',soul:''}),[tab,setTab]=React.useState('persona');
@@ -626,7 +884,7 @@ function installLocale(ctx) {
       return h('section',{className:'soul-page','aria-label':tr("私人灵魂人设与记忆管理")},
         h('div',{className:'soul-row'},h('h2',null,tr("私人灵魂")),h('span',{className:'soul-badge',role:'status'},view?.enabled?tr("已启用"):tr("未启用")),h('span',{className:'soul-hint'},tr("{p0} 个人设 · {p1} 条个人记忆", {p0: view?.personas.length??0, p1: total}))),
         h('p',{className:'soul-hint'},tr("每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。")),
-        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h(Switch,{checked:!!view?.enabled,disabled,label:tr("启用私人灵魂"),onChange:enabled=>run(()=>act('settings',{enabled}),tr("已更新总开关。"))}),h('span',null,tr("启用私人灵魂"))),h('div',{className:'soul-field'},h('span',null,tr("注入方式")),h(PromptModeSelect,{value:view?.mode??'priority',disabled,onChange:mode=>run(()=>act('settings',{mode}),tr("已更新注入方式。"))}))),
+        h('div',{className:'soul-card'},h('div',{className:'soul-row'},h(Switch,{checked:!!view?.enabled,disabled,label:tr("启用私人灵魂"),onChange:enabled=>run(()=>act('settings',{enabled}),tr("已更新总开关。"))}),h('span',null,tr("启用私人灵魂"))),h('div',{className:'soul-field'},h('span',null,tr("注入方式")),h(PromptModeSelect,{value:view?.mode??'priority',disabled,onChange:mode=>run(()=>act('settings',{mode}),tr("已更新注入方式。"))})),h(EnhancementControls)),
         h(RuleEditor,{library,disabled,onWrite:data=>run(()=>act('rule-set',data),tr("人设规则已保存，下一次请求生效。"))}),
         h('div',{className:'soul-actions'},button(tr("新建人设"),()=>{if(!dirty||window.confirm(tr("新建会替换未保存草稿，是否继续？"))){baseline.current={id:'new',name:'',soul:''};setSelected(null);setDraft({name:'',soul:''});setTab('persona');}},disabled),button(tr("导出全部"),()=>run(async()=>{download(tr("私人灵魂-{p0}.json", {p0: new Date().toISOString().slice(0,10)}),JSON.stringify(await request('/export'),null,2));},tr("整体存档已下载，包含所有人设、记忆和会话绑定。")),disabled||dirty),button(tr("导入全部"),()=>importInput.current.click(),disabled||dirty),h('input',{ref:importInput,type:'file',accept:'.json,application/json',onChange:importAll,hidden:true,'aria-label':tr("导入整体存档文件")})),
         importPreview?h('div',{className:'soul-card',role:'dialog','aria-label':tr("整体存档导入预览")},h('h3',null,tr("导入预览")),h('p',{className:'soul-hint'},tr("包含 {p0} 个人设、{p1} 条记忆。", {p0: importPreview.data.personas.length, p1: importPreview.data.personas.reduce((n,row)=>n+(row.memories?.length??0),0)})),h(NativeSelect,{label:tr("整体导入方式"),value:strategy,disabled:busy,options:[{id:'merge',label:tr("合并导入：保留现有，冲突项作为副本")},{id:'replace',label:tr("替换全部：恢复整个存档")}],onChange:setStrategy}),h('p',{className:'soul-hint'},tr("替换、删除和整理前服务器会自动备份。验证失败不会写入。")),h('div',{className:'soul-row'},button(tr("确认导入"),()=>run(async()=>{await act('import',{archive:importPreview,strategy});setImportPreview(null);choose(library.current.current.defaultPersonaId,true);},tr("整体存档已导入。")),busy,'primary'),button(tr("取消导入"),()=>setImportPreview(null),busy))):null,

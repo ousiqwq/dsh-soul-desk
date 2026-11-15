@@ -1,6 +1,7 @@
 import { SoulError } from './memory-policy.js';
 import { MAX_LIBRARY_BYTES } from './store.js';
 import { organizePreview } from './model-memory.js';
+import { renderEnhancementPrompt } from './prompt-enhancement.js';
 
 const BASE='/private-soul/v2';
 function send(response,status,value) {response.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});response.end(JSON.stringify(value));}
@@ -10,7 +11,7 @@ async function readBody(request,signal) {
   try{return JSON.parse(Buffer.concat(buffers).toString('utf8'));}catch{throw new SoulError('请求不是有效的 JSON。');}
 }
 
-export function registerSoulApi(ctx,store,runtime) {
+export function registerSoulApi(ctx,store,runtime,enhancement,enhancementRuntime) {
   const connection=ctx.connection;
   ctx.effect(()=>ctx.webServer.register({kind:'prefix',path:BASE,handler:async(request,response)=>{
     const rejection=connection.requestRejection(request);
@@ -21,6 +22,7 @@ export function registerSoulApi(ctx,store,runtime) {
     const signal=AbortSignal.any([controller.signal,AbortSignal.timeout(60000)]);
     try{
       const url=new URL(request.url,'http://local');const endpoint=url.pathname.slice(BASE.length);
+      if(request.method==='GET'&&endpoint==='/enhancement'&&enhancement){send(response,200,{...enhancement.view(),...enhancementRuntime?.status()});return;}
       if(request.method==='GET'&&endpoint==='/state'){
         const id=url.searchParams.get('sessionId'),compact=url.searchParams.get('compact')==='1';
         const view=store.view(id,compact,id?runtime?.descriptor(id):{});
@@ -31,6 +33,14 @@ export function registerSoulApi(ctx,store,runtime) {
       if(request.method!=='POST'){send(response,404,{error:'接口不存在。'});return;}
       if(!String(request.headers['content-type']).toLowerCase().startsWith('application/json'))throw new SoulError('请求必须使用 application/json。','content-type',415);
       const data=await readBody(request,signal);
+      if(!data||typeof data!=='object'||Array.isArray(data))throw new SoulError('请求必须是 JSON 对象。');
+      if(endpoint==='/enhancement'&&enhancement){
+        signal.throwIfAborted();
+        if(data.action==='preview'){send(response,200,{preview:renderEnhancementPrompt(data.data?.settings)});return;}
+        if(data.action==='preview-mode'&&enhancementRuntime){send(response,200,await enhancementRuntime.previewFor(data.data?.presetId,{settings:data.data?.settings,preferLive:data.data?.preferLive!==false}));return;}
+        if(data.action==='recheck'&&enhancementRuntime){send(response,200,await enhancementRuntime.recheck());return;}
+        send(response,200,{...await enhancement.action(data.action,data.data??{},data.expectedRevision),...enhancementRuntime?.status()});return;
+      }
       if(endpoint==='/organize-preview'){
         const agent=data.sessionId?ctx.get('agents')?.get(data.sessionId):undefined;
         send(response,200,await organizePreview(ctx,store,data.personaId,{agent,signal}));return;

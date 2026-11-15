@@ -1,5 +1,6 @@
 import { symbols } from '@deepseek-ai/cordis';
 import { MEMORY_INSTRUCTIONS, KIND_LABELS } from './memory-policy.js';
+import { applyEnhancement } from './prompt-enhancement.js';
 
 export const SECTION_NAME = 'private-soul:identity';
 export const MAX_TEXT_LENGTH = 262144;
@@ -60,7 +61,7 @@ export function applyPersona(assembly, config) {
  * This keeps scoped complete presets compatible and leaves tools and runtime
  * context under the native registry's control. Unloading restores the method.
  */
-export function attachPersonaPolicy(systemPrompt, getConfig) {
+export function attachPersonaPolicy(systemPrompt, getConfig, getEnhancement) {
   // Cordis service access creates a caller-local facade. The public original
   // symbol reaches the shared service so other agents also see this policy.
   const target = systemPrompt[symbols.original] ?? systemPrompt;
@@ -68,7 +69,26 @@ export function attachPersonaPolicy(systemPrompt, getConfig) {
   let active = true;
   const wrapped = async function (...args) {
     const assembly = await original.apply(this, args);
-    return active ? applyPersona(assembly, readConfig(await getConfig(args[0] ?? {}))) : assembly;
+    if (!active) return assembly;
+    if (getEnhancement?.bypassPersona?.()) return assembly;
+    const context = args[0] ?? {};
+    const personal = applyPersona(assembly, readConfig(await getConfig(context)));
+    if (!getEnhancement) return personal;
+    if (typeof getEnhancement.finalize === 'function') {
+      try { return await getEnhancement.finalize(personal, assembly, context); }
+      catch { getEnhancement.failed?.();return getEnhancement.fallback?.(personal)??personal; }
+    }
+    let enhancement;
+    try {
+      enhancement = await getEnhancement(context);
+      return applyEnhancement(personal, enhancement.config, {
+        ...enhancement.options,
+        nativeSections: assembly.sections,
+        structuredOutput: assembly.tools?.some(tool => tool.name === 'structured_output') ?? false,
+        externalActive: assembly.sections.some(section => section.name === 'unrestricted:execution-mode'
+          || section.name === 'deployment:persona-prefix' && section.text?.includes('## Unrestricted local execution mode')),
+      });
+    } catch { enhancement?.options?.report?.('unavailable'); return personal; }
   };
   target.assemble = wrapped;
   return () => {

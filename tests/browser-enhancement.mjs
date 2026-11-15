@@ -1,0 +1,108 @@
+import {reportDirectory} from './report-directory.mjs';
+import assert from 'node:assert/strict';
+import { readFile, writeFile } from 'node:fs/promises';
+const { chromium } = await import(process.env.DSH_TEST_PLAYWRIGHT);
+const base = 'http://127.0.0.1:14086', out = await reportDirectory('enhancement');
+const browser = await chromium.launch({ executablePath: process.env.DSH_TEST_CHROME, args: ['--no-sandbox'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1050 }, locale: 'zh-CN', colorScheme: 'dark' });
+const errors = [], report = {};
+page.on('pageerror', error => errors.push(error.message));
+const get = path => page.request.get(base + '/private-soul/v2/' + path).then(r => r.json());
+async function api(action, data) {
+  const current = await get('enhancement');
+  const response = await page.request.post(base + '/private-soul/v2/enhancement', { headers: { Origin: base }, data: { action, data, expectedRevision: current.revision } });
+  assert.equal(response.status(), 200); return response.json();
+}
+async function until(fn) { for (let i=0; i<100; i++) { const value=await fn(); if(value)return value; await new Promise(r=>setTimeout(r,80)); } throw Error('enhancement UI timeout'); }
+try {
+  await api('toggle', {enabled:false});
+  await api('save', {settings:(await get('enhancement')).defaults});
+  const startRevision=(await get('enhancement')).revision;
+  const before = await get('state');
+  assert.equal((await get('enhancement')).enabled, false);
+  await page.goto(base); await page.waitForTimeout(1000);
+  await page.getByRole('button', { name: /^(账号菜单|Account menu)$/ }).click();
+  await page.getByText(/^(设置|Settings)$/,{exact:true}).click();
+  if(await page.getByRole('button',{name:'General',exact:true}).count()){await page.getByRole('button',{name:'General',exact:true}).click();await page.getByRole('button',{name:'English',exact:true}).click();await page.getByRole('menuitem',{name:'中文',exact:true}).click();}
+  await page.getByRole('button', { name: '私人灵魂', exact: true }).click();
+  const controls = page.locator('[data-soul-enhancement-controls]');
+  await controls.waitFor();
+  const master = controls.getByRole('switch'), gear = controls.getByRole('button', { name: '提示词增强高级设置' });
+  assert.equal(await master.getAttribute('aria-checked'), 'false');
+  const persona = page.getByRole('textbox', { name: '人格 / SOUL.md', exact: true });
+  await persona.fill('未保存的原有人设草稿 {{literal}}');
+  await gear.click();
+  const dialog = page.getByRole('dialog', { name: '提示词增强高级设置', exact: true });
+  await dialog.waitFor();
+  assert.equal(await dialog.locator('[data-soul-enhancement-protection]').count(), 1);
+  assert.equal(await dialog.getByRole('switch').count(),4);
+  await dialog.getByRole('tab',{name:'提示词',exact:true}).click();
+  const prompt = dialog.getByRole('textbox', { name: '增强提示词（仅新增部分）', exact: true });
+  await prompt.fill('Only this enhancement draft. {{literal}}');
+  await dialog.getByRole('button', { name: '预览新增提示词', exact: true }).click();
+  await until(async () => await dialog.getByRole('textbox', { name: '新增提示词预览', exact: true }).count());
+  assert.match(await dialog.getByRole('textbox', { name: '新增提示词预览', exact: true }).inputValue(), /Only this enhancement draft\. \{\{literal\}\}/);
+  assert.equal((await get('enhancement')).revision, startRevision);
+  await dialog.getByRole('button',{name:'返回编辑',exact:true}).click();
+  await prompt.focus(); await page.keyboard.press('Escape');
+  await dialog.waitFor({ state: 'hidden' });
+  assert.equal(await persona.inputValue(), '未保存的原有人设草稿 {{literal}}');
+  assert.equal(await gear.evaluate(node => document.activeElement === node), true);
+  await gear.click(); await dialog.waitFor();
+  assert.equal(await prompt.inputValue(), 'Only this enhancement draft. {{literal}}');
+  await dialog.getByRole('button', { name: '保存设置', exact: true }).click();
+  await dialog.waitFor({ state: 'hidden' });
+  assert.equal((await get('enhancement')).enabled, false);
+  assert.equal((await get('enhancement')).settings.prompt, 'Only this enhancement draft. {{literal}}');
+  report.nativeModalPreviewDraftEscapeSaveWithoutEnabling = true;
+  await master.click(); await until(async () => (await get('enhancement')).enabled);
+  await gear.click(); await dialog.waitFor();
+  await prompt.fill('Keep local draft during a CAS conflict');
+  await api('save', { settings: { prompt: 'External saved setting' } });
+  await dialog.getByRole('button', { name: '保存设置', exact: true }).click();
+  await dialog.getByRole('alert').waitFor();
+  assert.equal(await prompt.inputValue(), 'Keep local draft during a CAS conflict');
+  assert.equal((await get('enhancement')).settings.prompt, 'External saved setting');
+  await dialog.getByRole('button', { name: '重新读取增强设置', exact: true }).click();
+  await until(async () => await prompt.inputValue() === 'External saved setting');
+  await dialog.getByRole('button', { name: '恢复默认草稿', exact: true }).click();
+  assert.notEqual(await prompt.inputValue(), 'External saved setting');
+  assert.equal((await get('enhancement')).settings.prompt, 'External saved setting');
+  await prompt.fill('a'.repeat(16010)); assert.equal((await prompt.inputValue()).length, 16000);
+  report.conflictResetDraftAndLimit = true;
+  await dialog.getByRole('button', { name: '重新读取增强设置', exact: true }).click();
+  await until(async () => await prompt.inputValue() === 'External saved setting');
+  await dialog.getByRole('button', { name: '关闭', exact: true }).last().click();
+  await dialog.waitFor({ state: 'hidden' });
+  const layouts=[];
+  for (const scheme of ['dark','light']) for (const width of [1440,390,320]) {
+    await page.emulateMedia({ colorScheme: scheme }); await page.setViewportSize({ width, height: 1050 });
+    await gear.click(); await dialog.waitFor(); await page.waitForTimeout(350);
+    assert.equal(await dialog.evaluate(node=>{const r=node.getBoundingClientRect();return node.contains(document.elementFromPoint(r.x+r.width/2,r.y+35));}),true);
+    const dimensions = await dialog.evaluate(node => { const r=node.getBoundingClientRect();return {x:r.x,right:r.right,width:r.width,scrollWidth:node.scrollWidth,clientWidth:node.clientWidth}; });
+    assert.ok(dimensions.x >= -1 && dimensions.right <= width+1, JSON.stringify(dimensions));
+    assert.ok(dimensions.scrollWidth <= dimensions.clientWidth+1, JSON.stringify(dimensions));
+    await page.screenshot({ path: out + '/advanced-' + scheme + '-' + width + '.png' });
+    await page.keyboard.press('Escape'); await dialog.waitFor({state:'hidden'});
+    const a=await master.boundingBox(),b=await gear.boundingBox();
+    assert.ok(Math.abs((a.y+a.height/2)-(b.y+b.height/2))<3);
+    layouts.push({scheme,viewport:width,...dimensions,frontmost:true});
+  }
+  report.nativeResponsiveLayouts=layouts;
+  assert.equal(await persona.inputValue(), '未保存的原有人设草稿 {{literal}}');
+  const after=await get('state');
+  for (const key of ['revision','personas','defaultPersonaId','sessions','workspaces','subagentDefault','enabled','mode']) assert.deepEqual(after[key],before[key],key);
+  report.originalLibraryAndUnsavedPersonaUnchanged=true;
+  await page.setViewportSize({width:1440,height:1050});
+  await page.getByRole('button',{name:'通用设置',exact:true}).click();await page.getByRole('button',{name:'中文',exact:true}).click();await page.getByRole('menuitem',{name:'English',exact:true}).click();
+  await page.getByRole('button',{name:'Private Soul',exact:true}).click();await page.getByRole('button',{name:'Response enhancement settings',exact:true}).click();
+  const english=page.getByRole('dialog',{name:'Response enhancement settings',exact:true});await english.waitFor();await page.waitForTimeout(350);
+  assert.equal(await english.getByRole('switch',{name:'Apply to subagents',exact:true}).count(),1);await english.getByRole('tab',{name:'Prompt',exact:true}).click();assert.equal(await english.getByRole('textbox',{name:'Enhancement prompt (added section only)',exact:true}).count(),1);
+  assert.ok(!(await english.innerText()).match(/[提示增强设置]/));await page.setViewportSize({width:320,height:700});await page.waitForTimeout(350);assert.ok(await english.evaluate(n=>{const r=n.getBoundingClientRect();return n.scrollWidth<=n.clientWidth+1&&r.y>=0&&r.bottom<=innerHeight;}));assert.ok(await english.getByRole('button',{name:'Save settings',exact:true}).isVisible());await english.getByRole('textbox',{name:'Enhancement prompt (added section only)',exact:true}).scrollIntoViewIfNeeded();assert.ok(await english.getByRole('button',{name:'Save settings',exact:true}).evaluate(n=>{const r=n.getBoundingClientRect();return r.y>=0&&r.bottom<=innerHeight;}));report.shortScreenScrollableWithVisibleFooter=true;await page.screenshot({path:out+'/advanced-english.png'});await page.keyboard.press('Escape');
+  const englishPage=page.locator('.soul-page');assert.ok(await englishPage.evaluate(n=>n.scrollWidth<=n.clientWidth+1));await page.setViewportSize({width:1440,height:1050});
+  await page.getByRole('button',{name:'General',exact:true}).click();await page.getByRole('button',{name:'English',exact:true}).click();await page.getByRole('menuitem',{name:'中文',exact:true}).click();
+  report.liveEnglishTranslation=true;
+  await api('save',{settings:(await get('enhancement')).defaults});await api('toggle',{enabled:false});
+  assert.deepEqual(errors,[]);report.pageErrors=errors;report.passed=true;
+} catch(error) { report.error=String(error);report.pageErrors=errors;await page.screenshot({path:out+'/advanced-failure.png'}).catch(()=>{});throw error; }
+finally { await writeFile(out+'/browser-enhancement.json',JSON.stringify(report,null,2));console.log(report);await browser.close(); }
