@@ -12,7 +12,7 @@ The interface uses DSH native i18n and follows language changes immediately. Chi
 
 Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
 
-The current version is **`0.5.0`**, pushed to GitHub and published to npm. This release bundles the upstream prompt text and keeps the default-off enhancement framework and three-tab advanced settings. Verified on DSH Web `0.2.2-rc.2`.
+The current version is **`0.5.1`**, pushed to GitHub and published to npm. It bundles the upstream prompt text and keeps the default-off enhancement framework and three-tab advanced settings. Compatible with DSH Web `0.2.2-rc.2`.
 
 Install **from the GitHub branch with npx** (Node.js 26; no global dsh or pnpm installation required):
 
@@ -67,13 +67,13 @@ Create and edit personas, choose a prompt mode, and select the default. Each con
 
 Screenshots show the current native DSH UI with isolated sample data; settings are expanded for readability.
 
-![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.5.0)
+![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.5.1)
 
 ### Personal memories
 
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
-![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.5.0)
+![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.5.1)
 
 ## Usage
 

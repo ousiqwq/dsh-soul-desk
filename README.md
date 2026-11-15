@@ -12,7 +12,7 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 兼容 DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2**，Node.js **26**。
 
-当前版本 **`0.5.0`**，已同步 GitHub 并发布到 npm。本版迁入上游提示词原文，保留默认关闭的增强框架和三页高级设置。验证宿主为 DSH Web `0.2.2-rc.2`。
+当前版本 **`0.5.1`**，已同步 GitHub 并发布到 npm。本版迁入上游提示词原文，保留默认关闭的增强框架和三页高级设置。兼容 DSH Web `0.2.2-rc.2`。
 
 通过 **npx 从 GitHub 分支安装**（Node.js 26，无需全局安装 dsh 或 pnpm）：
 
@@ -67,13 +67,13 @@ PTC 与标准模式都保留可用 Skill 目录、人设和记忆。Skill 完整
 
 截图使用当前 DSH 原生界面与隔离示例数据；设置区域为阅读方便展开显示。
 
-![人设管理：全局默认、注入方式与人格编辑](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png?v=0.5.0)
+![人设管理：全局默认、注入方式与人格编辑](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.png?v=0.5.1)
 
 ### 个人记忆
 
 按类别筛选和搜索记忆，手动补充内容，或先查看智能整理建议再应用。
 
-![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png?v=0.5.0)
+![个人记忆：筛选、编辑与整理](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.png?v=0.5.1)
 
 ## 使用
 
