@@ -26,7 +26,7 @@ npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugi
 npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@latest
 ```
 
-在运行 DSH 的主机上，用原实例相同的账户和 `DSH_HOME` 执行。命令固定本轮验证的官方 DSH CLI；`web` 是目标 profile。已安装 DSH CLI 时，也可直接从 GitHub 分支安装：
+在运行 DSH 的主机上，用原实例相同的账户和 `DSH_HOME` 执行。命令固定兼容的官方 DSH CLI；`web` 是目标 profile。已安装 DSH CLI 时，也可直接从 GitHub 分支安装：
 
 ```bash
 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
@@ -36,7 +36,7 @@ dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
 
 ## Agent 预设兼容性
 
-本轮在 DeepSeek Harness **0.2.2-rc.2** 的原生 Web 服务中，使用真实会话、工具执行器和文件接口逐项验证：
+兼容 DeepSeek Harness **0.2.2-rc.2** 的四种预设：
 
 | 预设 | Capability Desk | Soul Desk | File Bridge |
 | --- | --- | --- | --- |
@@ -45,11 +45,11 @@ dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
 | 极简 `minimal` | 规则仍有效；不会额外添加 Skill 加载、编辑或子代理工具 | 人设与记忆有效，保留预设原有工具边界 | 同样有效 |
 | 创造 `cordis` | Skill/MCP 规则有效，不移除原生创造工具 | 三种注入方式、记忆与子代理规则有效 | 同样有效 |
 
-PTC 与标准模式都保留可用 Skill 目录、人设和记忆。Skill 完整说明仍在加载后进入上下文；PTC 通过 `run_code` 调用 SDK，标准模式直接调用工具。已实测两种模式与“优先／替换／追加”的六种组合，启用项可加载，禁用项不可强行调用。
+PTC 与标准模式都保留可用 Skill 目录、人设和记忆。Skill 完整说明在加载后进入上下文；PTC 通过 `run_code` 调用 SDK，标准模式直接调用工具。两种模式与“优先／替换／追加”的六种组合行为一致：启用项可加载，禁用项不可强行调用。
 
-极简模式没有原生 Skill 加载器或子代理，启用某项 Skill 不会为该预设补装这些工具。全局插件仍可提供自己的记忆或 MCP 工具。子代理策略以 Soul 的设置为准，默认不使用人设；复用派出者需明确配置。Soul 的“替换”模式替换预设提示词正文，但保留执行器协议/SDK、工具 schema 和原生运行上下文；希望保留原有任务说明时使用“优先”或“追加”。自定义预设若隔离或替换底层注册表、外部 ACP 后端，不在本次统一保证范围。
+极简模式没有原生 Skill 加载器或子代理，启用某项 Skill 不会为该预设补装这些工具。全局插件仍可提供自己的记忆或 MCP 工具。子代理策略以 Soul 的设置为准，默认不使用人设；复用派出者需明确配置。Soul 的“替换”模式替换预设提示词正文，但保留执行器协议/SDK、工具 schema 和原生运行上下文；希望保留原有任务说明时使用“优先”或“追加”。自定义预设若隔离或替换底层注册表、或使用外部 ACP 后端，不在统一保证范围内。
 
-详见 [四模式验收](docs/AGENT-PRESET-COMPATIBILITY.md)。
+详见 [预设兼容性](docs/AGENT-PRESET-COMPATIBILITY.md)。
 
 ## 功能
 
@@ -92,7 +92,7 @@ PTC 与标准模式都保留可用 Skill 目录、人设和记忆。Skill 完整
 
 原生子代理创建时保存派生决定；父会话之后切换不会改写已有子代理。子代理也能单独选择人设。未配置的人设、空内容或已删除的人设停止注入，不会偷偷改用另一人设。Team Desk 的外层独立成员仍按普通会话规则处理。
 
-默认关闭的子代理不新增 Soul 人设、私人记忆或记忆指令，记忆工具也拒绝访问。**原生 fork 会复制父会话的历史**，关闭后续注入不会清除历史中已有的私人信息；需要不带父历史时请用 fresh spawn。外部 ACP 后端的人设控制未验证。
+默认关闭的子代理不新增 Soul 人设、私人记忆或记忆指令，记忆工具也拒绝访问。**原生 fork 会复制父会话的历史**，关闭后续注入不会清除历史中已有的私人信息；需要不带父历史时请用 fresh spawn。外部 ACP 后端不受人设控制覆盖。
 
 | 注入方式 | 行为 |
 | --- | --- |
@@ -110,11 +110,9 @@ Team Desk 0.14.0 可在团队预设中为每个成员及未来子代理指定人
 
 在私人灵魂设置中提供**默认关闭的全局开关**，右侧的**高级设置**使用 DSH 原生窗口。增强开关独立于原有的人设总开关；开启或关闭从下一次模型请求生效，不修改历史消息。
 
-`0.5.0-local.2`（已被 `0.5.0` 取代）迁入原项目的结构融合、Minimal 作用域覆盖及清理、各模式诊断、最近真实组装／独立模式的完整提示词预览。高级设置可检查 Standard、PTC、Cordis、Minimal，并重新检查适配；预览不调用模型，也不启用开关。完整预览可能包含人设和个人记忆，按当前 DSH 的登录与来源校验保护。
+高级设置分为 **常规／提示词／诊断** 三页：常规页显示常用开关；提示词页编辑和预览新增内容；诊断页检查 Standard、PTC、Cordis、Minimal 四种模式并查看完整提示词。窗口与保存区固定，草稿在切页和重开时保留。完整预览可能包含人设和个人记忆，按当前 DSH 的登录与来源校验保护；预览不调用模型，也不启用开关。
 
-`0.5.0-local.3`（已被 `0.5.0` 取代）将高级窗口整理为 **常规／提示词／诊断** 三页。常规页只显示常用开关；提示词页编辑和预览新增内容；诊断页检查模式并查看完整提示词。窗口与保存区保持固定，草稿在切页和重开时保留。
-
-`0.5.0` 迁入原项目的提示词原文：执行模式正文 10246 字符，人设指针与 Plan／PTC／结构化输出追加文本均按字节保留，不改编、不翻译、不重排；默认设置下注入的正文与上游完全一致。原文与四个结构锚点集中在 `upstream-prompt.js`，每条附 `sha256`，并与随包内置的上游 `src/rules.js` 原文比对。
+注入的正文取自上游 `dsh-unrestricted`：执行模式正文 10246 字符，人设指针与 Plan／PTC／结构化输出追加文本均按字节保留，不改编、不翻译、不重排。默认设置下注入的正文与上游完全一致。原文与四个结构锚点集中在 `upstream-prompt.js`，每条附 `sha256`，并与随包内置的上游 `src/rules.js` 原文比对。
 
 ![默认关闭的增强框架：常规设置](docs/images/enhancement-general.png)
 
@@ -153,7 +151,7 @@ npm test
 npm pack --ignore-scripts
 ```
 
-开发命令见 [TESTING.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/docs/TESTING.md)。
+测试说明见 [TESTING.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/docs/TESTING.md)。
 
 ## 许可证
 

@@ -26,7 +26,7 @@ Or install the **same version from npm**:
 npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@latest
 ```
 
-Run this on the DSH host with the same account and `DSH_HOME` as your existing instance. The command pins the verified official CLI; `web` is the target profile. With the DSH CLI already installed, install from the GitHub branch:
+Run this on the DSH host with the same account and `DSH_HOME` as your existing instance. The command pins a compatible official CLI; `web` is the target profile. With the DSH CLI already installed, install from the GitHub branch:
 
 ```bash
 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
@@ -36,7 +36,7 @@ Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and op
 
 ## Agent preset compatibility
 
-Verified against the native DeepSeek Harness **0.2.2-rc.2** Web service using real sessions, executors and file APIs:
+Compatible with the four presets of DeepSeek Harness **0.2.2-rc.2**:
 
 | Preset | Capability Desk | Soul Desk | File Bridge |
 | --- | --- | --- | --- |
@@ -45,11 +45,11 @@ Verified against the native DeepSeek Harness **0.2.2-rc.2** Web service using re
 | Minimal `minimal` | Rules work without adding a Skill loader, editor or subagent tools | Persona and memory support preserves the preset's existing tool boundary | Works |
 | Creation `cordis` | Skill/MCP rules preserve native creation tools | All three injection modes, memories and child policies work | Works |
 
-PTC and Standard both receive the available Skill catalog, persona and memories. Full Skill instructions enter context when loaded. PTC invokes tools through the `run_code` SDK; Standard invokes them directly. All six combinations with Priority, Complete and Append were tested: enabled Skills load, while disabled ones cannot be forced.
+PTC and Standard both receive the available Skill catalog, persona and memories. Full Skill instructions enter context when loaded. PTC invokes tools through the `run_code` SDK; Standard invokes them directly. The six combinations with Priority, Complete and Append behave consistently: enabled Skills load, while disabled ones cannot be forced.
 
-Minimal does not ship a Skill loader or subagents; enabling a Skill does not install those tools into that preset. Global plugins can still contribute their own memory or MCP tools. Soul child policies default to no persona; parent reuse is explicit. Soul's Complete mode replaces the preset's prompt body while preserving executor protocol/SDK sections, tool schemas and native runtime context. Use Priority or Append to keep the original task instructions. Custom presets that isolate or replace underlying registries, and external ACP backends, need separate verification.
+Minimal does not ship a Skill loader or subagents; enabling a Skill does not install those tools into that preset. Global plugins can still contribute their own memory or MCP tools. Soul child policies default to no persona; parent reuse is explicit. Soul's Complete mode replaces the preset's prompt body while preserving executor protocol/SDK sections, tool schemas and native runtime context. Use Priority or Append to keep the original task instructions. Custom presets that isolate or replace underlying registries, and external ACP backends, are outside the supported range.
 
-See [four-preset acceptance](docs/AGENT-PRESET-COMPATIBILITY.md).
+See [preset compatibility](docs/AGENT-PRESET-COMPATIBILITY.md).
 
 ## Features
 
@@ -92,7 +92,7 @@ Use **Persona rules** to configure global and workspace defaults. Edit conversat
 
 Native subagents capture their selection when created. Later changes to the parent do not rewrite existing children; each child can also choose independently. Missing, deleted, or empty personas stop injection rather than silently selecting another. Independent outer Team Desk members use ordinary conversation rules.
 
-Disabled children receive no new Soul persona, private memories, or memory instructions, and memory tools refuse access. **Native fork copies parent history**: disabling subsequent injection does not erase private information already in that history. Use fresh spawn when parent history must not be copied. Persona control for external ACP backends is unverified.
+Disabled children receive no new Soul persona, private memories, or memory instructions, and memory tools refuse access. **Native fork copies parent history**: disabling subsequent injection does not erase private information already in that history. Use fresh spawn when parent history must not be copied. External ACP backends are not covered by persona control.
 
 | Prompt mode | Behavior |
 | --- | --- |
@@ -110,11 +110,9 @@ Team Desk 0.14.0 can select a persona for each preset member and its future suba
 
 Soul settings include a **global switch, off by default**, with **Advanced settings** on the right using a native DSH modal. This switch is independent of the persona master switch. Changes apply to the next model request and do not rewrite message history.
 
-`0.5.0-local.2` (superseded by `0.5.0`) integrates upstream structural fusion, Minimal scope shadows and cleanup, per-preset diagnostics, and full live/standing system-prompt previews. Advanced settings can inspect Standard, PTC, Cordis and Minimal or recheck adaptation. Previewing does not call a model or enable the switch. Full previews may contain persona and personal memory and use the current DSH authentication and origin checks.
+Advanced settings are organized into **General / Prompt / Diagnostics**. General shows common switches; Prompt edits and previews the added section; Diagnostics checks Standard, PTC, Cordis and Minimal and displays full prompts. Window dimensions and save controls stay fixed, and drafts survive tab changes and reopening. Full previews may contain persona and personal memory and use the current DSH authentication and origin checks; previewing does not call a model or enable the switch.
 
-`0.5.0-local.3` (superseded by `0.5.0`) organizes advanced settings into **General / Prompt / Diagnostics**. General shows common switches; Prompt edits and previews the added section; Diagnostics checks presets and displays full prompts. Window dimensions and save controls stay fixed, and drafts survive tab changes and reopening.
-
-`0.5.0` bundles the upstream prompt text: the 10246-character execution-mode block plus the persona pointer and the Plan, PTC and structured-output notes, all byte-for-byte, untranslated and unrewrapped. Under default settings the injected body equals the upstream block exactly. The text and the four structural anchors live in `upstream-prompt.js` with per-string `sha256` values, checked against the vendored upstream `src/rules.js`.
+The injected text comes from upstream `dsh-unrestricted`: the 10246-character execution-mode block plus the persona pointer and the Plan, PTC and structured-output notes, all byte-for-byte, untranslated and unrewrapped. Under default settings the injected body equals the upstream block exactly. The text and the four structural anchors live in `upstream-prompt.js` with per-string `sha256` values, checked against the vendored upstream `src/rules.js`.
 
 ![Default-off enhancement framework: General settings](docs/images/enhancement-general.en.png)
 
