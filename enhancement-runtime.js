@@ -8,7 +8,7 @@ import {AsyncLocalStorage}from'node:async_hooks';
 import {renderPrompt}from'@deepseek-ai/dsh-system-prompt';
 import {SoulError}from'./memory-policy.js';
 import {ENHANCEMENT_SECTION,validateEnhancementSettings,renderEnhancementPrompt}from'./prompt-enhancement.js';
-import {UPSTREAM,PRESETS,PROTECTED_NAMES,SHADOW_VARIABLE,SHADOW_SUFFIX,POINTER,PLAN_NOTE,PTC_NOTE,STRUCTURED_NOTE,fuseSections,renderPreview,hasExternalEnhancement}from'./enhancement-fusion.js';
+import {UPSTREAM,PRESETS,PROTECTED_NAMES,SOUL_IDENTITY,SHADOW_VARIABLE,SHADOW_SUFFIX,POINTER,PLAN_NOTE,PTC_NOTE,STRUCTURED_NOTE,fuseSections,renderPreview,hasExternalEnhancement}from'./enhancement-fusion.js';
 
 export function createEnhancementRuntime(ctx,store,personaRuntime){
  const rootScope={},local=new AsyncLocalStorage(),raw=new WeakMap(),modes=new Map(),shadows=new Map(),customMinimal=new WeakSet(),live=new Map(),pendingShadows=new Map();
@@ -127,8 +127,15 @@ export function createEnhancementRuntime(ctx,store,personaRuntime){
   if(fused.issues){state(presetId,fused.issues,'complete-guard');if(!local.getStore()?.preview)store.report('unsupported');return assembly;}
   assembly=sections===assembly.sections&&fused.sections===sections?assembly:{...assembly,sections:fused.sections};
   // Personal instructions are owned exclusively by applyPersona, including
-  // literal template text and memory JSON. Fusion must preserve those rows.
-  for(const row of personal.sections.filter(s=>PROTECTED_NAMES.has(s.name)))if(!assembly.sections.includes(row))throw new Error('protected Soul section changed');
+  // literal template text and memory JSON. Fusion may append the upstream
+  // pointer to the persona row it anchors on, but must never change the
+  // persona's own text. Every other protected row stays object-identical.
+  for(const row of personal.sections.filter(s=>PROTECTED_NAMES.has(s.name))){
+   const kept=assembly.sections.find(s=>s.name===row.name);
+   if(!kept)throw new Error('protected Soul section changed');
+   if(kept===row)continue;
+   if(row.name!==SOUL_IDENTITY||kept.text!==row.text+POINTER&&kept.text!==row.text)throw new Error('protected Soul section changed');
+  }
   const path=shadows.has(agent)?'minimal-scope-shadow':presetId==='minimal'?'complete-guard':info?'waterfall':'post-assembly-guard';
   state(presetId,[],path);
   if(!local.getStore()?.preview){store.report(fused.status??'active');if(!isSubagent){try{const text=renderPreview(assembly,renderPrompt);if(Buffer.byteLength(text,'utf8')<=2*1024*1024)live.set(presetId,{revision:current.revision,text,sessionId:String(agent?.session?.id??'')});}catch{live.delete(presetId);}}}

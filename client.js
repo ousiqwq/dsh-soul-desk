@@ -218,8 +218,8 @@ const zh={
   "默认关闭；启用后也不覆盖原有人设和个人记忆。": "默认关闭；启用后也不覆盖原有人设和个人记忆。",
   "增强开关已保存，下一次模型请求生效。": "增强开关已保存，下一次模型请求生效。",
   "增强设置已保存，开关状态保持不变。": "增强设置已保存，开关状态保持不变。",
-  "仅调整新增模块，人设、记忆与原生运行约束始终优先。": "仅调整新增模块，人设、记忆与原生运行约束始终优先。",
-  "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。": "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。",
+  "仅调整新增模块；人设与记忆段落保持原文，原生运行规则由宿主决定。": "仅调整新增模块；人设与记忆段落保持原文，原生运行规则由宿主决定。",
+  "固定保护：此编辑器不改写原有人设和个人记忆段落，也不改变工具目录与运行规则。": "固定保护：此编辑器不改写原有人设和个人记忆段落，也不改变工具目录与运行规则。",
   "减少开场套话": "减少开场套话",
   "尽量先给出所需结果，保留人设原有语气。": "尽量先给出所需结果，保留人设原有语气。",
   "完整交付": "完整交付",
@@ -235,7 +235,7 @@ const zh={
   "预览新增提示词": "预览新增提示词",
   "新增提示词预览": "新增提示词预览",
   "已开启，将于下一次模型请求生效。": "已开启，将于下一次模型请求生效。",
-  "已应用；人设、记忆与原生工具约束保持优先。": "已应用；人设、记忆与原生工具约束保持优先。",
+  "已应用；人设与记忆段落保持原文，原生运行规则未改动。": "已应用；人设与记忆段落保持原文，原生运行规则未改动。",
   "已检测到独立增强模块，本模块未重复注入。": "已检测到独立增强模块，本模块未重复注入。",
   "已按高级设置跳过子代理。": "已按高级设置跳过子代理。",
   "未设置增强效果或提示词，原提示词保持不变。": "未设置增强效果或提示词，原提示词保持不变。",
@@ -300,7 +300,7 @@ const zh={
   "预览只读，可能包含人设和记忆。": "预览只读，可能包含人设和记忆。",
   "关于适配": "关于适配",
   "有未保存修改": "有未保存修改",
-  "人设、记忆和原生工具约束保持优先。": "人设、记忆和原生工具约束保持优先。"
+  "人设与记忆段落保持原文。": "人设与记忆段落保持原文。"
 };
 const en={
   "人设编辑内容": "Persona editor sections",
@@ -515,8 +515,8 @@ const en={
   "默认关闭；启用后也不覆盖原有人设和个人记忆。": "Off by default. Original personas and personal memories retain priority.",
   "增强开关已保存，下一次模型请求生效。": "Enhancement switch saved. Applies to the next model request.",
   "增强设置已保存，开关状态保持不变。": "Enhancement settings saved. The switch is unchanged.",
-  "仅调整新增模块，人设、记忆与原生运行约束始终优先。": "Only changes the added module. Persona, memory and native runtime requirements retain priority.",
-  "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。": "Fixed protection: this editor does not override original personas, personal memories, PTC SDK, Plan or structured output requirements.",
+  "仅调整新增模块；人设与记忆段落保持原文，原生运行规则由宿主决定。": "Only changes the added module. Persona and memory sections keep their original text; native operating rules stay under host control.",
+  "固定保护：此编辑器不改写原有人设和个人记忆段落，也不改变工具目录与运行规则。": "Fixed protection: this editor rewrites no persona or personal-memory section and changes no tool catalog or operating rule.",
   "减少开场套话": "Concise introductions",
   "尽量先给出所需结果，保留人设原有语气。": "Lead with the requested result while retaining the persona’s tone.",
   "完整交付": "Complete deliverables",
@@ -532,7 +532,7 @@ const en={
   "预览新增提示词": "Preview added prompt",
   "新增提示词预览": "Added prompt preview",
   "已开启，将于下一次模型请求生效。": "Enabled. Applies to the next model request.",
-  "已应用；人设、记忆与原生工具约束保持优先。": "Applied. Persona, memory and native tool requirements retain priority.",
+  "已应用；人设与记忆段落保持原文，原生运行规则未改动。": "Applied. Persona and memory sections keep their original text; native operating rules are unchanged.",
   "已检测到独立增强模块，本模块未重复注入。": "A standalone enhancement module was detected; this module skipped injection.",
   "已按高级设置跳过子代理。": "Skipped for a subagent according to advanced settings.",
   "未设置增强效果或提示词，原提示词保持不变。": "No enhancement effects or prompt are set. The original prompt is unchanged.",
@@ -597,7 +597,7 @@ const en={
   "预览只读，可能包含人设和记忆。": "Read-only preview; may include persona and memories.",
   "关于适配": "About integration",
   "有未保存修改": "Unsaved changes",
-  "人设、记忆和原生工具约束保持优先。": "Persona, memories and native tool requirements retain priority."
+  "人设与记忆段落保持原文。": "Persona and memory sections keep their original text."
 };
 let nativeTranslate = null, nativeLocale = null;
 function tr(key, params) { return nativeTranslate ? nativeTranslate(key, params) : params ? key.replace(/\{(\w+)\}/g, (match, name) => name in params ? String(params[name]) : match) : key; }
@@ -785,7 +785,7 @@ function installLocale(ctx) {
       function change(key,value){setDraft(previous=>({...previous,[key]:value}));setPreview('');setFullPreview(null);}
       async function action(fn,success){if(busy)return;setBusy(true);setError('');try{await fn();if(state.alive.current&&success)setMessage(success);}catch(cause){if(state.alive.current)setError(cause.message);}finally{if(state.alive.current)setBusy(false);}}
       async function write(action,data,revision){const next=await request('/enhancement',{action,data,expectedRevision:revision});state.accept(next);window.dispatchEvent(new Event('private-soul-enhancement-changed'));return next;}
-      const statuses={pending:tr("已开启，将于下一次模型请求生效。"),active:tr("已应用；人设、记忆与原生工具约束保持优先。"),'external-module':tr("已检测到独立增强模块，本模块未重复注入。"),'subagent-excluded':tr("已按高级设置跳过子代理。"),empty:tr("未设置增强效果或提示词，原提示词保持不变。"),unsupported:tr("当前提示词结构不受支持，已保留原有人设与记忆。"),unavailable:tr("增强模块暂不可用，已保留原有人设与记忆。")};
+      const statuses={pending:tr("已开启，将于下一次模型请求生效。"),active:tr("已应用；人设与记忆段落保持原文，原生运行规则未改动。"),'external-module':tr("已检测到独立增强模块，本模块未重复注入。"),'subagent-excluded':tr("已按高级设置跳过子代理。"),empty:tr("未设置增强效果或提示词，原提示词保持不变。"),unsupported:tr("当前提示词结构不受支持，已保留原有人设与记忆。"),unavailable:tr("增强模块暂不可用，已保留原有人设与记忆。")};
       const options=[['directAnswer','减少开场套话','尽量先给出所需结果，保留人设原有语气。'],['completeArtifacts','完整交付','在允许范围内交付完整成果，不编造未执行的结果。'],['preserveNames','保留用户命名','保留用户提供的名称与路径，继续遵守隐私及脱敏要求。'],['includeSubagents','应用于子代理','仅沿用此增强开关，不改变子代理的人设继承规则。']];
       const presetLabels={standard:'Standard',ptc:'PTC',cordis:'Cordis',minimal:'Minimal'};
       const modeStates={off:tr("已关闭"),pending:tr("待验证"),active:tr("已适配"),failed:tr("需要检查")};
@@ -824,7 +824,7 @@ function installLocale(ctx) {
         h('p',{className:'soul-hint soul-enhancement-hint',role:'status'},messageText(view?.error||state.error)||(view?.enabled?statuses[view.status]??statuses.pending:tr("默认关闭；启用后也不覆盖原有人设和个人记忆。"))),
         open&&draft?h(Modal,{open:true,title:tr("提示词增强高级设置"),closeLabel:tr("关闭"),onClose:close,className:'soul-enhancement-dialog',contentClassName:'soul-enhancement-content',footer:h('div',{className:'soul-enhancement-footer'},
           h('span',{className:'soul-hint soul-enhancement-draft-state',role:'status'},dirty?tr("有未保存修改"):''),h(Button,{variant:'outline',onClick:close,disabled:busy},tr("关闭")),h(Button,{variant:'primary',disabled:busy||!view?.available||!dirty,onClick:()=>action(async()=>{const next=await write('save',{settings:draft},baseline.current.revision);adoptSettings(next);setOpen(false);},tr("增强设置已保存，开关状态保持不变。"))},tr("保存设置")))},
-          h(Tooltip,{label:tr("固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。"),side:'bottom',portal:true,maxWidth:380},h('p',{className:'soul-hint','data-soul-enhancement-protection':''},tr("人设、记忆和原生工具约束保持优先。"))),
+          h(Tooltip,{label:tr("固定保护：此编辑器不改写原有人设和个人记忆段落，也不改变工具目录与运行规则。"),side:'bottom',portal:true,maxWidth:380},h('p',{className:'soul-hint','data-soul-enhancement-protection':''},tr("人设与记忆段落保持原文。"))),
           h(SegmentedTabs,{label:tr("增强设置分类"),size:'sm',value:section,onChange:value=>{if(!busy)setSection(value);},items:sectionItems}),
           h('div',{id:panelId,role:'tabpanel','aria-labelledby':editId+'-section-'+section,'data-soul-enhancement-panel':section,className:'soul-enhancement-panel'},renderPanel()),
           error?h('p',{className:'soul-error',role:'alert'},messageText(error)):null):null,

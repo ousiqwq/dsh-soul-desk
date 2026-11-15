@@ -84,9 +84,7 @@ export function attachPersonaPolicy(systemPrompt, getConfig, getEnhancement) {
       return applyEnhancement(personal, enhancement.config, {
         ...enhancement.options,
         nativeSections: assembly.sections,
-        structuredOutput: assembly.tools?.some(tool => tool.name === 'structured_output') ?? false,
-        externalActive: assembly.sections.some(section => section.name === 'unrestricted:execution-mode'
-          || section.name === 'deployment:persona-prefix' && section.text?.includes('## Unrestricted local execution mode')),
+        externalActive: assembly.sections.some(section => section.name === 'unrestricted:execution-mode'),
       });
     } catch { enhancement?.options?.report?.('unavailable'); return personal; }
   };

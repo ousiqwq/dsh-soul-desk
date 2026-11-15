@@ -12,3 +12,5 @@ import './team-bridge.test.mjs';
 import './enhancement.test.mjs';
 
 import './enhancement-fusion.test.mjs';
+
+import './upstream-prompt.test.mjs';

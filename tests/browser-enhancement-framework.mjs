@@ -14,7 +14,7 @@ try{
  const editor=dialog.getByRole('textbox',{name:'增强提示词（仅新增部分）',exact:true});await editor.fill('FULL_PREVIEW_LITERAL {{literal}}');await dialog.getByRole('tab',{name:'诊断',exact:true}).click();
  const rows=[];
  for(const [id,label]of[['standard','Standard'],['ptc','PTC'],['minimal','Minimal'],['cordis','Cordis']]){
-  await dialog.getByRole('tab',{name:label,exact:true}).click();await dialog.getByRole('button',{name:'预览完整系统提示词',exact:true}).click();const preview=dialog.getByRole('textbox',{name:'完整系统提示词预览',exact:true});await until(async()=>await preview.count());const text=await preview.inputValue();assert.match(text,/FULL_PREVIEW_LITERAL \{\{literal\}\}/);assert.match(text,/personal-memory instructions are exempt/);assert.ok(text.length>1500);if(id==='ptc')assert.match(text,/declare const tools/);rows.push({id,characters:text.length,literal:true,fullAssembly:true});
+  await dialog.getByRole('tab',{name:label,exact:true}).click();await dialog.getByRole('button',{name:'预览完整系统提示词',exact:true}).click();const preview=dialog.getByRole('textbox',{name:'完整系统提示词预览',exact:true});await until(async()=>await preview.count());const text=await preview.inputValue();assert.match(text,/FULL_PREVIEW_LITERAL \{\{literal\}\}/);assert.match(text,/This section is the workspace delivery contract/);assert.ok(text.length>1500);if(id==='ptc')assert.match(text,/declare const tools/);rows.push({id,characters:text.length,literal:true,fullAssembly:true});
  }
  report.fourFullPreviews=rows;
  for(const width of[1440,390,320])for(const scheme of['dark','light']){

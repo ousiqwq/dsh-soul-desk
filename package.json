@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-private-soul",
-  "version": "0.5.0-local.3",
+  "version": "0.5.0",
   "description": "DSH Soul Desk: personas, session switching and isolated personal memories for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -42,7 +42,9 @@
     "enhancement-fusion.js",
     "enhancement-runtime.js",
     "vendor/dsh-unrestricted/LICENSE",
-    "docs/UPSTREAM-INTEGRATION.md"
+    "docs/UPSTREAM-INTEGRATION.md",
+    "upstream-prompt.js",
+    "vendor/dsh-unrestricted/rules-0.2.9.js"
   ],
   "dsh": {
     "bundle": {

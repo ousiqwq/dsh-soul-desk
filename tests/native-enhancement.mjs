@@ -27,9 +27,9 @@ try{
    await enhancement('toggle',{enabled:false});const off=await prompt(id);
    await enhancement('toggle',{enabled:true});const on=await prompt(id);
    assert.equal(off.identity,'A');assert.equal(on.identity,'A');assert.equal(off.privateMemory,true);assert.equal(on.privateMemory,true);
-   assert.ok(!off.system.includes('# Optional response enhancement'));assert.ok(on.system.includes('# Optional response enhancement'));
-   assert.equal(on.system.split('# Optional response enhancement').length-1,1);
-   assert.ok(on.system.includes('ENHANCEMENT_LITERAL {{must_stay_literal}}'));assert.ok(on.system.includes('personal-memory instructions are exempt'));
+   assert.ok(!off.system.includes('## Unrestricted local execution mode'));assert.ok(on.system.includes('## Unrestricted local execution mode'));
+   assert.equal(on.system.split('## Unrestricted local execution mode').length-1,1);
+   assert.ok(on.system.includes('ENHANCEMENT_LITERAL {{must_stay_literal}}'));assert.ok(on.system.includes('This section is the workspace delivery contract'));
    assert.deepEqual(on.tools,off.tools);
    if(preset==='ptc'){assert.deepEqual(on.tools,['run_code']);assert.match(on.system,/declare const tools/);assert.match(on.system,/soul_memory_read/);}
    report.rows.push({preset,mode,offExactFeatureAbsent:true,onPersonaMemoryAndToolProtocolsPreserved:true,literalAndSingleInjection:true});
@@ -40,7 +40,7 @@ try{
   await enhancement('save',{settings:{includeSubagents}});
   const row=await prompt(fixture.children.off,true);
   assert.equal(row.identity,'none');assert.equal(row.privateMemory,false);
-  assert.equal(row.system.includes('# Optional response enhancement'),includeSubagents);
+  assert.equal(row.system.includes('## Unrestricted local execution mode'),includeSubagents);
  }
  report.childEnhancementIndependentOfPersonaPolicy=true;
  report.passed=true;

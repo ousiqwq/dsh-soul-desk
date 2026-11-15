@@ -67,11 +67,17 @@ With the candidate installed in the isolated host, run `node tests/native-enhanc
 
 These fixtures verify assembly, persistence and execution contracts using a synthetic model. They do not guarantee that any external model will follow every stylistic instruction.
 
+## Upstream prompt text
+
+`upstream-prompt.test.mjs` compares every bundled string against the vendored upstream module `vendor/dsh-unrestricted/rules-0.2.9.js`: the 10246-character execution-mode block, the 170-character persona pointer and the Plan, PTC and structured-output notes, plus the four structural anchors. Each string also matches the recorded `sha256` in `UPSTREAM_SHA256`. The tests assert that `renderEnhancementPrompt()` returns the block byte-for-byte under default settings, that the optional extras only append after it, and that no wrapper heading is introduced for any preset.
+
+Refreshing the text after an upstream release means replacing the vendored `src/rules.js`, regenerating `upstream-prompt.js`, and updating `UPSTREAM` and `UPSTREAM_SHA256` in the same commit. The tests fail if only part of that is done.
+
 ## Upstream framework adaptation
 
 `enhancement-fusion.test.mjs` tests structural contracts, protected Soul rows, scope shadows and custom-agent exclusion, removal on mode changes, literal templates, fallback on errors and empty configuration, standalone-module coexistence, rosterless detection, full preview and concurrent recheck scope isolation.
 
-In the isolated host, also run `native-enhancement-framework.mjs` and `browser-enhancement-framework.mjs` sequentially. These check blank-session Minimal/Standard/PTC switching, the actual scope-shadow path, removal when off, live/standing full previews, read-only rechecking without model calls, native Plan/PTC coordination, four-mode browser previews, and 320/390/1440 widths in both themes. Native preset and PTC Skill regression scripts still execute actual memory, Skill and MCP tools. See `docs/UPSTREAM-INTEGRATION.md` for intentional differences from upstream content.
+In the isolated host, also run `native-enhancement-framework.mjs` and `browser-enhancement-framework.mjs` sequentially. These check blank-session Minimal/Standard/PTC switching, the actual scope-shadow path, removal when off, live/standing full previews, read-only rechecking without model calls, native Plan/PTC coordination, four-mode browser previews, and 320/390/1440 widths in both themes. Native preset and PTC Skill regression scripts still execute actual memory, Skill and MCP tools. See `docs/UPSTREAM-INTEGRATION.md` for the deliberate structural differences: the prompt text is byte-identical, while Soul injects it as its own editable section instead of appending to the native persona row.
 
 ## Advanced settings layout
 

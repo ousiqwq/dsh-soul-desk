@@ -7,6 +7,7 @@ import { Readable } from 'node:stream';
 import { EventEmitter } from 'node:events';
 import { EnhancementStore } from '../enhancement-store.js';
 import { DEFAULT_ENHANCEMENT_SETTINGS as settings, ENHANCEMENT_SECTION, applyEnhancement, renderEnhancementPrompt } from '../prompt-enhancement.js';
+import { EXECUTION_MODE_BLOCK } from '../upstream-prompt.js';
 import { applyPersona, attachPersonaPolicy } from '../prompt-policy.js';
 import { registerSoulApi } from '../http-api.js';
 
@@ -29,16 +30,16 @@ test('four preset protocols and three persona modes preserve literal identity, m
     const soul = applyPersona(native, { enabled: true, mode, personaId: 'a', name: '测试', text: 'SOUL {{secret}}', memories: [{ id: 'm', kind: 'preference', content: '乌龙茶 {{secret}}', updatedAt: '2026-11-15' }] });
     const original = structuredClone(soul);
     assert.equal(applyEnhancement(soul, { enabled: false }), soul);
-    const enhanced = applyEnhancement(soul, config, { nativeSections: native.sections, structuredOutput: true });
+    const enhanced = applyEnhancement(soul, config, { nativeSections: native.sections });
     assert.deepEqual(soul, original);
     assert.equal(enhanced.sections[0].name, ENHANCEMENT_SECTION);
     assert.equal(enhanced.sections[0].interpolate, false);
     for (const row of soul.sections) assert.ok(enhanced.sections.includes(row));
     for (const name of ['tools:executor', 'tools:sdk', 'plan:policy', 'tool:structured_output']) assert.ok(enhanced.sections.some(row => row.name === name), preset + '/' + mode + '/' + name);
-    assert.match(enhanced.sections[0].text, /persona.*personal-memory.*take precedence/s);
-    assert.match(enhanced.sections[0].text, /Finish by calling it/);
+    // Default settings inject the vendored upstream block byte-for-byte.
+    assert.equal(enhanced.sections[0].text, EXECUTION_MODE_BLOCK);
     assert.equal(enhanced.tools, native.tools); assert.equal(enhanced.contexts, native.contexts); assert.equal(enhanced.variables, native.variables);
-    assert.equal(applyEnhancement(enhanced, config, { nativeSections: native.sections, structuredOutput: true }), enhanced);
+    assert.equal(applyEnhancement(enhanced, config, { nativeSections: native.sections }), enhanced);
   }
 });
 

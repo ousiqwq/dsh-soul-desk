@@ -421,8 +421,8 @@ const enhancementTranslations = {
   "默认关闭；启用后也不覆盖原有人设和个人记忆。": "Off by default. Original personas and personal memories retain priority.",
   "增强开关已保存，下一次模型请求生效。": "Enhancement switch saved. Applies to the next model request.",
   "增强设置已保存，开关状态保持不变。": "Enhancement settings saved. The switch is unchanged.",
-  "仅调整新增模块，人设、记忆与原生运行约束始终优先。": "Only changes the added module. Persona, memory and native runtime requirements retain priority.",
-  "固定保护：原有人设、个人记忆、PTC SDK、Plan 和结构化输出规则不由此编辑器覆盖。": "Fixed protection: this editor does not override original personas, personal memories, PTC SDK, Plan or structured output requirements.",
+  "仅调整新增模块；人设与记忆段落保持原文，原生运行规则由宿主决定。": "Only changes the added module. Persona and memory sections keep their original text; native operating rules stay under host control.",
+  "固定保护：此编辑器不改写原有人设和个人记忆段落，也不改变工具目录与运行规则。": "Fixed protection: this editor rewrites no persona or personal-memory section and changes no tool catalog or operating rule.",
   "减少开场套话": "Concise introductions",
   "尽量先给出所需结果，保留人设原有语气。": "Lead with the requested result while retaining the persona’s tone.",
   "完整交付": "Complete deliverables",
@@ -438,7 +438,7 @@ const enhancementTranslations = {
   "预览新增提示词": "Preview added prompt",
   "新增提示词预览": "Added prompt preview",
   "已开启，将于下一次模型请求生效。": "Enabled. Applies to the next model request.",
-  "已应用；人设、记忆与原生工具约束保持优先。": "Applied. Persona, memory and native tool requirements retain priority.",
+  "已应用；人设与记忆段落保持原文，原生运行规则未改动。": "Applied. Persona and memory sections keep their original text; native operating rules are unchanged.",
   "已检测到独立增强模块，本模块未重复注入。": "A standalone enhancement module was detected; this module skipped injection.",
   "已按高级设置跳过子代理。": "Skipped for a subagent according to advanced settings.",
   "未设置增强效果或提示词，原提示词保持不变。": "No enhancement effects or prompt are set. The original prompt is unchanged.",
@@ -511,6 +511,6 @@ const enhancementLayoutTranslations = {
   "预览只读，可能包含人设和记忆。": "Read-only preview; may include persona and memories.",
   "关于适配": "About integration",
   "有未保存修改": "Unsaved changes",
-  "人设、记忆和原生工具约束保持优先。": "Persona, memories and native tool requirements retain priority."
+  "人设与记忆段落保持原文。": "Persona and memory sections keep their original text."
 };
 for (const [key,value] of Object.entries(enhancementLayoutTranslations)) { zh[key]=key; en[key]=value; }

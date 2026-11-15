@@ -1,6 +1,6 @@
 import test from'node:test';import assert from'node:assert/strict';
 import {Context}from'@deepseek-ai/cordis';import SystemPrompt,{renderPrompt}from'@deepseek-ai/dsh-system-prompt';import{createScope}from'@deepseek-ai/dsh-scope';
-import {fuseSections,PRESETS,POINTER,PLAN_NOTE,PTC_NOTE,STRUCTURED_NOTE,PROTECTED_NAMES}from'../enhancement-fusion.js';
+import {fuseSections,PRESETS,POINTER,PLAN_NOTE,PTC_NOTE,STRUCTURED_NOTE,PROTECTED_NAMES,SOUL_IDENTITY}from'../enhancement-fusion.js';
 import {DEFAULT_ENHANCEMENT_SETTINGS,ENHANCEMENT_SECTION}from'../prompt-enhancement.js';
 import {createEnhancementRuntime}from'../enhancement-runtime.js';import{attachPersonaPolicy,applyPersona}from'../prompt-policy.js';
 const settings={...DEFAULT_ENHANCEMENT_SETTINGS,prompt:'Literal {{raw}}'};
@@ -19,12 +19,25 @@ test('upstream structural fusion preserves original text and exactly targets eac
 test('missing-persona and unsupported modes follow upstream fallback; Soul and delegated agents are explicit exceptions',()=>{
  const rows=[{name:'tools:sdk',text:'native SDK'}];assert.deepEqual(fuseSections(rows,'standard').issues,['missing-persona']);assert.deepEqual(fuseSections(source(),'other').issues,['unsupported-preset']);
  assert.ok(fuseSections(rows,'standard',{isSubagent:true}).sections);const soul={name:'private-soul:identity',text:'{{raw}} persona'};
- const fused=fuseSections([soul,...rows],'standard',{settings});assert.equal(fused.sections[0],soul);assert.equal(fused.sections[1].name,ENHANCEMENT_SECTION);
+ // The pointer now anchors on the Soul persona row, because priority/complete
+ // replace the native persona row it used to attach to.
+ const fused=fuseSections([soul,...rows],'standard',{settings});
+ assert.equal(fused.sections[0].text,soul.text+POINTER);
+ assert.equal(fused.sections[1].name,ENHANCEMENT_SECTION);
 });
 test('three Soul modes exempt original persona and memory rows from the upstream structural adapter',()=>{
  for(const mode of['priority','complete','append'])for(const preset of PRESETS){const native={sections:source(),tools:[{name:'run_code'}],contexts:[],variables:{}};
  const personal=applyPersona(native,{enabled:true,mode,text:'SOUL {{raw}}',personaId:'p',name:'合成',memories:[{id:'m',kind:'preference',content:'合成记忆',updatedAt:'2026-11-15'}]});
- const result=fuseSections(personal.sections,preset,{settings});for(const row of personal.sections.filter(s=>PROTECTED_NAMES.has(s.name)))assert.ok(result.sections.includes(row));}
+ const result=fuseSections(personal.sections,preset,{settings});
+ // Protected rows survive with their original text. The persona row keeps its
+ // exact text as a prefix because the upstream pointer may be appended to it;
+ // memory rows are never touched at all.
+ for(const row of personal.sections.filter(s=>PROTECTED_NAMES.has(s.name))){
+  const kept=result.sections.find(s=>s.name===row.name);
+  assert.ok(kept,preset+'/'+mode+'/'+row.name);
+  if(row.name==='private-soul:identity')assert.ok(kept.text===row.text||kept.text===row.text+POINTER,preset+'/'+mode);
+  else assert.equal(kept.text,row.text,preset+'/'+mode+'/'+row.name);
+ }}
 });
 async function fixture(fn){const ctx=new Context();const fiber=ctx.plugin(SystemPrompt,{personaPrefix:'native persona {{raw}}'});await fiber;ctx.systemPrompt.variable('raw',()=> 'native value');
  let state={enabled:false,revision:0,settings:structuredClone(settings)},mode='append';const store={config:()=>structuredClone(state),report:value=>store.last=value};const runtime=createEnhancementRuntime(ctx,store,{descriptor:(_id,agent)=>({kind:agent?.session?.header?.origin==='subagent'?'subagent':'session'})});

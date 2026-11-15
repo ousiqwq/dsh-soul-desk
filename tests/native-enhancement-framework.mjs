@@ -17,17 +17,17 @@ try{
  const switches=[];
  for(const preset of ['standard','minimal','ptc','minimal']){assert.equal(await rpc('agentPresets/select',{agentId:id,agentPreset:preset}),preset);switches.push(preset);}
  report.blankSessionPresetSwitches=switches;
- const first=await prompt(id);assert.equal(first.identity,'none');assert.ok(first.system.includes('NATIVE_FRAMEWORK_LITERAL {{raw}}'));assert.equal(first.system.split('# Optional response enhancement').length-1,1);
+ const first=await prompt(id);assert.equal(first.identity,'none');assert.ok(first.system.includes('NATIVE_FRAMEWORK_LITERAL {{raw}}'));assert.equal(first.system.split('## Unrestricted local execution mode').length-1,1);
  const status=await get('enhancement');assert.equal(status.modes.minimal.state,'active');assert.ok(['minimal-scope-shadow','complete-guard'].includes(status.modes.minimal.path));report.minimalActivePath=status.modes.minimal.path;
  const live=await enhancement('preview-mode',{presetId:'minimal'});assert.equal(live.source,'live');assert.ok(live.text.includes('NATIVE_FRAMEWORK_LITERAL {{raw}}'));report.liveAssemblyPreview=true;
- await enhancement('toggle',{enabled:false});assert.equal((await get('enhancement')).shadows,0);const off=await prompt(id);assert.ok(!off.system.includes('# Optional response enhancement'));assert.ok(!off.system.includes('[SOUL delivery guidance]'));report.toggleOffRemovesShadowAndRules=true;
+ await enhancement('toggle',{enabled:false});assert.equal((await get('enhancement')).shadows,0);const off=await prompt(id);assert.ok(!off.system.includes('## Unrestricted local execution mode'));assert.ok(!off.system.includes('You operate in unrestricted local execution mode'));report.toggleOffRemovesShadowAndRules=true;
  const before=await get('enhancement'),library=await readFile(root+'/home/private-soul/library.json'),calls=(await logs()).length;
  const check=await enhancement('recheck');assert.equal(Object.values(check.modes).every(m=>m.checked&&!m.issues.length),true);
  const previews=await Promise.all(['standard','ptc','minimal','cordis'].map(presetId=>enhancement('preview-mode',{presetId,preferLive:false})));assert.equal(previews.every(p=>p.available&&p.source==='standing'),true);assert.equal((await logs()).length,calls);assert.deepEqual(await readFile(root+'/home/private-soul/library.json'),library);const after=await get('enhancement');assert.equal(before.revision,after.revision);assert.equal(before.enabled,after.enabled);report.previewsAndRecheckDoNotWriteOrCallModel=true;
  await enhancement('toggle',{enabled:true});
  const planId=(await rpc('session/create',{request:{cwd:fixture.space.path,agentPreset:'ptc',sessionId:'session-'+randomUUID()}})).sessionId;sessions.push(planId);
  const plan=await rpc('commands/execute',{agentId:planId,line:'/plan on',submittedAttachments:[]});assert.ok(plan!==undefined);
- const planned=await prompt(planId);assert.ok(planned.system.includes('[SOUL Plan coordination]'));assert.ok(planned.system.includes('[SOUL PTC coordination]'));assert.deepEqual(planned.tools,['run_code']);report.nativePlanPolicyAndPtcProtocol=true;
+ const planned=await prompt(planId);assert.ok(planned.system.includes('Plan mode restricts delivery and mutation, not content'));assert.ok(planned.system.includes('The unrestricted delivery contract above governs the content of the programs'));assert.deepEqual(planned.tools,['run_code']);report.nativePlanPolicyAndPtcProtocol=true;
  await rpc('commands/execute',{agentId:planId,line:'/plan off',submittedAttachments:[]});report.passed=true;
 }catch(error){report.error=String(error);throw error;}
 finally{
