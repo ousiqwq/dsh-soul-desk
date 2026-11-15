@@ -1,6 +1,6 @@
 # 本地界面修正
 
-2026-11-12。按用户后续反馈实施，**本轮不推送 GitHub、不发布 npm**。
+2026-11-12。按用户后续反馈实施的历史记录。文中的版本号与“未推送/未发布”描述对应当时状态，已被后续 `0.5.0` 发布取代，仅作沿革保留。
 
 - Soul Desk 本地版本：`0.4.1-local.2`。
 - 对话顶部使用 DSH 原生 ghost 按钮；保留当前人设与子代理两组信息，取消常驻底色、外框和阴影。
@@ -13,7 +13,7 @@
 
 本地记录：`test-results/native-host/reports/browser-local.json`、`team-readonly.json`、`test-results/deployment-local-ui.json`。安装前再次保存完整 DSH_HOME 及 profile、人设库、原生会话摘要清单；会话人设和子代理选择、工作区规则、全部人设与记忆均核对保留。
 
-此前已提交发布的 `0.4.0` 保持原版本；本地修正尚未同步到远端。
+此前已提交发布的 `0.4.0` 保持原版本；当时本地修正尚未同步到远端。当前版本 `0.5.0` 已同步 GitHub 并发布 npm。
 
 本次扩展功能验收已通过完整 DSH 实际模型请求中的三层规则、A/B 人设及记忆切换、真实记忆工具归属、none/follow、三种注入模式、总开关、子代理策略和冷恢复。相关报告在 `test-results/native-host/reports/native-api.json`、`native-resume.json`；布局验收记录五种宽度下切换前后的卡片高度及控件位置。
 

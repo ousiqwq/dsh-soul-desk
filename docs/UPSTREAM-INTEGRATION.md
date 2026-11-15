@@ -32,6 +32,10 @@ Soul-specific adaptations:
 
 The prompt text is byte-identical to upstream; the surrounding framework is an adapted integration rather than a byte-identical copy. Whether a given model actually follows the guidance depends on that model, so no behavioral equivalence is claimed from source parity alone. Web 0.2.2-rc.2 is the local verification target; other hosts require separate verification.
 
-One deliberate structural difference: the upstream fusion appends its notes to the native sections next to the persona, while Soul inserts a separate `private-soul:response-enhancement` section so the block can be edited, previewed and disabled independently. The injected text is identical; only the section name and its insertion position differ.
+Two deliberate structural differences, both forced by Soul owning the prompt:
+
+1. **Separate section.** Upstream appends its notes to the native sections next to the persona, while Soul inserts a separate `private-soul:response-enhancement` section so the block can be edited, previewed and disabled independently. The injected text is identical; the section name and position differ.
+
+2. **Pointer anchoring.** Upstream appends the persona pointer to `deployment:persona-prefix`. Soul's `priority` and `complete` modes replace that row with `private-soul:identity`, so the pointer is anchored on whichever row currently carries the persona. Anchoring runs on every assembly pass and is idempotent, because a mode change can drop the previous anchor while the block itself stays. The persona's own text is always an exact prefix; only the upstream pointer is appended, and memory rows are never touched.
 
 The upstream MIT notice is included at [vendor/dsh-unrestricted/LICENSE](../vendor/dsh-unrestricted/LICENSE).

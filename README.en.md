@@ -12,21 +12,21 @@ The interface uses DSH native i18n and follows language changes immediately. Chi
 
 Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
 
-The GitHub source is the **`0.5.0-local.3` preview**, including the default-off enhancement framework and three-tab advanced settings. **npm remains at stable `0.4.2`; npm is not updated in this sync.** The new enhancement adaptation is verified on DSH Web `0.2.2-rc.2`.
+The current version is **`0.5.0`**, pushed to GitHub and published to npm. This release bundles the upstream prompt text and keeps the default-off enhancement framework and three-tab advanced settings. Verified on DSH Web `0.2.2-rc.2`.
 
-Install the **current GitHub branch with npx** (Node.js 26; no global dsh or pnpm installation required):
+Install **from the GitHub branch with npx** (Node.js 26; no global dsh or pnpm installation required):
 
 ```bash
 npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
 ```
 
-For **npm stable** (without the new enhancement features described below), use:
+Or install the **same version from npm**:
 
 ```bash
 npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@latest
 ```
 
-Run this on the DSH host with the same account and `DSH_HOME` as your existing instance. The command pins the verified official CLI; `web` is the target profile. With the DSH CLI already installed, install the GitHub preview with:
+Run this on the DSH host with the same account and `DSH_HOME` as your existing instance. The command pins the verified official CLI; `web` is the target profile. With the DSH CLI already installed, install from the GitHub branch:
 
 ```bash
 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
@@ -67,13 +67,13 @@ Create and edit personas, choose a prompt mode, and select the default. Each con
 
 Screenshots show the current native DSH UI with isolated sample data; settings are expanded for readability.
 
-![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.4.2)
+![Persona management with a default selector, prompt mode, and editor](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/personas.en.png?v=0.5.0)
 
 ### Personal memories
 
 Filter and search by category, add or edit memories, and preview consolidation before applying it.
 
-![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.4.2)
+![Memory filtering, editing, and consolidation controls](https://raw.githubusercontent.com/ousiqwq/dsh-soul-desk/main/docs/images/memories.en.png?v=0.5.0)
 
 ## Usage
 
@@ -106,13 +106,13 @@ Persona text is literal: `{{...}}` is not interpolated. The global switch contro
 
 Team Desk 0.14.0 can select a persona for each preset member and its future subagents. Explicit selections take precedence when applied; unspecified fields keep the existing Soul rules. Members remain editable afterward in either conversation menus or Team Desk. The global switch remains authoritative. See the [team integration contract](docs/TEAM-BRIDGE.md).
 
-## Response enhancement and preset adaptation (GitHub preview)
+## Response enhancement and preset adaptation
 
 Soul settings include a **global switch, off by default**, with **Advanced settings** on the right using a native DSH modal. This switch is independent of the persona master switch. Changes apply to the next model request and do not rewrite message history.
 
-`0.5.0-local.2` integrates upstream structural fusion, Minimal scope shadows and cleanup, per-preset diagnostics, and full live/standing system-prompt previews. Advanced settings can inspect Standard, PTC, Cordis and Minimal or recheck adaptation. Previewing does not call a model or enable the switch. Full previews may contain persona and personal memory and use the current DSH authentication and origin checks.
+`0.5.0-local.2` (superseded by `0.5.0`) integrates upstream structural fusion, Minimal scope shadows and cleanup, per-preset diagnostics, and full live/standing system-prompt previews. Advanced settings can inspect Standard, PTC, Cordis and Minimal or recheck adaptation. Previewing does not call a model or enable the switch. Full previews may contain persona and personal memory and use the current DSH authentication and origin checks.
 
-`0.5.0-local.3` organizes advanced settings into **General / Prompt / Diagnostics**. General shows common switches; Prompt edits and previews the added section; Diagnostics checks presets and displays full prompts. Window dimensions and save controls stay fixed, and drafts survive tab changes and reopening.
+`0.5.0-local.3` (superseded by `0.5.0`) organizes advanced settings into **General / Prompt / Diagnostics**. General shows common switches; Prompt edits and previews the added section; Diagnostics checks presets and displays full prompts. Window dimensions and save controls stay fixed, and drafts survive tab changes and reopening.
 
 `0.5.0` bundles the upstream prompt text: the 10246-character execution-mode block plus the persona pointer and the Plan, PTC and structured-output notes, all byte-for-byte, untranslated and unrewrapped. Under default settings the injected body equals the upstream block exactly. The text and the four structural anchors live in `upstream-prompt.js` with per-string `sha256` values, checked against the vendored upstream `src/rules.js`.
 
@@ -120,7 +120,7 @@ Soul settings include a **global switch, off by default**, with **Advanced setti
 
 The three optional extras (concise introductions, complete deliverables, preserved names) are off by default; enabling one appends after the original block without altering it. Application to subagents remains separately switchable. Edit only the added prompt, preview it, save it or reset the draft to defaults. Saving does not enable enhancement; resetting only changes the draft. Stale writes are rejected and local drafts are retained for manual merging.
 
-Existing persona, voice and personal-memory instructions are exempt and retain priority. The enhancement adds a separate section without rewriting them. Its fixed protection text is outside the editor. PTC executor protocols, SDK, tool catalogs, Plan and structured output requirements are preserved. This is model guidance, grants no extra tool permissions, and cannot guarantee stylistic compliance on every response. Priority, Complete and Append persona modes remain supported.
+Existing persona, voice and personal-memory sections are never rewritten; the enhancement adds a separate section. Note that the upstream block itself states that no external style sheet, persona or tone block may re-narrow the scale it defines. This page therefore no longer claims the persona outranks that text: the block governs content and delivery scale, while the Soul memory rules govern memory facts and ownership. PTC executor protocols, SDK, tool catalogs, Plan and structured output stay under host control, and the block explicitly disclaims changing them. This is model guidance, grants no extra tool permissions, and cannot guarantee stylistic compliance on every response. Priority, Complete and Append persona modes remain supported.
 
 Configuration is separate: `$DSH_HOME/private-soul/prompt-enhancement.v1.json`, with ten recent pre-change versions under `enhancement-backups/`. Initial installation and reads do not create it. Persona archive import/export and memory consolidation leave it untouched. An unreadable configuration disables enhancement without replacing the file or affecting personas and memories. A detected standalone `dsh-unrestricted` prompt section causes enhancement to skip injection; avoid enabling both modules together.
 

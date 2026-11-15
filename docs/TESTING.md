@@ -75,7 +75,7 @@ Refreshing the text after an upstream release means replacing the vendored `src/
 
 ## Upstream framework adaptation
 
-`enhancement-fusion.test.mjs` tests structural contracts, protected Soul rows, scope shadows and custom-agent exclusion, removal on mode changes, literal templates, fallback on errors and empty configuration, standalone-module coexistence, rosterless detection, full preview and concurrent recheck scope isolation.
+`enhancement-fusion.test.mjs` tests structural contracts, protected Soul rows, scope shadows and custom-agent exclusion, removal on mode changes, literal templates, fallback on errors and empty configuration, standalone-module coexistence, rosterless detection, full preview and concurrent recheck scope isolation. It also covers persona-pointer anchoring: with a Soul persona active the native persona row is replaced, so the pointer must follow the row that now carries the persona, appear exactly once, and stay put across repeated assembly.
 
 In the isolated host, also run `native-enhancement-framework.mjs` and `browser-enhancement-framework.mjs` sequentially. These check blank-session Minimal/Standard/PTC switching, the actual scope-shadow path, removal when off, live/standing full previews, read-only rechecking without model calls, native Plan/PTC coordination, four-mode browser previews, and 320/390/1440 widths in both themes. Native preset and PTC Skill regression scripts still execute actual memory, Skill and MCP tools. See `docs/UPSTREAM-INTEGRATION.md` for the deliberate structural differences: the prompt text is byte-identical, while Soul injects it as its own editable section instead of appending to the native persona row.
 
