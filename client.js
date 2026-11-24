@@ -6,6 +6,9 @@ window.__ModuleLoader__.load({
     /* i18n:start */
 const NS="soulDesk";
 const zh={
+  "宿主独占指令": "宿主独占指令",
+  "预览使用预设基准和全局人设，不读取会话历史。": "预览使用预设基准和全局人设，不读取会话历史。",
+  "增强设置请求过大。": "增强设置请求过大。",
   "人设编辑内容": "人设编辑内容",
   "会话仅在对话顶部设置，优先于工作区和全局。": "会话仅在对话顶部设置，优先于工作区和全局。",
   " · 有未保存修改": " · 有未保存修改",
@@ -96,7 +99,7 @@ const zh={
   "此会话不使用人设": "此会话不使用人设",
   "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。": "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。",
   "注入方式": "注入方式",
-  "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。": "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。",
+  "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。": "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。",
   "确认导入": "确认导入",
   "私人灵魂": "私人灵魂",
   "私人灵魂-{p0}.json": "私人灵魂-{p0}.json",
@@ -265,7 +268,7 @@ const zh={
   "完整预览暂不可用。": "完整预览暂不可用。",
   "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。": "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。",
   "{p0} · {p1} 行 · {p2} 字节": "{p0} · {p1} 行 · {p2} 字节",
-  "最近真实组装": "最近真实组装",
+  "最近会话预览": "最近会话预览",
   "独立模式预览": "独立模式预览",
   "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。": "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。",
   "请求必须是 JSON 对象。": "请求必须是 JSON 对象。",
@@ -300,9 +303,15 @@ const zh={
   "预览只读，可能包含人设和记忆。": "预览只读，可能包含人设和记忆。",
   "关于适配": "关于适配",
   "有未保存修改": "有未保存修改",
-  "人设与记忆段落保持原文。": "人设与记忆段落保持原文。"
+  "人设与记忆段落保持原文。": "人设与记忆段落保持原文。",
+  "子代理增强": "子代理增强",
+  "识别可以独立完成的一部分工作，结合当前任务考虑原生子代理。": "识别可以独立完成的一部分工作，结合当前任务考虑原生子代理。",
+  "独立工作可并行，结果回到当前会话。": "独立工作可并行，结果回到当前会话。"
 };
 const en={
+  "宿主独占指令": "Host-exclusive instructions",
+  "预览使用预设基准和全局人设，不读取会话历史。": "Preview uses the preset baseline and global persona without reading conversation history.",
+  "增强设置请求过大。": "The enhancement settings request is too large.",
   "人设编辑内容": "Persona editor sections",
   "会话仅在对话顶部设置，优先于工作区和全局。": "Set conversations in the chat header; they override workspace and global defaults.",
   " · 有未保存修改": " · Unsaved changes",
@@ -393,7 +402,7 @@ const en={
   "此会话不使用人设": "No persona for this conversation",
   "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。": "Each persona has its own cross-conversation memories. Store relationships, preferences, and shared stories; code, task progress, and work details stay outside long-term memory.",
   "注入方式": "Prompt mode",
-  "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。": "Replace the system prompt body with the persona and personal memories, keeping native tool schemas and runtime context.",
+  "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。": "Replace editable identity sections with the persona and its memories. DSH manages task instructions, tools and exclusive system prompts.",
   "确认导入": "Confirm import",
   "私人灵魂": "Private Soul",
   "私人灵魂-{p0}.json": "private-soul-{p0}.json",
@@ -562,7 +571,7 @@ const en={
   "完整预览暂不可用。": "Full preview is currently unavailable.",
   "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。": "The read-only full preview may include persona and personal memory. It does not enable enhancement or send a model request.",
   "{p0} · {p1} 行 · {p2} 字节": "{p0} · {p1} lines · {p2} bytes",
-  "最近真实组装": "Latest live assembly",
+  "最近会话预览": "Latest session preview",
   "独立模式预览": "Standing preset preview",
   "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。": "Adaptation base: dsh-unrestricted {p0}. The original unrestricted prompt is not included.",
   "请求必须是 JSON 对象。": "The request must be a JSON object.",
@@ -597,7 +606,10 @@ const en={
   "预览只读，可能包含人设和记忆。": "Read-only preview; may include persona and memories.",
   "关于适配": "About integration",
   "有未保存修改": "Unsaved changes",
-  "人设与记忆段落保持原文。": "Persona and memory sections keep their original text."
+  "人设与记忆段落保持原文。": "Persona and memory sections keep their original text.",
+  "子代理增强": "Subagent enhancement",
+  "识别可以独立完成的一部分工作，结合当前任务考虑原生子代理。": "Help identify independent work that a native child session could take on.",
+  "独立工作可并行，结果回到当前会话。": "Independent work can run in parallel and return its result here."
 };
 let nativeTranslate = null, nativeLocale = null;
 function tr(key, params) { return nativeTranslate ? nativeTranslate(key, params) : params ? key.replace(/\{(\w+)\}/g, (match, name) => name in params ? String(params[name]) : match) : key; }
@@ -624,7 +636,7 @@ function installLocale(ctx) {
     const BASE='/private-soul/v2',labels={get relationship(){return tr("关系");},get preference(){return tr("喜好");},get story(){return tr("故事");}};
     const promptModes=[
       {id:'priority',get label(){return tr("优先");},get description(){return tr("将人格与个人记忆放在系统提示词前部，替换原有身份设定，保留工具和框架说明。");}},
-      {id:'complete',get label(){return tr("替换");},get description(){return tr("用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。");}},
+      {id:'complete',get label(){return tr("替换");},get description(){return tr("用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。");}},
       {id:'append',get label(){return tr("追加");},get description(){return tr("保留原有系统提示词，在其末尾追加人格与个人记忆。");}},
     ];
     const css=`
@@ -687,7 +699,7 @@ function installLocale(ctx) {
 .soul-persona-trigger{max-width:min(100%,380px);min-width:0;gap:6px}
 .soul-chip-secondary{font-size:12px;color:inherit;opacity:.72;padding-left:6px;border-left:1px solid var(--dsw-alias-border-l2);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .soul-enhancement-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.soul-enhancement-label{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px}.soul-enhancement-label>button{flex:none}.soul-enhancement-hint{min-height:21px}
-.soul-enhancement-dialog{width:min(680px,calc(100vw - 24px));height:min(620px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);min-height:0;overflow:hidden}
+.soul-enhancement-dialog[role="dialog"]{width:680px;max-width:100%;height:620px;max-height:100%;min-height:0;overflow:hidden}
 .soul-enhancement-content{display:flex;flex-direction:column;flex:1;gap:14px;min-width:0;min-height:0;overflow:hidden}.soul-enhancement-content>p{margin:0}.soul-enhancement-content>:has(>.soul-enhancement-panel){flex:1;min-height:0;gap:12px;overflow:hidden}
 .soul-enhancement-panel{display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;min-height:0;overflow:auto}.soul-enhancement-panel p{margin:0}
 .soul-enhancement-options{display:flex;flex-direction:column;gap:16px}.soul-enhancement-option{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px}.soul-enhancement-option>button{flex:none}.soul-enhancement-option>span{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
@@ -699,8 +711,9 @@ function installLocale(ctx) {
 
 `;
     async function request(path,data){
-      const response=await fetch(BASE+path,{method:data===undefined?'GET':'POST',cache:'no-store',credentials:'same-origin',...(data===undefined?{}:{headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})});
-      const value=await response.json();if(!response.ok)throw new Error(value.error||tr("请求失败（{p0}）", {p0: response.status}));if(path==='/action')window.dispatchEvent(new Event('private-soul-library-changed'));return value;
+      const url=path==='/enhancement'?'/api/private-soul/enhancement':BASE+path;
+      const response=await fetch(url,{method:data===undefined?'GET':'POST',cache:'no-store',credentials:'same-origin',...(data===undefined?{}:{headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})});
+      const value=await response.json().catch(error=>{if(response.ok)throw error;return {};});if(!response.ok)throw new Error(value.error||tr("请求失败（{p0}）", {p0: response.status}));if(path==='/action')window.dispatchEvent(new Event('private-soul-library-changed'));return value;
     }
     function useLibrary(sessionId,compact=false){
       const [view,setView]=React.useState(null),[error,setError]=React.useState('');
@@ -767,9 +780,9 @@ function installLocale(ctx) {
 
     function useEnhancement(){
       const [view,setView]=React.useState(null),[error,setError]=React.useState('');
-      const current=React.useRef(null),alive=React.useRef(true);
-      const accept=value=>{if(alive.current&&(!current.current||value.revision>=current.current.revision)){current.current=value;setView(value);setError('');}};
-      const load=async()=>{try{const next=await request('/enhancement');accept(next);return next;}catch(cause){if(alive.current)setError(cause.message);return null;}};
+      const current=React.useRef(null),alive=React.useRef(true),sequence=React.useRef(0);
+      const accept=value=>{if(alive.current&&(!current.current||value.revision>=current.current.revision)){sequence.current++;current.current=value;setView(value);setError('');}};
+      const load=async()=>{const id=++sequence.current;try{const next=await request('/enhancement');if(id===sequence.current)accept(next);return current.current;}catch(cause){if(alive.current&&id===sequence.current)setError(cause.message);return null;}};
       React.useEffect(()=>{alive.current=true;load();const changed=()=>load(),timer=setInterval(()=>{if(!document.hidden)load();},3000);window.addEventListener('private-soul-enhancement-changed',changed);return()=>{alive.current=false;clearInterval(timer);window.removeEventListener('private-soul-enhancement-changed',changed);};},[]);
       return {view,error,current,alive,accept,load};
     }
@@ -786,13 +799,18 @@ function installLocale(ctx) {
       async function action(fn,success){if(busy)return;setBusy(true);setError('');try{await fn();if(state.alive.current&&success)setMessage(success);}catch(cause){if(state.alive.current)setError(cause.message);}finally{if(state.alive.current)setBusy(false);}}
       async function write(action,data,revision){const next=await request('/enhancement',{action,data,expectedRevision:revision});state.accept(next);window.dispatchEvent(new Event('private-soul-enhancement-changed'));return next;}
       const statuses={pending:tr("已开启，将于下一次模型请求生效。"),active:tr("已应用；人设与记忆段落保持原文，原生运行规则未改动。"),'external-module':tr("已检测到独立增强模块，本模块未重复注入。"),'subagent-excluded':tr("已按高级设置跳过子代理。"),empty:tr("未设置增强效果或提示词，原提示词保持不变。"),unsupported:tr("当前提示词结构不受支持，已保留原有人设与记忆。"),unavailable:tr("增强模块暂不可用，已保留原有人设与记忆。")};
-      const options=[['directAnswer','减少开场套话','尽量先给出所需结果，保留人设原有语气。'],['completeArtifacts','完整交付','在允许范围内交付完整成果，不编造未执行的结果。'],['preserveNames','保留用户命名','保留用户提供的名称与路径，继续遵守隐私及脱敏要求。'],['includeSubagents','应用于子代理','仅沿用此增强开关，不改变子代理的人设继承规则。']];
+      const options=[['directAnswer','减少开场套话','尽量先给出所需结果，保留人设原有语气。'],['completeArtifacts','完整交付','在允许范围内交付完整成果，不编造未执行的结果。'],['preserveNames','保留用户命名','保留用户提供的名称与路径，继续遵守隐私及脱敏要求。'],['subagentGuidance','子代理增强','识别可以独立完成的一部分工作，结合当前任务考虑原生子代理。'],['includeSubagents','应用于子代理','仅沿用此增强开关，不改变子代理的人设继承规则。']];
       const presetLabels={standard:'Standard',ptc:'PTC',cordis:'Cordis',minimal:'Minimal'};
-      const modeStates={off:tr("已关闭"),pending:tr("待验证"),active:tr("已适配"),failed:tr("需要检查")};
-      const selectedMode=view?.modes?.[preset];
+      const presetIds=view?.presets??Object.keys(presetLabels);
+      const hasExtraPresets=presetIds.some(id=>!Object.hasOwn(presetLabels,id));
+      const selectedPreset=presetIds.includes(preset)?preset:presetIds[0];
+      const presetLabel=id=>Object.hasOwn(presetLabels,id)?presetLabels[id]:id;
+      const changePreset=value=>{if(!busy){setPreset(value);setFullPreview(null);}};
+      const modeStates={off:tr("已关闭"),pending:tr("待验证"),active:tr("已适配"),unsupported:tr("宿主独占指令"),failed:tr("需要检查")};
+      const selectedMode=view?.modes?.[selectedPreset];
       const panelId=editId+'-settings-panel';
       const sectionItems=[['general',tr("常规")],['prompt',tr("提示词")],['diagnostics',tr("诊断")]].map(([value,label])=>({value,label,id:editId+'-section-'+value,panelId}));
-      const shortHints={directAnswer:tr("先给结果，保留人设语气。"),completeArtifacts:tr("完整交付，明确未执行的部分。"),preserveNames:tr("保留名称、路径和参数。"),includeSubagents:tr("沿用增强，不改变人设继承。")};
+      const shortHints={directAnswer:tr("先给结果，保留人设语气。"),completeArtifacts:tr("完整交付，明确未执行的部分。"),preserveNames:tr("保留名称、路径和参数。"),subagentGuidance:tr("独立工作可并行，结果回到当前会话。"),includeSubagents:tr("沿用增强，不改变人设继承。")};
       const resetDraft=()=>{setDraft(structuredClone(view.defaults));setPreview('');setFullPreview(null);setError('');};      function renderPanel(){
         if(section==='general')return h(React.Fragment,null,
           h('div',{className:'soul-enhancement-options'},...options.map(([key,label,hint])=>h(Tooltip,{key,label:tr(hint),side:'bottom',portal:true,delayMs:500},
@@ -807,17 +825,20 @@ function installLocale(ctx) {
             h(Button,{variant:'ghost',size:'sm',disabled:busy,'aria-label':preview?tr("返回编辑"):tr("预览新增提示词"),onClick:preview?()=>setPreview(''):()=>action(async()=>{const result=await request('/enhancement',{action:'preview',data:{settings:draft}});setPreview(result.preview||tr("未设置增强效果或提示词，原提示词保持不变。"));})},preview?tr("返回编辑"):tr("预览"))),
           h('p',{className:'soul-hint'},tr("只编辑新增部分，{{…}} 保留原文。")));
         return h(React.Fragment,null,
-          h(SegmentedTabs,{label:tr("预览模式"),size:'sm',value:preset,onChange:value=>{if(!busy){setPreset(value);setFullPreview(null);}},items:Object.entries(presetLabels).map(([value,label])=>({value,label,id:editId+'-mode-'+value,panelId:editId+'-mode-panel'}))}),
-          h('div',{id:editId+'-mode-panel',role:'tabpanel','aria-labelledby':editId+'-mode-'+preset,className:'soul-enhancement-diagnostics'},
+          hasExtraPresets
+            ? h('select',{className:'soul-input','aria-label':tr("预览模式"),value:selectedPreset,disabled:busy,onChange:event=>changePreset(event.target.value)},
+              presetIds.map(id=>h('option',{key:id,value:id},presetLabel(id))))
+            : h(SegmentedTabs,{label:tr("预览模式"),size:'sm',value:selectedPreset,onChange:changePreset,items:presetIds.map(value=>({value,label:presetLabel(value),id:editId+'-mode-'+value,panelId:editId+'-mode-panel'}))}),
+          h('div',{id:editId+'-mode-panel',...(hasExtraPresets?{role:'region','aria-label':tr("预览模式")}:{role:'tabpanel','aria-labelledby':editId+'-mode-'+selectedPreset}),className:'soul-enhancement-diagnostics'},
             h('div',{className:'soul-enhancement-toolbar','data-soul-mode-statuses':''},h('span',{className:'soul-hint',role:'status'},(modeStates[selectedMode?.state]??modeStates.pending)+' · '+(selectedMode?.checked&&!selectedMode.issues.length?tr("结构检查通过"):tr("尚未检查"))),
               h(Button,{variant:'ghost',size:'sm',disabled:busy||!view?.available,onClick:()=>action(async()=>{await request('/enhancement',{action:'recheck'});await state.load();setFullPreview(null);},tr("模式检查完成，未修改开关或人设。"))},tr("重新检查模式"))),
             selectedMode?.issues?.length?h('p',{className:'soul-error'},tr("此模式需要检查：{p0}",{p0:selectedMode.issues.join(', ')})):null,
-            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("选择预览模式，不切换会话。")),h(Button,{variant:'outline',size:'sm',disabled:busy||!view?.available,'aria-label':tr("预览完整系统提示词"),onClick:()=>action(async()=>{const result=await request('/enhancement',{action:'preview-mode',data:{presetId:preset,settings:draft,preferLive:!dirty}});if(!result.available)throw new Error(messageText(result.reason)||tr("完整预览暂不可用。"));setFullPreview(result);})},tr("查看完整提示词"))),
-            fullPreview?h(React.Fragment,null,
+            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("选择预览模式，不切换会话。")),h(Button,{variant:'outline',size:'sm',disabled:busy||!view?.available,'aria-label':tr("预览完整系统提示词"),onClick:()=>action(async()=>{const result=await request('/enhancement',{action:'preview-mode',data:{presetId:selectedPreset,settings:draft}});if(!result.available)throw new Error(messageText(result.reason)||tr("完整预览暂不可用。"));setFullPreview(result);})},tr("查看完整提示词"))),
+            fullPreview?.presetId===selectedPreset?h(React.Fragment,null,
               h('textarea',{className:'soul-input soul-text soul-enhancement-editor',readOnly:true,value:fullPreview.text,'aria-label':tr("完整系统提示词预览")}),
-              h(Tooltip,{label:tr("{p0} · {p1} 行 · {p2} 字节",{p0:fullPreview.source==='live'?tr("最近真实组装"):tr("独立模式预览"),p1:fullPreview.lines,p2:fullPreview.bytes}),side:'top',portal:true},h('span',{className:'soul-hint'},fullPreview.source==='live'?tr("最近真实组装"):tr("独立模式预览"))))
+              h(Tooltip,{label:tr("{p0} · {p1} 行 · {p2} 字节",{p0:tr("独立模式预览"),p1:fullPreview.lines,p2:fullPreview.bytes}),side:'top',portal:true},h('span',{className:'soul-hint'},fullPreview.locked?tr("宿主独占指令"):tr("独立模式预览"))))
               :h('div',{className:'soul-enhancement-empty soul-hint'},tr("检查模式，或查看完整提示词。")),
-            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("预览只读，可能包含人设和记忆。")),h(Tooltip,{label:tr("适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。",{p0:view?.upstream?.version??'0.2.8'}),side:'top',portal:true,maxWidth:320},h('span',{className:'soul-hint',tabIndex:0},tr("关于适配"))))));
+            h('div',{className:'soul-enhancement-toolbar'},h('span',{className:'soul-hint'},tr("预览使用预设基准和全局人设，不读取会话历史。")),h(Tooltip,{label:tr("选择预览模式，不切换会话。"),side:'top',portal:true,maxWidth:320},h('span',{className:'soul-hint',tabIndex:0},tr("关于适配"))))));
       }
       return h(React.Fragment,null,
         h('div',{className:'soul-enhancement-row','data-soul-enhancement-controls':''},h('span',{className:'soul-enhancement-label'},h(Switch,{label:tr("提示词增强"),checked:!!view?.enabled,disabled:busy||!view?.available,onChange:enabled=>action(()=>write('toggle',{enabled},state.current.current.revision),tr("增强开关已保存，下一次模型请求生效。"))}),h('span',null,tr("提示词增强"))),h(Button,{ref:openButton,variant:'ghost',size:'sm',disabled:busy||!view,'aria-label':tr("提示词增强高级设置"),onClick:advanced,icon:IconSettingsOutlineRegular?h(IconSettingsOutlineRegular,{size:16}):undefined},tr("高级设置"))),

@@ -7,16 +7,17 @@ import { Readable } from 'node:stream';
 import { EventEmitter } from 'node:events';
 import { EnhancementStore } from '../enhancement-store.js';
 import { DEFAULT_ENHANCEMENT_SETTINGS as settings, ENHANCEMENT_SECTION, applyEnhancement, renderEnhancementPrompt } from '../prompt-enhancement.js';
-import { EXECUTION_MODE_BLOCK } from '../upstream-prompt.js';
+const customText = 'Use the local glossary.';
 import { applyPersona, attachPersonaPolicy } from '../prompt-policy.js';
-import { registerSoulApi } from '../http-api.js';
+import { ENHANCEMENT_API, registerEnhancementApi, registerSoulApi } from '../http-api.js';
+import { createEnhancementRuntime } from '../enhancement-runtime.js';
 
 async function fixture(fn) {
   const directory = await mkdtemp(join(tmpdir(), 'soul-enhancement-'));
   try { await fn(directory, join(directory, 'prompt-enhancement.v1.json')); }
   finally { await rm(directory, { recursive: true, force: true }); }
 }
-const config = { enabled: true, settings };
+const config = { enabled: true, settings: {...settings,prompt:customText} };
 
 test('four preset protocols and three persona modes preserve literal identity, memories, schemas and runtime context', () => {
   for (const preset of ['standard', 'ptc', 'minimal', 'cordis']) for (const mode of ['priority', 'complete', 'append']) {
@@ -36,8 +37,7 @@ test('four preset protocols and three persona modes preserve literal identity, m
     assert.equal(enhanced.sections[0].interpolate, false);
     for (const row of soul.sections) assert.ok(enhanced.sections.includes(row));
     for (const name of ['tools:executor', 'tools:sdk', 'plan:policy', 'tool:structured_output']) assert.ok(enhanced.sections.some(row => row.name === name), preset + '/' + mode + '/' + name);
-    // Default settings inject the vendored upstream block byte-for-byte.
-    assert.equal(enhanced.sections[0].text, EXECUTION_MODE_BLOCK);
+    assert.equal(enhanced.sections[0].text, customText);
     assert.equal(enhanced.tools, native.tools); assert.equal(enhanced.contexts, native.contexts); assert.equal(enhanced.variables, native.variables);
     assert.equal(applyEnhancement(enhanced, config, { nativeSections: native.sections }), enhanced);
   }
@@ -53,22 +53,6 @@ test('disabled, empty, child-excluded and standalone-module paths do not inject 
   const upstream = { sections: [{ name: 'unrestricted:execution-mode', text: 'standalone' }] };
   assert.equal(applyEnhancement(upstream, config), upstream);
   assert.ok(applyEnhancement(native, config, { isSubagent: true }).sections.length === 1);
-});
-
-test('live wrapper isolates enhancement failures and unloads without touching original assembly', async () => {
-  const native = { sections: [{ name: 'tools:sdk', text: 'native protocol' }], tools: [], contexts: [] };
-  const system = { assemble: async () => native };
-  const original = system.assemble;
-  let active = false, broken = false;
-  const undo = attachPersonaPolicy(system, () => ({ enabled: true, mode: 'append', text: 'ORIGINAL SOUL' }), () => {
-    if (broken) throw Error('configuration unavailable');
-    return { config: { enabled: active, settings } };
-  });
-  const baseline = await system.assemble(); active = true;
-  assert.equal((await system.assemble()).sections[0].name, ENHANCEMENT_SECTION);
-  active = false; assert.deepEqual(await system.assemble(), baseline);
-  broken = true; assert.deepEqual(await system.assemble(), baseline);
-  undo(); assert.equal(system.assemble, original); assert.equal(await system.assemble(), native);
 });
 
 test('fresh install and read leave files untouched, and enhancement edits never change library.json', () => fixture(async (directory, file) => {
@@ -142,4 +126,104 @@ test('authenticated API checks origins, content type, revisions and preview with
   assert.deepEqual(await readdir(directory), []);
   assert.equal((await call('POST', { action: 'toggle', data: { enabled: true }, expectedRevision: 0 })).status, 200);
   assert.equal((await call('POST', { action: 'save', data: { settings: { prompt: 'stale' } }, expectedRevision: 0 })).status, 409);
+}));
+
+
+test('optional subagent guidance preserves defaults, native contracts and persona/memory text',()=>{
+ assert.equal(settings.subagentGuidance,false);assert.equal(renderEnhancementPrompt({...settings,prompt:''}),'');
+ const text=renderEnhancementPrompt({...settings,subagentGuidance:true});
+ assert.ok(text.startsWith(settings.prompt));
+ const guidance=renderEnhancementPrompt({...settings,prompt:'',subagentGuidance:true});
+ assert.equal(renderEnhancementPrompt({...settings,prompt:' ',subagentGuidance:true}),guidance.trim());
+ assert.equal(renderEnhancementPrompt({...settings,prompt:' ',subagentGuidance:false}),'');
+ assert.match(guidance,/two independent deliverables/);
+ assert.match(guidance,/unclaimed part of your own assignment/);
+ assert.match(guidance,/One helper usually suffices for one independent result/);
+ assert.match(guidance,/quick answer.*work already assigned.*unfinished result/);
+ assert.match(guidance,/temporary child session/);
+ assert.match(guidance,/current authorization/);
+ assert.match(guidance,/completion messages/);
+ assert.match(guidance,/tools\.subagent inside run_code/);
+ assert.doesNotMatch(guidance,/Team Desk|team_members|team_send_message|teammate|always delegate|must (?:spawn|delegate)|favor starting a child/i);
+ const persona={name:'private-soul:identity',text:'original literal persona {{value}}'},memory={name:'private-soul:memory',text:'original literal memory'},native={sections:[persona,memory],tools:[],contexts:[],variables:{}};
+ const result=applyEnhancement(native,{enabled:true,settings:{...settings,subagentGuidance:true}});assert.ok(result.sections.includes(persona)&&result.sections.includes(memory));assert.equal(result.tools,native.tools);assert.equal(result.contexts,native.contexts);assert.equal(applyEnhancement(native,{enabled:false,settings:{...settings,subagentGuidance:true}}),native);
+});
+
+test('standing previews ignore live session and Plan prompts, isolate parallel drafts and release their scopes', async () => {
+  const stored = { revision: 1, ...config };
+  const globalPersona = { name: 'private-soul:identity', order: 10, text: 'Global example persona', interpolate: false };
+  const globalMemory = { name: 'private-soul:memories', order: 11, text: 'Global example memory', interpolate: false };
+  const policy = { name: 'plan:policy', order: 20, text: 'Native Plan rules for {{model}}' };
+  const presetScope = new Map();
+  const registry = {
+    composedPreset: context => context.preset,
+    async acquireScope(preset) {
+      const key = {};
+      presetScope.set(key, preset);
+      return { key, [Symbol.asyncDispose]: async () => { presetScope.delete(key); } };
+    },
+  };
+  let runtime;
+  const ctx = { get: () => registry, systemPrompt: {
+    async assemble(context) {
+      const preset = presetScope.get(context.scope);
+      await new Promise(resolve => setImmediate(resolve));
+      const native = preset === 'minimal'
+        ? { sections: [{ name: 'deployment:persona-prefix', order: 0, text: 'Exclusive native instructions', complete: true }] }
+        : { sections: [policy], variables: { model: undefined } };
+      return runtime.finalize({ ...native, sections: [...native.sections, globalPersona, globalMemory] }, native, context);
+    },
+  } };
+  const store = { config: () => structuredClone(stored), report() {} };
+  const personas = { descriptor: (_id, agent) => ({ kind: agent.kind }) };
+  runtime = createEnhancementRuntime(ctx, store, personas, { extraPresets: ['custom-example'] });
+  const live = { sections: [{ ...globalPersona, text: 'Live session only' }, policy] };
+  const agent = { ctx: { preset: 'standard' }, session: { id: 'synthetic' } };
+  runtime.finalize(live, live, { agent, planMode: true });
+  const [first, second, locked] = await Promise.all([
+    runtime.previewFor('standard', { settings: { prompt: 'First draft' } }),
+    runtime.previewFor('custom-example', { settings: { prompt: 'Second draft' } }),
+    runtime.previewFor('minimal', { settings: { prompt: 'Third draft' } }),
+  ]);
+  assert.equal(first.source, 'standing');
+  assert.match(first.text, /Global example persona/);
+  assert.match(first.text, /Global example memory/);
+  assert.match(first.text, /Native Plan rules for \{\{model\}\}/);
+  assert.match(first.text, /First draft/);
+  assert.doesNotMatch(first.text, /Live session only|Second draft/);
+  assert.match(second.text, /Second draft/);
+  assert.doesNotMatch(second.text, /First draft/);
+  assert.equal(locked.locked, true);
+  assert.equal(locked.text, 'Exclusive native instructions');
+  assert.equal(presetScope.size, 0);
+  await assert.rejects(runtime.previewFor('unlisted'), { status: 400 });
+  const unlisted = { ...agent, ctx: { preset: 'unlisted' } };
+  assert.equal(runtime.finalize(live, live, { agent: unlisted }), live);
+  const custom = { ...agent, ctx: { preset: 'custom-example' } };
+  assert.ok(runtime.finalize(live, live, { agent: custom }).sections.some(row => row.name === ENHANCEMENT_SECTION));
+  stored.settings = { ...stored.settings, includeSubagents: false };
+  assert.equal(runtime.finalize(live, live, { agent: { ...custom, kind: 'subagent' } }), live);
+  const check = runtime.recheck();
+  assert.equal(runtime.recheck(), check);
+  assert.equal((await check).modes.minimal.state, 'unsupported');
+  assert.equal(presetScope.size, 0);
+});
+
+test('shared Connection route exposes enhancement only and shares revision checks with the legacy endpoint', () => fixture(async (_directory, file) => {
+  const store = await new EnhancementStore(file).init();
+  let route;
+  const ctx = { connection: { fetch: { register(value) { route = value; return () => {}; } } } };
+  registerEnhancementApi(ctx, store, { status: () => ({ presets: ['standard'] }) });
+  assert.equal(route.path, ENHANCEMENT_API);
+  assert.deepEqual(route.methods, ['GET', 'POST']);
+  const invoke = (data, contentType = 'application/json') => route.fetch(new Request('http://example.invalid' + route.path,
+    data === undefined ? {} : { method: 'POST', headers: { 'content-type': contentType }, body: JSON.stringify(data) }));
+  const status = await invoke();
+  assert.equal(status.headers.get('cache-control'), 'no-store');
+  assert.deepEqual((await status.json()).presets, ['standard']);
+  assert.equal((await invoke({ action: 'preview', data: { settings: { prompt: 'X'.repeat(140000) } } })).status, 413);
+  assert.equal((await invoke({}, 'application/jsonp')).status, 415);
+  assert.equal((await invoke({ action: 'save', data: { settings: { prompt: 'New draft' } }, expectedRevision: 0 })).status, 200);
+  assert.equal((await invoke({ action: 'toggle', data: { enabled: true }, expectedRevision: 0 })).status, 409);
+  assert.equal(store.config().enabled, false);
 }));

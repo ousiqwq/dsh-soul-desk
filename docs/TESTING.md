@@ -18,7 +18,7 @@ npm run i18n:build
 
 - persona resolution across global / workspace / conversation scopes, migration, child ownership and concurrency conflicts;
 - the four-preset × three-persona-mode assembly matrix, disabled-state equality, literal `{{...}}` handling and failure isolation;
-- byte-for-byte comparison of the bundled upstream prompt against the vendored `vendor/dsh-unrestricted/rules-0.2.9.js`, plus per-string `sha256` checks;
+- byte-for-byte comparison of the bundled upstream prompt against the vendored `vendor/dsh-unrestricted/rules-0.2.15.js`, plus per-string `sha256` checks;
 - persona-pointer anchoring: with a Soul persona active the native persona row is replaced, so the pointer must follow the row that carries the persona, appear exactly once, and stay put across repeated assembly;
 - configuration storage, CAS revisions, backups, malformed-file fallback and API origin checks.
 
@@ -56,4 +56,4 @@ These fixtures verify assembly, persistence and execution contracts. They do not
 
 ## Refreshing the upstream text
 
-Replacing the vendored `src/rules.js`, regenerating `upstream-prompt.js`, and updating `UPSTREAM` and `UPSTREAM_SHA256` must land in the same commit. The tests fail if only part of that is done. See [upstream migration](UPSTREAM-INTEGRATION.md) for the deliberate structural differences.
+Replacing the vendored `src/rules.js`, regenerating `upstream-prompt.js`, and updating `UPSTREAM` and `UPSTREAM_SHA256` must land in the same commit. The tests fail if only part of that is done. `upstream-prompt.js` is generated: `node scripts/generate-upstream-prompt.mjs .` rewrites it from the vendored source, and the generator is kept so the bytes are reproducible rather than hand-edited. See [upstream migration](UPSTREAM-INTEGRATION.md) for the deliberate structural differences.

@@ -17,6 +17,7 @@ async function fixture(fn){
   const control={mode:'valid',beforeReply:null};
   class LlmStub extends Service {constructor(c){super(c,'llm');}async *stream(options){if(control.beforeReply)await control.beforeReply();if(control.mode==='throw')throw new Error('model unavailable');if(control.mode==='invalid'){yield {type:'text-delta',text:'invalid JSON'};return;}const content=JSON.parse(options.messages[0].content[0].text).content;yield {type:'text-delta',text:JSON.stringify({allow:!content.includes('欢迎按钮改成蓝色'),reason:'非个人事实'})};}}
   class DefaultModelStub extends Service {constructor(c){super(c,'agentDefaultModel');}currentSelection(){return {provider:'test',model:'test'};}}
+  await ctx.plugin((await import('@deepseek-ai/dsh-session-projection')).default).await();
   const fibers=[ctx.plugin(SystemPrompt),ctx.plugin(ToolRuntime),ctx.plugin(LlmStub),ctx.plugin(DefaultModelStub)];for(const fiber of fibers)await fiber;await mountExecutor(ctx);
   const owner={id:'caller-a'},other={id:'caller-b'};
   const plugin=ctx.plugin({name:'memory-tools-fixture',inject:['tools'],apply(child){registerMemoryTools(child,store,agent=>store.state.enabled?store.persona(agent===owner?a:b):null);}});await plugin;

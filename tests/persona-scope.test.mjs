@@ -12,7 +12,11 @@ import {attachPersonaPolicy} from '../prompt-policy.js';
 
 test('explicit child inheritance preserves in-flight owners and injects only their own memories',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'soul-scopes-')),store=await new SoulStore(join(dir,'library.json')).init();
- const ctx=new Context(),fiber=ctx.plugin(SystemPrompt);await fiber;
+ const ctx=new Context();
+ if (SystemPrompt.inject?.includes('sessionProjections')) {
+   await ctx.plugin((await import('@deepseek-ai/dsh-session-projection')).default).await();
+ }
+ const fiber=ctx.plugin(SystemPrompt);await fiber;
  const a=(await store.action('persona-save',{name:'甲',soul:'# 甲',activate:true},0)).personaId;
  const b=(await store.action('persona-save',{name:'乙',soul:'# 乙'},store.state.revision)).personaId;
  await store.remember(a,{kind:'preference',content:'用户喜欢乌龙茶。'});await store.remember(b,{kind:'story',content:'我们每周日一起读书。'});

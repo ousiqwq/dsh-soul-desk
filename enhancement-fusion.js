@@ -7,7 +7,7 @@
  */
 import {PERSONA_POINTER,PLAN_NOTE as UPSTREAM_PLAN_NOTE,PTC_ONLY_NOTE,STRUCTURED_OUTPUT_NOTE,EXECUTION_MODE_BLOCK} from './upstream-prompt.js';
 import {DEFAULT_ENHANCEMENT_SETTINGS,ENHANCEMENT_SECTION,renderEnhancementPrompt} from './prompt-enhancement.js';
-export const UPSTREAM={version:'0.2.9',frameworkBase:'0.2.8',commit:'c7afd4e03d162cf9545f47168f29a5ec225c0bd0'};
+export const UPSTREAM={version:'0.2.15',frameworkBase:'0.2.15',commit:'c79ce9c11d49925182fa9654d76d7055d6f5b3ac'};
 export const PRESETS=['standard','ptc','cordis','minimal'];
 export const PRESET_RULES={standard:{plan:true,ptcOnly:false},ptc:{plan:true,ptcOnly:true},cordis:{plan:true,ptcOnly:false},minimal:{plan:false,ptcOnly:false}};
 /** Upstream verbatim pointer appended to deployment:persona-prefix. */

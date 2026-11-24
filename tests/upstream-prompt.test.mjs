@@ -1,13 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import{createHash}from'node:crypto';
 import{EXECUTION_MODE_BLOCK,PERSONA_POINTER,PLAN_NOTE,PTC_ONLY_NOTE,STRUCTURED_OUTPUT_NOTE,ANCHORS,UPSTREAM,UPSTREAM_SHA256}from'../upstream-prompt.js';
-import*as vendored from'../vendor/dsh-unrestricted/rules-0.2.9.js';
+import*as vendored from'../vendor/dsh-unrestricted/rules-0.2.15.js';
 import{DEFAULT_ENHANCEMENT_SETTINGS,renderEnhancementPrompt}from'../prompt-enhancement.js';
 import{fuseSections,POINTER,PLAN_NOTE as FUSED_PLAN_NOTE,PTC_NOTE,STRUCTURED_NOTE}from'../enhancement-fusion.js';
 const sha=s=>createHash('sha256').update(s,'utf8').digest('hex');
 
 test('vendored prompt text is byte-identical to the upstream dsh-unrestricted source',()=>{
  assert.equal(EXECUTION_MODE_BLOCK,vendored.EXECUTION_MODE_BLOCK);
- assert.equal(EXECUTION_MODE_BLOCK.length,10246);
+ assert.equal(EXECUTION_MODE_BLOCK.length,9712);
  assert.equal(sha(EXECUTION_MODE_BLOCK),UPSTREAM_SHA256.executionModeBlock);
  const upstream=vendored.contractAdditions('ptc'),standard=vendored.contractAdditions('standard');
  assert.equal(PERSONA_POINTER,upstream.pointer);assert.equal(PERSONA_POINTER,standard.pointer);

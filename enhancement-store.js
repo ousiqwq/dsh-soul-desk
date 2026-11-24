@@ -1,15 +1,30 @@
 import { readFile, mkdir, open, rename, unlink, writeFile, readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { SoulError } from './memory-policy.js';
 import { DEFAULT_ENHANCEMENT_SETTINGS, validateEnhancementSettings, renderEnhancementPrompt } from './prompt-enhancement.js';
 
 const MAX_BYTES = 100000;
-const defaults = () => ({ version: 1, revision: 0, enabled: false, settings: { ...DEFAULT_ENHANCEMENT_SETTINGS } });
+const defaults = () => ({ version: 2, revision: 0, enabled: false, settings: { ...DEFAULT_ENHANCEMENT_SETTINGS } });
+
+const LEGACY_BUNDLED_SHA256 = '69d74c40bede59b272c7a9f6e2b680cf151c603b9c6c9f818161cf1d693e7c61';
+
+/** v1 stored the bundled body verbatim; recognise it so the upgrade keeps a working default. */
+function legacyPrompt(prompt) {
+  if (typeof prompt !== 'string' || !prompt.trim()) return '';
+  const digest = createHash('sha256').update(prompt, 'utf8').digest('hex');
+  return digest === LEGACY_BUNDLED_SHA256 ? DEFAULT_ENHANCEMENT_SETTINGS.prompt : '';
+}
 
 export function validateEnhancementState(value) {
-  if (!value || value.version !== 1 || !Number.isSafeInteger(value.revision) || value.revision < 0 || typeof value.enabled !== 'boolean') throw new SoulError('提示词增强配置格式或版本不受支持。');
-  return { version: 1, revision: value.revision, enabled: value.enabled, settings: validateEnhancementSettings(value.settings) };
+  if (!value || ![1, 2].includes(value.version) || !Number.isSafeInteger(value.revision) || value.revision < 0 || typeof value.enabled !== 'boolean') throw new SoulError('提示词增强配置格式或版本不受支持。');
+  // Version 1 shipped its bundled body inside the file instead of as a default.
+  // A file that still holds that exact body is upgraded to the current bundled
+  // text; anything else is dropped as documented, so local edits are not revived
+  // under a new release's wording.
+  const legacy = value.version === 1 && value.settings && typeof value.settings === 'object' && !Array.isArray(value.settings);
+  const settings = validateEnhancementSettings(legacy ? { ...value.settings, prompt: legacyPrompt(value.settings.prompt) } : value.settings);
+  return { version: 2, revision: value.revision, enabled: value.enabled, settings };
 }
 
 /** Deliberately separate from library.json, its imports and memory tools. */

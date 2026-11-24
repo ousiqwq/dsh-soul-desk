@@ -7,17 +7,20 @@ export const DEFAULT_ENHANCEMENT_SETTINGS = Object.freeze({
   directAnswer: false,
   completeArtifacts: false,
   preserveNames: false,
+  subagentGuidance: false,
   includeSubagents: true,
   prompt: EXECUTION_MODE_BLOCK,
 });
 
-// Optional short additions. They are off by default so the default injected
-// text stays byte-identical to the upstream block; enabling one appends its
-// paragraph after the block and therefore leaves the block itself untouched.
 export const ENHANCEMENT_EFFECTS = Object.freeze({
   directAnswer: "Lead with the requested result when possible, and keep introductions concise. Preserve the persona's tone and conversational style.",
   completeArtifacts: 'When a concrete artifact is requested and permitted, provide enough detail for it to be useful. State prerequisites or missing information rather than inventing results or claiming unperformed work.',
   preserveNames: 'Preserve names, paths and values supplied by the user. Use explicit placeholders for missing values, and honor any existing privacy or redaction requirements.',
+  subagentGuidance: [
+    "The user has enabled optional parallel help. When you own two independent deliverables that each take substantial work, prefer giving an unclaimed part of your own assignment to a native DSH subagent early and progressing the other yourself. This preference applies when the user describes an outcome without mentioning the tool. Use your judgment about whether the time saved is worth handing over the context.",
+    "A subagent is a temporary child session within your current authorization. One helper usually suffices for one independent result. More helpers make sense when they own different deliverables or the user wants several independent opinions. The tool returns immediately. A useful description names the branch; the prompt gives its inputs, the result needed and an acceptance check. Native completion messages bring its result back for you to verify and integrate. In Standard the tool is subagent; in PTC it may be exposed as tools.subagent inside run_code.",
+    "For a quick answer, a single lookup, work already assigned, or a step that needs your unfinished result, proceed directly. Respect the user's narrower instructions and the tools and permissions available in this session.",
+  ].join(" "),
 });
 
 export function validateEnhancementSettings(value) {
@@ -30,16 +33,11 @@ export function validateEnhancementSettings(value) {
   return settings;
 }
 
-/**
- * Returns the section body. With default settings this is exactly the vendored
- * `EXECUTION_MODE_BLOCK`: never wrapped, prefixed, softened or reworded.
- */
 export function renderEnhancementPrompt(value) {
   const settings = validateEnhancementSettings(value);
   const block = settings.prompt.trim();
-  if (!block) return '';
   const extras = Object.entries(ENHANCEMENT_EFFECTS).filter(([key]) => settings[key]).map(([, text]) => text);
-  return extras.length ? block + '\n\n' + extras.join('\n\n') : block;
+  return [block, ...extras].filter(Boolean).join('\n\n');
 }
 
 /** Adds one independent section; never rewrites existing rows. */

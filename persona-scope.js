@@ -51,9 +51,14 @@ export function createPersonaRuntime(store, ctx) {
     const query = service('sessionQuery');
     if (query) for (const row of await query.listSessions()) {
       const id=String(row.header.id);headers.set(id,row.header);
-      if(!titles.has(id)&&query.inspectSession&&service('sessionTitle')) {
-        const title=await query.inspectSession(id,session=>service('sessionTitle').get(session)?.title);
-        titles.set(id,title??id);
+      if (!titles.has(id) && service('sessionTitle')) {
+        if (query.observeSession) {
+          using observation = await query.observeSession(id);
+          titles.set(id, observation.projections?.values?.title ?? id);
+        } else if (query.inspectSession) {
+          const title = await query.inspectSession(id, session => service('sessionTitle').get(session)?.title);
+          titles.set(id, title ?? id);
+        }
       }
     }
     for (const session of service('sessions')?.list?.() ?? []) headers.set(String(session.id), session.header);

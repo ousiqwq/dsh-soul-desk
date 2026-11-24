@@ -1,4 +1,7 @@
 export const zh = {
+  "宿主独占指令": "宿主独占指令",
+  "预览使用预设基准和全局人设，不读取会话历史。": "预览使用预设基准和全局人设，不读取会话历史。",
+  "增强设置请求过大。": "增强设置请求过大。",
   "人设编辑内容": "人设编辑内容",
   "会话仅在对话顶部设置，优先于工作区和全局。": "会话仅在对话顶部设置，优先于工作区和全局。",
   " · 有未保存修改": " · 有未保存修改",
@@ -89,7 +92,7 @@ export const zh = {
   "此会话不使用人设": "此会话不使用人设",
   "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。": "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。",
   "注入方式": "注入方式",
-  "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。": "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。",
+  "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。": "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。",
   "确认导入": "确认导入",
   "私人灵魂": "私人灵魂",
   "私人灵魂-{p0}.json": "私人灵魂-{p0}.json",
@@ -205,6 +208,9 @@ export const zh = {
   "会话已不存在，请刷新。": "会话已不存在，请刷新。"
 };
 export const en = {
+  "宿主独占指令": "Host-exclusive instructions",
+  "预览使用预设基准和全局人设，不读取会话历史。": "Preview uses the preset baseline and global persona without reading conversation history.",
+  "增强设置请求过大。": "The enhancement settings request is too large.",
   "人设编辑内容": "Persona editor sections",
   "会话仅在对话顶部设置，优先于工作区和全局。": "Set conversations in the chat header; they override workspace and global defaults.",
   " · 有未保存修改": " · Unsaved changes",
@@ -295,7 +301,7 @@ export const en = {
   "此会话不使用人设": "No persona for this conversation",
   "每个人设拥有独立的跨会话记忆。只记录关系、喜好与共同故事；代码、任务进度和具体工作内容不进入长期记忆。": "Each persona has its own cross-conversation memories. Store relationships, preferences, and shared stories; code, task progress, and work details stay outside long-term memory.",
   "注入方式": "Prompt mode",
-  "用人格与个人记忆替换系统提示词正文，保留原生工具接口和运行时上下文。": "Replace the system prompt body with the persona and personal memories, keeping native tool schemas and runtime context.",
+  "用人格与个人记忆替换可编辑的身份段。任务说明、工具和独占系统指令由 DSH 管理。": "Replace editable identity sections with the persona and its memories. DSH manages task instructions, tools and exclusive system prompts.",
   "确认导入": "Confirm import",
   "私人灵魂": "Private Soul",
   "私人灵魂-{p0}.json": "private-soul-{p0}.json",
@@ -472,7 +478,7 @@ const fusionTranslations = {
   "完整预览暂不可用。": "Full preview is currently unavailable.",
   "完整预览可能包含人设和个人记忆，只读展示；不会启用增强或发送模型。": "The read-only full preview may include persona and personal memory. It does not enable enhancement or send a model request.",
   "{p0} · {p1} 行 · {p2} 字节": "{p0} · {p1} lines · {p2} bytes",
-  "最近真实组装": "Latest live assembly",
+  "最近会话预览": "Latest session preview",
   "独立模式预览": "Standing preset preview",
   "适配基础：dsh-unrestricted {p0}；原始破限提示词未迁入。": "Adaptation base: dsh-unrestricted {p0}. The original unrestricted prompt is not included.",
   "请求必须是 JSON 对象。": "The request must be a JSON object.",
@@ -514,3 +520,6 @@ const enhancementLayoutTranslations = {
   "人设与记忆段落保持原文。": "Persona and memory sections keep their original text."
 };
 for (const [key,value] of Object.entries(enhancementLayoutTranslations)) { zh[key]=key; en[key]=value; }
+
+const delegationTranslations={"子代理增强": "Subagent enhancement", "识别可以独立完成的一部分工作，结合当前任务考虑原生子代理。": "Help identify independent work that a native child session could take on.", "独立工作可并行，结果回到当前会话。": "Independent work can run in parallel and return its result here."};
+for(const [key,value] of Object.entries(delegationTranslations)){zh[key]=key;en[key]=value;}

@@ -1,6 +1,8 @@
 # Upstream framework and prompt migration
 
-Upstream: [dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted), MIT, copyright 2026 yexi-by. Structural base release 0.2.8 (commit `1383c6c16849a0f05bb8f9d927aa1bb31d772547`); prompt text taken from 0.2.9 (commit `c7afd4e03d162cf9545f47168f29a5ec225c0bd0`). `src/rules.js` is byte-identical across both releases.
+This document records the historical integration shipped in Soul Desk 0.5.1. See [Response enhancement](RESPONSE-ENHANCEMENT.zh-CN.md) for the current implementation.
+
+Upstream: [dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted), MIT, copyright 2026 yexi-by. The bundled prompt text is taken from 0.2.15 (commit `c79ce9c11d49925182fa9654d76d7055d6f5b3ac`). The previously bundled 0.2.9 text (commit `c7afd4e03d162cf9545f47168f29a5ec225c0bd0`) is still vendored, because version 1 enhancement files recorded that body and the upgrade test needs its exact bytes.
 
 ## Prompt text
 
@@ -8,14 +10,14 @@ The text lives in `upstream-prompt.js`, stored byte-for-byte and never rewritten
 
 | Export | Upstream source | Length |
 | --- | --- | --- |
-| `EXECUTION_MODE_BLOCK` | the `unrestricted:execution-mode` section body | 10246 chars |
+| `EXECUTION_MODE_BLOCK` | the `unrestricted:execution-mode` section body | 9712 chars |
 | `PERSONA_POINTER` | appended to the persona row | 170 chars |
 | `PLAN_NOTE` | appended to `plan:policy` | 349 chars |
 | `PTC_ONLY_NOTE` | appended to `tools:ptc-only` (PTC only) | 400 chars |
 | `STRUCTURED_OUTPUT_NOTE` | appended to `tool:structured_output` | 138 chars |
 | `ANCHORS` | identity, persona and structured-output reference texts | 4 strings |
 
-Per-string `sha256` values are recorded in `UPSTREAM_SHA256`. The unmodified upstream `src/rules.js` ships at `vendor/dsh-unrestricted/rules-0.2.9.js`, so the bytes are auditable offline. Under default settings `renderEnhancementPrompt()` returns the block unchanged: no wrapper heading, summary or added boundary sentence. The three optional extras (concise introductions, complete deliverables, preserved names) are off by default; enabling one appends after the block without altering it.
+Per-string `sha256` values are recorded in `UPSTREAM_SHA256`. The unmodified upstream `src/rules.js` ships at `vendor/dsh-unrestricted/rules-0.2.15.js`, so the bytes are auditable offline; the superseded 0.2.9 source sits next to it at `vendor/dsh-unrestricted/rules-0.2.9.js`. `DEFAULT_ENHANCEMENT_SETTINGS.prompt` is this block, so a fresh install and the Reset control both start from it, and `renderEnhancementPrompt()` returns it unchanged: no wrapper heading, summary or added boundary sentence. The optional extras (concise introductions, complete deliverables, preserved names, subagent guidance) are off by default; enabling one appends after the block without altering it.
 
 The block scopes its effect to content and states that it changes no tool catalog, tool-call protocol, plan rule, approval prompt, sandbox limit or structured-output report. Those mechanics stay under host control.
 

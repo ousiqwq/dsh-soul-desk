@@ -1,12 +1,8 @@
 # Third-party notes
 
-Soul Desk includes adapted framework code and verbatim prompt text from [dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted), by yexi-by, version 0.2.9, commit `c7afd4e03d162cf9545f47168f29a5ec225c0bd0` (MIT). The structural base was taken from release 0.2.8, commit `1383c6c16849a0f05bb8f9d927aa1bb31d772547`; `src/rules.js` is byte-identical between the two releases.
+Soul Desk bundles the prompt text of [dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted) by yexi-by, version 0.2.15, commit `c79ce9c11d49925182fa9654d76d7055d6f5b3ac` (MIT). `upstream-prompt.js` re-exports it without edits: the unrestricted execution-mode block, the persona pointer, the Plan, PTC and structured-output notes, plus the four structural anchors. Each string is stored with its `sha256` in `UPSTREAM_SHA256` and compared against the vendored `vendor/dsh-unrestricted/rules-0.2.15.js`, so the bytes stay auditable offline. That body is the default content of the enhancement editor. The superseded 0.2.9 text is vendored as well, because version 1 enhancement files recorded it byte-for-byte and the upgrade path recognises it there.
 
-`upstream-prompt.js` re-exports the upstream prompt text without edits: the unrestricted execution-mode block, the persona pointer and the Plan, PTC and structured-output notes, plus the four structural anchors. Each string is stored with its `sha256` in `UPSTREAM_SHA256` and checked against the vendored source by `tests/upstream-prompt.test.mjs`. The untouched upstream source file is vendored at `vendor/dsh-unrestricted/rules-0.2.9.js` so the bytes remain auditable. Soul does not paraphrase, translate, re-wrap or trim this text; `renderEnhancementPrompt()` returns the block byte-for-byte under default settings.
-
-`enhancement-fusion.js` adapts structural section fusion and preset contracts from `src/rules.js`. `enhancement-runtime.js` adapts preset resolution, scope shadow lifecycle, diagnostics and live/standing previews from `src/node.js`. Soul-specific protection, configuration and UI are maintained separately. The upstream project is not a runtime dependency and does not endorse this integration.
-
-See [integration notes](docs/UPSTREAM-INTEGRATION.md). The required upstream license follows and is also included at `vendor/dsh-unrestricted/LICENSE`.
+The upstream project is not a runtime dependency and does not endorse this integration. The required upstream license follows and is also included at `vendor/dsh-unrestricted/LICENSE`.
 
 MIT License
 

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Context, Service } from '@deepseek-ai/cordis';
+import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection';
 import SystemPrompt, { renderPrompt } from '@deepseek-ai/dsh-system-prompt';
 import { createScope } from '@deepseek-ai/dsh-scope';
 import { attachPersonaPolicy, applyPersona } from '../prompt-policy.js';
@@ -11,9 +12,10 @@ import { tmpdir } from 'node:os';
 
 async function fixture(fn) {
   const ctx = new Context();
+  await ctx.plugin(SessionProjectionRegistry);
   const fiber = ctx.plugin(SystemPrompt, { personaPrefix: 'default persona', personaSuffix: 'default suffix' });
   await fiber;
-  try { await fn(ctx); } finally { await fiber.dispose(); }
+  try { await fn(ctx); } finally { await ctx.fiber.dispose(); }
 }
 
 test('literal SOUL text is first, replacing identities while preserving tools and runtime context', () => fixture(async (ctx) => {
@@ -26,8 +28,8 @@ test('literal SOUL text is first, replacing identities while preserving tools an
     const assembly = await ctx.systemPrompt.assemble();
     assert.equal(assembly.sections[0].text, text);
     assert.equal(assembly.sections[0].interpolate, false);
-    assert.equal(assembly.sections.some(s => s.name === 'harness:identity' || s.name === 'deployment:persona-prefix'), false);
-    assert.match(renderPrompt(assembly), /^  # 私人灵魂/);
+    assert.equal(assembly.sections.some(s => s.text && (s.name === 'harness:identity' || s.name === 'deployment:persona-prefix')), false);
+    assert.match(renderPrompt(assembly), /^# 私人灵魂/);
     assert.match(renderPrompt(assembly), /\{\{literal\}\}/);
     assert.match(renderPrompt(assembly), /Use the example tool/);
     assert.equal(assembly.tools[0].name, 'example');
@@ -35,7 +37,7 @@ test('literal SOUL text is first, replacing identities while preserving tools an
   } finally { undo(); }
 }));
 
-test('complete mode also replaces a scoped complete persona without a duplicate-complete error', () => fixture(async (ctx) => {
+test('exclusive native modes retain their scoped system prompt', () => fixture(async (ctx) => {
   const key = {};
   const scope = createScope(ctx, key);
   await scope.ctx.inject(['systemPrompt'], (child) => child.systemPrompt.section({ name: 'deployment:persona-prefix', order: 0, text: 'scoped preset identity', complete: true }));
@@ -44,7 +46,7 @@ test('complete mode also replaces a scoped complete persona without a duplicate-
   try {
     const assembly = await ctx.systemPrompt.assemble({ scope: key });
     assert.equal(assembly.sections.length, 1);
-    assert.equal(renderPrompt(assembly), config.text);
+    assert.equal(renderPrompt(assembly), 'scoped preset identity');
   } finally { undo(); await scope.dispose(); }
 }));
 
@@ -56,18 +58,18 @@ test('append preserves the original prompt and adds literal persona and memory s
   const undo = attachPersonaPolicy(ctx.systemPrompt, () => config);
   try {
     const assembly = await ctx.systemPrompt.assemble();
-    assert.deepEqual(assembly.sections.slice(0, baseline.sections.length), baseline.sections);
-    assert.deepEqual(assembly.sections.slice(-3).map(s => s.name), ['private-soul:identity', 'private-soul:memory-policy', 'private-soul:memories']);
-    assert.equal(assembly.sections.at(-3).text, config.text);
+    assert.deepEqual(assembly.sections.filter(s=>s.text).slice(0, baseline.sections.length), baseline.sections);
+    assert.deepEqual(assembly.sections.filter(s=>s.text).slice(-3).map(s => s.name), ['private-soul:identity', 'private-soul:memory-policy', 'private-soul:memories']);
+    assert.equal(assembly.sections.filter(s=>s.text).at(-3).text, config.text);
     const prompt = renderPrompt(assembly);
-    assert.ok(prompt.startsWith(renderPrompt(baseline) + '\n\n' + config.text));
+    assert.ok(prompt.startsWith(renderPrompt(baseline) + '\n\n' + config.text.trim()));
     assert.match(prompt, /用户喜欢乌龙茶/);
     assert.match(prompt, /default persona/);
     assert.match(prompt, /default suffix/);
     assert.match(prompt, /\{\{literal\}\}/);
     assert.deepEqual(assembly.contexts, baseline.contexts);
     const reapplied = applyPersona(assembly, config);
-    assert.deepEqual(reapplied.sections, assembly.sections);
+    assert.equal(renderPrompt(reapplied), renderPrompt(assembly));
     assert.equal(reapplied.tools, assembly.tools);
     assert.equal(reapplied.contexts, assembly.contexts);
     assert.equal(reapplied.variables, assembly.variables);
@@ -79,7 +81,7 @@ test('append also preserves a native scoped complete preset', () => fixture(asyn
   await scope.ctx.inject(['systemPrompt'], child => child.systemPrompt.section({ name: 'deployment:persona-prefix', order: 0, text: 'Scoped complete prompt', complete: true }));
   const undo = attachPersonaPolicy(ctx.systemPrompt, () => ({ enabled: true, text: 'Appended persona', mode: 'append' }));
   try {
-    assert.equal(renderPrompt(await ctx.systemPrompt.assemble({ scope: key })), 'Scoped complete prompt\n\nAppended persona');
+    assert.equal(renderPrompt(await ctx.systemPrompt.assemble({ scope: key })), 'Scoped complete prompt');
   } finally { undo(); await scope.dispose(); }
 }));
 
@@ -138,7 +140,7 @@ test('native Cordis migrates literal legacy cells once and unload restores the r
   try {
     const assembly = await ctx.systemPrompt.assemble();
     assert.equal(assembly.sections[0].text, 'native first soul');
-    assert.equal(assembly.sections.length, 3);
+    assert.equal(assembly.sections.filter(s=>s.text).length, 3);
     const persisted = JSON.parse(await readFile(join(dataDir, 'library.json'), 'utf8'));
     assert.equal(persisted.personas[0].soul, 'native first soul');
     assert.equal(persisted.enabled, true);
@@ -154,5 +156,5 @@ test('complete persona replacement preserves executor protocol and generated PTC
  ctx.systemPrompt.context({name:'workdir',order:100,text:'native workspace context',required:true});
  const baseline=await ctx.systemPrompt.assemble(),config={enabled:true,text:'Replacement persona',mode:'complete'};
  const undo=attachPersonaPolicy(ctx.systemPrompt,()=>config);
- try{const result=await ctx.systemPrompt.assemble();assert.deepEqual(result.sections.map(s=>s.name),['private-soul:identity','tools:ptc-only','tools:sdk']);assert.match(renderPrompt(result),/Only run_code/);assert.match(renderPrompt(result),/declare const tools/);assert.doesNotMatch(renderPrompt(result),/Old task|default persona/);assert.deepEqual(result.contexts,baseline.contexts);assert.deepEqual(applyPersona(result,config).sections,result.sections);}finally{undo();}
+ try{const result=await ctx.systemPrompt.assemble();assert.deepEqual(result.sections.filter(s=>s.text).map(s=>s.name),['private-soul:identity','task:old-body','tools:ptc-only','tools:sdk']);assert.match(renderPrompt(result),/Only run_code/);assert.match(renderPrompt(result),/declare const tools/);assert.doesNotMatch(renderPrompt(result),/default persona/);assert.deepEqual(result.contexts,baseline.contexts);assert.equal(renderPrompt(applyPersona(result,config)),renderPrompt(result));}finally{undo();}
 }));

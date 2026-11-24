@@ -8,48 +8,15 @@ Open **Settings → Private Soul**. Package: `dsh-plugin-private-soul`.
 
 The interface uses DSH native i18n and follows language changes immediately. Chinese and English dictionaries are included; other interface languages use the native English fallback.
 
-## One-command installation
+## Install the local build
 
-Compatible with DeepSeek Harness **0.2.1-rc.3 / 0.2.1-rc.5 / 0.2.2-rc.2** and Node.js **26**.
-
-The current version is **`0.5.1`**, pushed to GitHub and published to npm. It bundles the upstream prompt text and keeps the default-off enhancement framework and three-tab advanced settings. Compatible with DSH Web `0.2.2-rc.2`.
-
-Install **from the GitHub branch with npx** (Node.js 26; no global dsh or pnpm installation required):
+Local build `0.5.3-local.2` targets DSH Web `0.2.3-alpha.2` and Node.js 26. Run on the profile host and supply the local tarball path.
 
 ```bash
-npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
+dsh plugin --profile web add file:/absolute/path/dsh-plugin-private-soul-0.5.3-local.2.tgz
 ```
 
-Or install the **same version from npm**:
-
-```bash
-npx --yes --package=@deepseek-ai/dsh@0.2.2-rc.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@latest
-```
-
-Run this on the DSH host with the same account and `DSH_HOME` as your existing instance. The command pins a compatible official CLI; `web` is the target profile. With the DSH CLI already installed, install from the GitHub branch:
-
-```bash
-dsh plugin --profile web add github:ousiqwq/dsh-soul-desk#main
-```
-
-Enable the plugin in DSH's plugin manager, restart DSH, refresh the page, and open **Settings → Private Soul**.
-
-## Agent preset compatibility
-
-Compatible with the four presets of DeepSeek Harness **0.2.2-rc.2**:
-
-| Preset | Capability Desk | Soul Desk | File Bridge |
-| --- | --- | --- | --- |
-| Standard `standard` | Skill/MCP catalogs, rules and invocation guards work | All three injection modes, memories and child policies work | Download and access checks work |
-| PTC `ptc` | Enabled Skills are injected normally; enabled tools stay in the SDK, while disabled entries are hidden and guarded | Preserves the `run_code` protocol and SDK; memory tools work through SDK calls | Works independently of tool-call style |
-| Minimal `minimal` | Rules work without adding a Skill loader, editor or subagent tools | Persona and memory support preserves the preset's existing tool boundary | Works |
-| Creation `cordis` | Skill/MCP rules preserve native creation tools | All three injection modes, memories and child policies work | Works |
-
-PTC and Standard both receive the available Skill catalog, persona and memories. Full Skill instructions enter context when loaded. PTC invokes tools through the `run_code` SDK; Standard invokes them directly. The six combinations with Priority, Complete and Append behave consistently: enabled Skills load, while disabled ones cannot be forced.
-
-Minimal does not ship a Skill loader or subagents; enabling a Skill does not install those tools into that preset. Global plugins can still contribute their own memory or MCP tools. Soul child policies default to no persona; parent reuse is explicit. Soul's Complete mode replaces the preset's prompt body while preserving executor protocol/SDK sections, tool schemas and native runtime context. Use Priority or Append to keep the original task instructions. Custom presets that isolate or replace underlying registries, and external ACP backends, are outside the supported range.
-
-See [preset compatibility](docs/AGENT-PRESET-COMPATIBILITY.md).
+Standard and PTC use native instruction sources for personas, memories and optional enhancements. Presets with exclusive instructions retain the complete host prompt.
 
 ## Features
 
@@ -97,7 +64,7 @@ Disabled children receive no new Soul persona, private memories, or memory instr
 | Prompt mode | Behavior |
 | --- | --- |
 | Priority | Place persona text before the system prompt's tool and framework guidance |
-| Replace | Replace the system prompt body with persona text while retaining tool schemas and runtime context |
+| Replace | Replace editable identity sections and retain native task instructions and tools |
 | Append | Preserve the original system prompt and append the persona and personal memories at the end |
 
 The interface uses short labels; hover over a mode to see its explanation.
@@ -108,19 +75,9 @@ Team Desk 0.14.0 can select a persona for each preset member and its future suba
 
 ## Response enhancement and preset adaptation
 
-Soul settings include a **global switch, off by default**, with **Advanced settings** on the right using a native DSH modal. This switch is independent of the persona master switch. Changes apply to the next model request and do not rewrite message history.
+Upgrade preserves the enhancement toggle, individual preferences, personas, memories, and session and workspace bindings. A version 1 body that is still the previously bundled text is upgraded to the current bundled text; a body you authored or emptied stays empty. Text can be edited in advanced settings. Reading a version 1 configuration migrates it in memory; the next edit writes version 2.
 
-Advanced settings are organized into **General / Prompt / Diagnostics**. General shows common switches; Prompt edits and previews the added section; Diagnostics checks Standard, PTC, Cordis and Minimal and displays full prompts. Window dimensions and save controls stay fixed, and drafts survive tab changes and reopening. Full previews may contain persona and personal memory and use the current DSH authentication and origin checks; previewing does not call a model or enable the switch.
-
-The injected text comes from upstream `dsh-unrestricted`: the 10246-character execution-mode block plus the persona pointer and the Plan, PTC and structured-output notes, all byte-for-byte, untranslated and unrewrapped. Under default settings the injected body equals the upstream block exactly. The text and the four structural anchors live in `upstream-prompt.js` with per-string `sha256` values, checked against the vendored upstream `src/rules.js`.
-
-![Default-off enhancement framework: General settings](docs/images/enhancement-general.en.png)
-
-The three optional extras (concise introductions, complete deliverables, preserved names) are off by default; enabling one appends after the original block without altering it. Application to subagents remains separately switchable. Edit only the added prompt, preview it, save it or reset the draft to defaults. Saving does not enable enhancement; resetting only changes the draft. Stale writes are rejected and local drafts are retained for manual merging.
-
-Existing persona, voice and personal-memory sections are never rewritten; the enhancement adds a separate section. Note that the upstream block itself states that no external style sheet, persona or tone block may re-narrow the scale it defines. This page therefore no longer claims the persona outranks that text: the block governs content and delivery scale, while the Soul memory rules govern memory facts and ownership. PTC executor protocols, SDK, tool catalogs, Plan and structured output stay under host control, and the block explicitly disclaims changing them. This is model guidance, grants no extra tool permissions, and cannot guarantee stylistic compliance on every response. Priority, Complete and Append persona modes remain supported.
-
-Configuration is separate: `$DSH_HOME/private-soul/prompt-enhancement.v1.json`, with ten recent pre-change versions under `enhancement-backups/`. Initial installation and reads do not create it. Persona archive import/export and memory consolidation leave it untouched. An unreadable configuration disables enhancement without replacing the file or affecting personas and memories. A detected standalone `dsh-unrestricted` prompt section causes enhancement to skip injection; avoid enabling both modules together.
+The enhancement uses native system instruction sources. Diagnostics build a fresh preset preview, with an explicit opt-in for custom presets. Presets with an exclusive system prompt keep the host’s complete text. Optional subagent guidance has its own switch. See [Response enhancement](docs/RESPONSE-ENHANCEMENT.zh-CN.md).
 
 ## Try the Ronova preset
 
@@ -159,4 +116,8 @@ See [TESTING.md](https://github.com/ousiqwq/dsh-soul-desk/blob/main/docs/TESTING
 
 ## Project acknowledgment
 
-The enhancement framework and prompt text come from [yexi-by/dsh-unrestricted](https://github.com/yexi-by/dsh-unrestricted) (structural base 0.2.8, commit `1383c6c16849a0f05bb8f9d927aa1bb31d772547`; prompt text 0.2.9, commit `c7afd4e03d162cf9545f47168f29a5ec225c0bd0`; MIT). The prompt text is bundled verbatim and verified byte-for-byte by tests; structural fusion, preset adaptation, diagnostics and previews are integrated with additional protection for Soul personas, memories and the current DSH release. Source parity does not by itself prove behavioral equivalence on any particular model. The default-off switch, advanced editing, separate configuration, backups and conflict protection remain. DSH host files are not modified. See [integration scope](docs/UPSTREAM-INTEGRATION.md) and [third-party notes](THIRD_PARTY_NOTICES.md).
+See the [third-party notices](THIRD_PARTY_NOTICES.md) for historical licensing.
+
+## Subagent enhancement
+
+Enable **Subagent enhancement** under **Response enhancement → Advanced settings → General**. The guidance helps the model recognize independent work, such as reconciling figures while drafting a guide. The task and available native tools determine whether a child is useful. Results return to the originating session for review and integration. This option defaults to off and takes effect when response enhancement is enabled.
