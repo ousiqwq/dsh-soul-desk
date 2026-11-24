@@ -659,8 +659,6 @@ function installLocale(ctx) {
 .soul-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;align-items:end}
 .soul-field{min-width:0;display:flex;flex-direction:column;gap:7px;font-size:13px}
 .soul-field select{width:100%}
-.soul-mode-menu{width:100%;min-width:0}
-.soul-mode-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}
 .soul-mode-options{min-width:140px}
 .soul-mode-option{width:100%;min-width:0}
 .soul-layout{min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -693,7 +691,8 @@ function installLocale(ctx) {
 @container(max-width:420px){.soul-card{padding:12px}.soul-actions>.soul-primary{flex:1 1 100%}.soul-actions>button{flex:1 1 auto}.soul-persona{flex:1 1 140px}.soul-memory-filter{grid-template-columns:minmax(0,1fr)}.soul-text{height:210px;min-height:160px}}
 /* Layout only: controls, menus, focus and hover come from DSH primitives. */
 .soul-native-select{width:100%;min-width:0}
-.soul-select-trigger{width:100%;justify-content:space-between;gap:8px;text-align:left}
+.soul-page .soul-select-trigger{width:100%;min-width:0;justify-content:space-between;gap:8px;text-align:left}
+.soul-select-trigger>svg{flex:none}
 .soul-ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .soul-rule-panel,.soul-rule-target{display:flex;flex-direction:column;gap:12px;min-width:0}
 .soul-persona-trigger{max-width:min(100%,380px);min-width:0;gap:6px}
@@ -771,9 +770,9 @@ function installLocale(ctx) {
       const [open,setOpen]=React.useState(false),anchorRef=React.useRef(null);
       React.useEffect(()=>{if(disabled)setOpen(false);},[disabled]);
       const selected=promptModes.find(row=>row.id===value)??promptModes[0];
-      return h(AnchoredMenu,{anchorRef,open,portal:true,minWidthFromAnchor:true,className:'soul-mode-menu',listClassName:'soul-mode-options',onClose:()=>setOpen(false),
+      return h(AnchoredMenu,{anchorRef,open,portal:true,minWidthFromAnchor:true,className:'soul-native-select',listClassName:'soul-mode-options',onClose:()=>setOpen(false),
         anchor:h(Tooltip,{label:selected.description,side:'bottom',portal:true,delayMs:400,disabled:open,maxWidth:320},
-          h(Button,{ref:anchorRef,id:'soul-prompt-mode',variant:'outline',className:'soul-mode-trigger',disabled,'aria-label':tr("注入方式"),'aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(current=>!current)},selected.label,h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true})))},
+          h(Button,{ref:anchorRef,id:'soul-prompt-mode',variant:'outline',className:'soul-select-trigger',disabled,'aria-label':tr("注入方式"),'aria-haspopup':'menu','aria-expanded':open,onClick:()=>setOpen(current=>!current)},h('span',{className:'soul-ellipsis'},selected.label),h(IconChevronDownOutlineRegular,{size:14,'aria-hidden':true})))},
         ...promptModes.map(row=>h(Tooltip,{key:row.id,label:row.description,side:'right',portal:true,delayMs:350,focusDelayMs:350,maxWidth:320},
           h('div',{className:'soul-mode-option'},h(MenuItemButton,{current:row.id===selected.id,onSelect:()=>{setOpen(false);onChange(row.id);}},row.label)))));
     }
