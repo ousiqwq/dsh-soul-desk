@@ -8,13 +8,15 @@ Open **Settings → Private Soul**. Package: `dsh-plugin-private-soul`.
 
 The interface uses DSH native i18n and follows language changes immediately. Chinese and English dictionaries are included; other interface languages use the native English fallback.
 
-## Install the local build
+## One-command installation
 
-Local build `0.5.3-local.2` targets DSH Web `0.2.3-alpha.2` and Node.js 26. Run on the profile host and supply the local tarball path.
+Version `0.5.4` requires DSH Web `0.2.3-alpha.2` and Node.js 26 or newer. For DSH `0.2.1-rc.3`, `0.2.1-rc.5`, or `0.2.2-rc.2`, install plugin version `0.5.0`.
 
 ```bash
-dsh plugin --profile web add file:/absolute/path/dsh-plugin-private-soul-0.5.3-local.2.tgz
+npx --yes --package=@deepseek-ai/dsh@0.2.3-alpha.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@0.5.4
 ```
+
+Run on the DSH host with the same account and `DSH_HOME` as the existing instance. Replace `web` with your target profile.
 
 Standard and PTC use native instruction sources for personas, memories and optional enhancements. Presets with exclusive instructions retain the complete host prompt.
 

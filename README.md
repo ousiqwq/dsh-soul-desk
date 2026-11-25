@@ -8,13 +8,15 @@ DeepSeek Harness 的人格与个人记忆管理插件。为不同对话选择合
 
 界面接入 DSH 原生 i18n，实时跟随 DSH 的语言设置。内置中英文词典；其他界面语言按 DSH 的规则回退到英文。
 
-## 安装本地版本
+## 一键安装
 
-本地版 `0.5.3-local.2` 使用 DSH Web `0.2.3-alpha.2` 和 Node.js 26。在对应 profile 所在的机器上运行，文件路径填本地包的实际位置。
+`0.5.4` 需要 DSH Web `0.2.3-alpha.2` 和 Node.js 26 或更新版本。使用 DSH `0.2.1-rc.3`、`0.2.1-rc.5` 或 `0.2.2-rc.2` 时，请安装插件 `0.5.0`。
 
 ```bash
-dsh plugin --profile web add file:/absolute/path/dsh-plugin-private-soul-0.5.3-local.2.tgz
+npx --yes --package=@deepseek-ai/dsh@0.2.3-alpha.2 --package=pnpm@11.28.5 dsh plugin --profile web add dsh-plugin-private-soul@0.5.4
 ```
+
+在 DSH 主机上用原实例相同的账户和 `DSH_HOME` 执行。将 `web` 改为你的目标 profile。
 
 标准和 PTC 使用宿主原生指令来源加载人设、记忆和可选增强。独占指令预设使用宿主指定的完整正文。
 
